@@ -1,0 +1,20 @@
+// Util Imports
+import { getDictionary } from '@/utils/getDictionary'
+
+// View Imports
+import ProfileManagement from '@/views/dashboard/area/school-vendor-assosiates/schools/[id]/index'
+
+// Meta data
+export const metadata = {
+  title: 'Profile Management'
+}
+
+// Page
+const ProfileManagementPage = async ({ params }) => {
+  // Vars
+  const dictionary = await getDictionary(params?.lang)
+
+  return <ProfileManagement dictionary={dictionary} params={params} />
+}
+
+export default ProfileManagementPage

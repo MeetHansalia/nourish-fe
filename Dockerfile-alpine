@@ -1,0 +1,68 @@
+# # Stage 1: Build
+# FROM node:18.17 AS builder
+# # Set working directory inside the container
+# WORKDIR /app
+# # Copy package.json and package-lock.json first for better layer caching
+# COPY package*.json ./
+# # Install dependencies
+# COPY . .
+# COPY .env.stag .env
+
+# # Install pnpm globally
+# RUN npm install -g pnpm
+# RUN pnpm install
+
+# # Run the build process
+# RUN pnpm run build
+
+# EXPOSE 3000
+# # Define the command to first run the build and then start the app
+# CMD ["sh", "-c", "pnpm run start"]
+
+# # Stage 2: Production
+# FROM alpine:latest
+# # Set working directory inside the container
+# WORKDIR /app
+# RUN apk add --no-cache nodejs npm
+# # Copy only the necessary files from the build stage
+# COPY --from=builder /app .
+# COPY --from=builder /app/node_modules ./node_modules
+# COPY --from=builder /app/package*.json ./
+# COPY --from=builder /app/.env.example .env
+# # Expose the necessary port
+# EXPOSE 3000
+# # Define the command to first run the build and then start the app
+# CMD ["sh", "-c", "pnpm run start"]
+
+
+# Stage 1: Build
+FROM node:18.17 AS builder
+# installing basic lib's 
+# RUN apt-get install -y unzip git zip nano vim 
+# Set working directory inside the container
+WORKDIR /app
+# Copy package.json and package-lock.json first for better layer caching
+
+# Install dependencies (for production or development, depending on your use case)
+
+
+RUN npm install -g pnpm
+COPY . .
+RUN pnpm install
+# Copy the rest of the application source code
+
+
+# Stage 2: Production
+FROM alpine:latest
+# Set working directory inside the container
+WORKDIR /app
+RUN apk add --no-cache nodejs npm
+# Copy only the necessary files from the build stage
+COPY --from=builder /app .
+# COPY --from=builder /app/node_modules ./node_modules
+# COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/.env.stag .env
+# Expose the necessary port
+EXPOSE 3000
+# Define the command to run your app
+CMD ["pnpm", "run", "start"]

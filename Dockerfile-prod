@@ -1,0 +1,20 @@
+# Stage 1: Build
+FROM node:18.17 AS builder
+# Set working directory inside the container
+WORKDIR /app
+# Copy package.json and package-lock.json first for better layer caching
+COPY package*.json ./
+# Install dependencies
+COPY . .
+COPY .env.prod .env
+
+# Install pnpm globally
+RUN npm install -g pnpm
+RUN pnpm install
+
+# Run the build process
+RUN pnpm run build
+
+EXPOSE 3000
+# Define the command to first run the build and then start the app
+CMD ["sh", "-c", "pnpm run start"]
