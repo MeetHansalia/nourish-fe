@@ -25,9 +25,8 @@ import {
   reviewDialogState,
   setDialogData,
   setIsCompleteOrderApiCall,
-  setIsDialogShow,
+  setIsDialogFromDeliveryPage,
   setIsFromPendingApi,
-  setIsRefreshReviewList
 } from '@/redux-store/slices/reviewDialog'
 
 import { API_ROUTER } from '@/utils/apiRoutes'
@@ -44,7 +43,7 @@ import { USER_PANELS } from '@/utils/constants'
 
 const GlobalReviewDialog = () => {
   const [isOpenDialog, setIsOpenDialog] = useState(false)
-  const { isDialogShow, dialogData, isFromPendingApi, isCompleteOrderApiCall } = useSelector(reviewDialogState)
+  const { dialogData, isCompleteOrderApiCall, isDialogShowFromDeliveryPage } = useSelector(reviewDialogState)
   const dispatch = useDispatch()
   const router = useRouter()
 
@@ -56,11 +55,11 @@ const GlobalReviewDialog = () => {
   // const abortController = useRef(null)
 
   useEffect(() => {
-    if (isDialogShow) {
+    if (isDialogShowFromDeliveryPage) {
       setDialogDetailData(dialogData)
       setIsOpenDialog(true)
     }
-  }, [isDialogShow])
+  }, [isDialogShowFromDeliveryPage])
 
   // useEffect(() => {
   //   if (!dialogData) {
@@ -102,7 +101,7 @@ const GlobalReviewDialog = () => {
     e.preventDefault()
     const pathnameWithoutPanel = await getPathnameWithoutPanel()
 
-    dispatch(setIsDialogShow(false))
+    dispatch(setIsDialogFromDeliveryPage(false))
     dispatch(setDialogData(null))
     dispatch(setIsFromPendingApi(false))
 
@@ -133,11 +132,11 @@ const GlobalReviewDialog = () => {
 
       ...(dialogDetailData?.order?.kidId
         ? [
-            {
-              label: t('form.label.kid_name'),
-              value: `${dialogDetailData?.order?.kidId?.first_name} ${dialogDetailData?.order?.kidId?.last_name}`
-            }
-          ]
+          {
+            label: t('form.label.kid_name'),
+            value: `${dialogDetailData?.order?.kidId?.first_name} ${dialogDetailData?.order?.kidId?.last_name}`
+          }
+        ]
         : []),
       { label: t('page.common.order_date'), value: dialogDetailData?.order?.orderDate },
       { label: t('page.common.details'), value: orderDetails }

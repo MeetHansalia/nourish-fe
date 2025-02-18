@@ -97,16 +97,10 @@ const OrdersTableComponent = ({ mode, dictionary }) => {
 
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
-  // const isDialogShowFromDeliveryPage = useSelector(state => state.reviewDialog.isDialogShowFromDeliveryPage)
-  const { isDialogShowFromDeliveryPage } = useSelector(reviewDialogState)
+  const { isDialogShowFromDeliveryPage, isDialogShow } = useSelector(reviewDialogState)
 
-  console.log('isDialogShowFromDeliveryPage', isDialogShowFromDeliveryPage)
 
-  // useEffect(() => {
-  //   if (isDialogShowFromDeliveryPage === true) {
-  //     setIsDialogOpen(true)
-  //   }
-  // }, [isDialogShowFromDeliveryPage])
+
 
   const abortController = useRef(null)
 
@@ -416,14 +410,16 @@ const OrdersTableComponent = ({ mode, dictionary }) => {
   }
 
   useEffect(() => {
-    getDataForInquiryTable()
+    if (!isDialogShowFromDeliveryPage) {
+      getDataForInquiryTable()
+    }
 
     return () => {
       if (abortController.current) {
         abortController.current.abort()
       }
     }
-  }, [page, itemsPerPage, globalFilter, updateData])
+  }, [page, itemsPerPage, globalFilter, updateData, isDialogShowFromDeliveryPage])
 
   useEffect(() => {
     setPage(1)
@@ -581,7 +577,7 @@ const OrdersTableComponent = ({ mode, dictionary }) => {
       />
       {/* )} */}
 
-      {isDialogShowFromDeliveryPage && <GlobalReviewDialog onClose={() => setIsDialogOpen(false)} />}
+      {isDialogShow && <GlobalReviewDialog onClose={() => setIsDialogOpen(false)} />}
 
       {/*---DIALOG BOX---  */}
       <Dialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)} fullWidth maxWidth='sm'>
