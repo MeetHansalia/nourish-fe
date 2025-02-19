@@ -232,6 +232,7 @@ const ManageVendorRequest = ({ dictionary }) => {
                   } else if (cancelOrderRequestStatus == 'accepted') {
                     setIsNearVendorDialogShow(true)
                     setSelectedRow(row?.original)
+                    dispatch(setOrderId(row?.original._id))
                   }
                 }}
               >
@@ -249,7 +250,7 @@ const ManageVendorRequest = ({ dictionary }) => {
                     children: `${dictionary?.common?.reject}`,
                     onClick: e => {
                       e.stopPropagation()
-                      dispatch(setOrderId(row?.original._id))
+
                     }
                   }}
                   dialog={RejectConfirmationDialogBox}
@@ -470,8 +471,8 @@ const ManageVendorRequest = ({ dictionary }) => {
                   onChange={handlePageChange}
                   showFirstButton
                   showLastButton
-                  //   onPageChange={handlePageChange}
-                  // rowsPerPageOptions={[10, 25, 50]}
+                //   onPageChange={handlePageChange}
+                // rowsPerPageOptions={[10, 25, 50]}
                 />
               </div>
             )}

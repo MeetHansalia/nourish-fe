@@ -283,6 +283,8 @@ export const API_ROUTER = {
 
     ADD_TO_CART: '/v1/state-executive-order-management/add-to-cart',
     GET_CART_DETAILS: id => `/v1/state-executive-order-management/cart/${id}`,
+    UPDATE_CART_QUANTITY: '/v1/state-executive-order-management/update-cart-items',
+    PLACE_ORDER: id => `/v1/state-executive-order-management/place-order/${id}`,
 
     GET_FOOD_CHART: '/v1/state-executive-foodchart',
     POST_FOOD_CHART: '/v1/state-executive-foodchart',

@@ -42,6 +42,7 @@ import { getLocalizedUrl } from '@/utils/i18n'
 
 import SpeedometerChart from '@/components/nourishubs/GaugeChart'
 import MealNutritionTable from '@/views/dashboard/common/MealNutritionTable'
+import { globalState } from '@/redux-store/slices/global'
 
 const validationSchema = selectedDish =>
   yup.object().shape({
@@ -138,6 +139,8 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
   const [itemTotal, setItemTotal] = useState(0)
 
   const selectedDates = useSelector(state => state.date.singleDate)
+  const { orderId } = useSelector(globalState)
+
 
   const {
     control,
@@ -212,30 +215,28 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
 
   const handlePayNow = async () => {
     try {
-      const response = await axiosApiCall.post(API_ROUTER.PARENT.PAY_NOW, {
-        kidId
-      })
+      const response = await axiosApiCall.post(API_ROUTER.STATE.PLACE_ORDER(cartData._id))
 
       const { status, message } = response?.data || {}
 
       if (status) {
-        await fetchLatestCartDetails()
+        // await fetchLatestCartDetails()
         toastSuccess(message)
-        router.push(getLocalizedUrl(`${getPanelName(pathname)}/kid-profile-management`, locale))
+        router.push(getLocalizedUrl(`${getPanelName(pathname)}/order-management`, locale))
       }
-    } catch (error) {}
+    } catch (error) { }
   }
 
   const emptyCart = () => {
-    router.push(getLocalizedUrl(`${getPanelName(pathname)}/kid-profile-management`, locale))
+    router.push(getLocalizedUrl(`${getPanelName(pathname)}/order-management`, locale))
 
     return
   }
 
-  const fetchLatestCartDetails = async (kidId, selectedDates) => {
+  const fetchLatestCartDetails = async (orderId, selectedDates) => {
     try {
       setLoading(true)
-      const response = await axiosApiCall.get(API_ROUTER.PARENT.GET_CART_DETAILS(kidId, selectedDates))
+      const response = await axiosApiCall.get(API_ROUTER.STATE.GET_CART_DETAILS(orderId, selectedDates))
 
       if (!response?.data || (typeof response.data === 'string' && response.data.trim() === '')) {
         emptyCart()
@@ -284,10 +285,10 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
         kidId
       }
 
-      const response = await axiosApiCall.post(API_ROUTER.PARENT.UPDATE_CART_QUANTITY, payload)
+      const response = await axiosApiCall.post(API_ROUTER.STATE.UPDATE_CART_QUANTITY, payload)
 
       if (response.status === 201) {
-        await fetchLatestCartDetails(kidId)
+        await fetchLatestCartDetails(orderId)
       } else {
         console.error('Failed to update quantity:', response)
       }
@@ -347,17 +348,15 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
 
       const payload = {
         vendorId,
-        userId: session.user._id,
-        orderDate: selectedDates,
         cartItems: [cartItem],
-        kidId
+        orderId
       }
 
       await axiosApiCall.post(API_ROUTER.STATE.ADD_TO_CART, payload, {
         headers: { 'Content-Type': 'application/json' }
       })
 
-      fetchLatestCartDetails(kidId)
+      fetchLatestCartDetails(orderId)
       reset()
       handleDialogClose()
     } catch (error) {
@@ -367,8 +366,8 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
 
   // Initial Cart Fetch
   useEffect(() => {
-    if (kidId) {
-      fetchLatestCartDetails(kidId)
+    if (orderId) {
+      fetchLatestCartDetails(orderId)
     }
   }, [])
 
@@ -406,14 +405,14 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
               )}
             </CardContent>
           </Card>
-          <Card sx={{ mb: 2 }}>
+          {/* <Card sx={{ mb: 2 }}>
             <CardContent>
               <Typography variant='h6'>{dictionary?.common?.account}</Typography>
               <Typography variant='body2' color='text.secondary'>
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod...
               </Typography>
             </CardContent>
-          </Card>
+          </Card> */}
           <Card sx={{ mb: 2 }}>
             <CardContent>
               <Typography variant='h6'>{dictionary?.common?.delivery_address}</Typography>
@@ -423,14 +422,14 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
             </CardContent>
           </Card>
 
-          <Card sx={{ mb: 2 }}>
+          {/* <Card sx={{ mb: 2 }}>
             <CardContent>
               <Typography variant='h6'>{dictionary?.common?.payment}</Typography>
               <Typography variant='body2' color='text.secondary'>
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod...
               </Typography>
             </CardContent>
-          </Card>
+          </Card> */}
         </Grid>
 
         <Grid item xs={12} md={4} lg={4}>

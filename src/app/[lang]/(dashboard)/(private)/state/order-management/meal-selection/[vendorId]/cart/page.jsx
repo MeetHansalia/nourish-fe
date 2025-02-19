@@ -1,6 +1,6 @@
 // Util Imports
 import { getDictionary } from '@/utils/getDictionary'
-import CheckOutPage from '@/views/dashboard/parent/meal-selection/CheckOutPage'
+import CheckOutPage from '@/views/dashboard/state/order-management/last-moment-cancellation/meal-selection/CheckOutPage'
 
 // Meta data
 export const metadata = {
@@ -9,12 +9,12 @@ export const metadata = {
 
 // Page
 const Checkout = async ({ params }) => {
-  const { kidId, vendorId } = params
+  const { vendorId } = params
 
   // Vars
   const dictionary = await getDictionary(params?.lang)
 
-  return <CheckOutPage dictionary={dictionary} kidId={kidId} vendorId={vendorId} />
+  return <CheckOutPage dictionary={dictionary} vendorId={vendorId} />
 }
 
 export default Checkout

@@ -47,6 +47,7 @@ import { useTranslation } from '@/utils/getDictionaryClient'
 import { getLocalizedUrl } from '@/utils/i18n'
 
 import { getPanelName } from '@/utils/globalFunctions'
+import { globalState } from '@/redux-store/slices/global'
 
 const validationSchema = selectedDish =>
   yup.object().shape({
@@ -139,6 +140,8 @@ const Menu = ({ dictionary, kidId, vendorId }) => {
   const [isDataLoaded, setIsDataLoaded] = useState(false)
   const [totalPrice, setTotalPrice] = useState(0)
   const [selectedModifierIds, setSelectedModifierIds] = useState([])
+  const { orderId } = useSelector(globalState)
+
 
   const selectedDates = useSelector(state => state.date.singleDate)
 
@@ -157,15 +160,15 @@ const Menu = ({ dictionary, kidId, vendorId }) => {
     }
   })
 
-  const handleOrderNow = (kidId, vendorId) => {
+  const handleOrderNow = (orderId, vendorId) => {
     if ((cartData?.length || 0) > 0) {
-      router.push(getLocalizedUrl(`${getPanelName(pathname)}/meal-selection/${kidId}/${vendorId}/cart`, locale))
+      router.push(getLocalizedUrl(`${getPanelName(pathname)}/order-management/meal-selection/${vendorId}/cart`, locale))
     }
   }
 
   const fetchLatestCartDetails = async kidId => {
     try {
-      const response = await axiosApiCall.get(API_ROUTER.PARENT.GET_CART_DETAILS(kidId))
+      const response = await axiosApiCall.get(API_ROUTER.STATE.GET_CART_DETAILS(orderId))
 
       setCartData(response?.data?.cartItems || [])
     } catch (error) {
@@ -175,15 +178,9 @@ const Menu = ({ dictionary, kidId, vendorId }) => {
 
   const checkRun = useRef(false)
 
-  useEffect(() => {
-    if (kidId) {
-      fetchLatestCartDetails(kidId)
-    }
-  }, [kidId])
-
-  useEffect(() => {
-    axiosApiCall
-      .get(API_ROUTER.PARENT.GET_PARENT_ALL_CATEGORIES(vendorId))
+  const CategoryApiCall = async (vendorId) => {
+    await axiosApiCall
+      .get(API_ROUTER.PARENT.GET_PARENT_ALL_CATEGORIES, { params: { vendorId: vendorId } })
       .then(response => {
         const fetchedCategories = response?.data?.response?.data?.categories || []
         const allFetchedDishes = fetchedCategories.flatMap(cat => cat.dishes || [])
@@ -201,6 +198,16 @@ const Menu = ({ dictionary, kidId, vendorId }) => {
       .catch(error => {
         setIsDataLoaded(true)
       })
+  }
+
+  useEffect(() => {
+    if (orderId) {
+      fetchLatestCartDetails(orderId)
+    }
+  }, [orderId])
+
+  useEffect(() => {
+    CategoryApiCall(vendorId)
   }, [vendorId])
 
   useEffect(() => {
@@ -284,7 +291,7 @@ const Menu = ({ dictionary, kidId, vendorId }) => {
         // userId: session.user._id,
         // orderDate: selectedDates,
         cartItems: [cartItem],
-        orderId: kidId
+        orderId: orderId
       }
 
       await axiosApiCall.post(API_ROUTER.STATE.ADD_TO_CART, payload, {
@@ -312,7 +319,7 @@ const Menu = ({ dictionary, kidId, vendorId }) => {
             onChange={e => setSearchQuery(e.target.value)}
           />
           <Typography
-            onClick={() => handleOrderNow(kidId, vendorId)}
+            onClick={() => handleOrderNow(orderId, vendorId)}
             style={{
               cursor: cartData?.length > 0 ? 'pointer' : 'not-allowed',
               opacity: cartData?.length > 0 ? 1 : 0.5
@@ -326,9 +333,8 @@ const Menu = ({ dictionary, kidId, vendorId }) => {
       <Card className='mb-4'>
         <CardContent className='flex gap-4 overflow-x-auto'>
           <div
-            className={`cursor-pointer border p-4 rounded-lg flex flex-col items-center gap-2 ${
-              selectedCategory === null ? 'bg-green-100' : ''
-            }`}
+            className={`cursor-pointer border p-4 rounded-lg flex flex-col items-center gap-2 ${selectedCategory === null ? 'bg-green-100' : ''
+              }`}
             onClick={() => handleSelectCategory(null)}
           >
             <Typography className='font-medium text-center'>{dictionary?.form?.label?.all}</Typography>
@@ -337,9 +343,8 @@ const Menu = ({ dictionary, kidId, vendorId }) => {
           {categories.map(category => (
             <div
               key={category._id}
-              className={`cursor-pointer border p-4 rounded-lg flex flex-col items-center gap-2 ${
-                selectedCategory?._id === category._id ? 'bg-green-100' : ''
-              }`}
+              className={`cursor-pointer border p-4 rounded-lg flex flex-col items-center gap-2 ${selectedCategory?._id === category._id ? 'bg-green-100' : ''
+                }`}
               onClick={() => handleSelectCategory(category)}
             >
               <img src={category.imageUrl} alt={category.name} className='w-12 h-12' />
