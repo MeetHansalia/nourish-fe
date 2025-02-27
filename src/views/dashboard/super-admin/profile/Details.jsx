@@ -29,6 +29,8 @@ import CustomAvatar from '@/@core/components/mui/Avatar'
 import { getLocalizedUrl } from '@/utils/i18n'
 import { getFullName, getPanelName } from '@/utils/globalFunctions'
 import { getInitials } from '@/utils/getInitials'
+import OpenDialogOnElementClick from '@/components/layout/OpenDialogOnElementClick'
+import changePasswordDialog from './ChangePasswordDialog'
 
 /**
  * Page
@@ -45,12 +47,11 @@ const Details = ({ dictionary, userData, setSelectedFile }) => {
   // States
   const [preview, setPreview] = useState(userData?.profileImage)
 
-
   const handleImageChange = event => {
     const file = event.target.files[0]
 
     if (file) {
-      setSelectedFile(file);
+      setSelectedFile(file)
       const reader = new FileReader()
 
       reader.onloadend = () => {
@@ -62,8 +63,6 @@ const Details = ({ dictionary, userData, setSelectedFile }) => {
       toastError('Please select a valid file.')
     }
   }
-
-
 
   return (
     <Card>
@@ -155,26 +154,38 @@ const Details = ({ dictionary, userData, setSelectedFile }) => {
             </div>
             <div className='flex items-center flex-wrap gap-2'>
               <Typography className='text-textPrimary font-medium'>{dictionary?.form?.label?.status}:</Typography>
-              <Typography>{userData?.status
-                ? userData.status.charAt(0).toUpperCase() + userData.status.slice(1)
-                : <i>N/A</i>}</Typography>
+              <Typography>
+                {userData?.status ? userData.status.charAt(0).toUpperCase() + userData.status.slice(1) : <i>N/A</i>}
+              </Typography>
             </div>
             <div className='flex items-center flex-wrap gap-2'>
-              <Typography className='text-textPrimary font-medium'>
-                {dictionary?.dialog?.contact}:
-              </Typography>
+              <Typography className='text-textPrimary font-medium'>{dictionary?.dialog?.contact}:</Typography>
               <Typography>{userData?.phoneNo || <i>N/A</i>}</Typography>
             </div>
             <div className='flex items-center flex-wrap gap-2'>
-              <Typography className='text-textPrimary font-medium'>
-                {dictionary?.form?.label?.language}:
-              </Typography>
+              <Typography className='text-textPrimary font-medium'>{dictionary?.form?.label?.language}:</Typography>
               <Typography>{locale || <i>N/A</i>}</Typography>
             </div>
             <div className='flex items-center flex-wrap gap-2'>
               <Typography className='text-textPrimary font-medium'>{dictionary?.form?.label?.country}:</Typography>
-              <Typography>{userData?.location?.country ? userData?.location?.country.charAt(0).toUpperCase() + userData?.location?.country.slice(1)
-                : <i>N/A</i>}</Typography>
+              <Typography>
+                {userData?.location?.country ? (
+                  userData?.location?.country.charAt(0).toUpperCase() + userData?.location?.country.slice(1)
+                ) : (
+                  <i>N/A</i>
+                )}
+              </Typography>
+            </div>
+            <div className='flex items-center flex-wrap gap-2 justify-center'>
+              <OpenDialogOnElementClick
+                element={Button}
+                elementProps={{
+                  children: `${dictionary?.common?.change_password}`,
+                  variant: 'contained'
+                }}
+                dialog={changePasswordDialog}
+                dialogProps={{ dictionary }}
+              />
             </div>
           </div>
         </div>

@@ -584,9 +584,14 @@ function AddDishForm({ onSave, onDelete, handleBackToTabs, tabValue, editId }) {
                     </Select>
                     <FormHelperText>{errors.ingredients?.[index]?.unit?.message}</FormHelperText>
                   </FormControl>
-                  <IconButton color='primary' onClick={addIngredient}>
-                    <AddCircleIcon />
-                  </IconButton>
+                  {/* Show "+" button only for the last ingredient */}
+                  {index === ingredients.length - 1 && (
+                    <IconButton color='primary' onClick={addIngredient}>
+                      <AddCircleIcon />
+                    </IconButton>
+                  )}
+
+                  {/* Show "-" button for all ingredients except the first one */}
                   {ingredients.length > 1 && (
                     <IconButton color='error' onClick={() => removeIngredient(index)}>
                       <RemoveCircleIcon />

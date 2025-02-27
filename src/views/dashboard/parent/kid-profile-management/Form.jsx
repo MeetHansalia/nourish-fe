@@ -74,20 +74,20 @@ const Form = ({ dictionary, kidData, setKidData, profileUploadedFile }) => {
       .required(dictionary?.form?.validation?.required)
       .label(dictionary?.form?.label?.first_name),
     last_name: yup.string().required(dictionary?.form?.validation?.required).label(dictionary?.form?.label?.last_name),
-    class: yup
-      .string()
-      .matches(
-        /^(Nursery|KG1|KG2|[1-9]|1[0-2])$/,
-        dictionary?.form?.validation?.invalid_class ||
-          "Class must be 'Nursery', 'KG1', 'KG2', or a number between 1 and 12."
-      )
-      .required(dictionary?.form?.validation?.required)
-      .label(dictionary?.form?.label?.class),
-    grade: yup
-      .string()
-      .length(2, dictionary?.form?.validation?.invalid_length || 'Grade must be exactly 1 character.')
-      .required(dictionary?.form?.validation?.required)
-      .label(dictionary?.form?.label?.grade),
+    // class: yup
+    //   .string()
+    //   .matches(
+    //     /^(Nursery|KG1|KG2|[1-9]|1[0-2])$/,
+    //     dictionary?.form?.validation?.invalid_class ||
+    //       "Class must be 'Nursery', 'KG1', 'KG2', or a number between 1 and 12."
+    //   )
+    //   .required(dictionary?.form?.validation?.required)
+    //   .label(dictionary?.form?.label?.class),
+    // grade: yup
+    //   .string()
+    //   .length(2, dictionary?.form?.validation?.invalid_length || 'Grade must be exactly 2 character.')
+    //   .required(dictionary?.form?.validation?.required)
+    //   .label(dictionary?.form?.label?.grade),
     age: yup
       .number()
       .typeError(dictionary?.form?.validation?.invalid_number)
@@ -120,10 +120,10 @@ const Form = ({ dictionary, kidData, setKidData, profileUploadedFile }) => {
         dictionary?.form?.validation?.invalid_decimal,
         value => /^\d+(\.\d{1,2})?$/.test(value?.toString()) // Allows up to 2 decimal places
       ),
-    allergiesOrDietaryDescription: yup
-      .string()
-      .required(dictionary?.form?.validation?.required)
-      .label(dictionary?.form?.label?.allergies_dietary_description),
+    // allergiesOrDietaryDescription: yup
+    //   .string()
+    //   .required(dictionary?.form?.validation?.required)
+    //   .label(dictionary?.form?.label?.allergies_dietary_description),
     google_address: yup
       .object()
       .required(dictionary?.form?.validation?.required)
@@ -134,8 +134,8 @@ const Form = ({ dictionary, kidData, setKidData, profileUploadedFile }) => {
   const formDefaultValues = {
     first_name: '',
     last_name: '',
-    class: '',
-    grade: '',
+    // class: '',
+    // grade: '',
     age: '',
     gender: null,
     weight: '',
@@ -162,8 +162,8 @@ const Form = ({ dictionary, kidData, setKidData, profileUploadedFile }) => {
     if (kidData?._id) {
       setValue('first_name', kidData?.first_name ? kidData?.first_name : '')
       setValue('last_name', kidData?.last_name ? kidData?.last_name : '')
-      setValue('class', kidData?.class ? kidData?.class : '')
-      setValue('grade', kidData?.grade ? kidData?.grade : '')
+      // setValue('class', kidData?.class ? kidData?.class : '')
+      // setValue('grade', kidData?.grade ? kidData?.grade : '')
       setValue('age', kidData?.age ? kidData?.age : '')
       setValue('gender', kidData?.gender ? kidData?.gender : '')
       setValue('weight', kidData?.weight ? kidData?.weight : '')
@@ -355,7 +355,7 @@ const Form = ({ dictionary, kidData, setKidData, profileUploadedFile }) => {
                 />
               </div>
             </Grid>
-            <Grid item xs={4}>
+            {/* <Grid item xs={4}>
               <div className='form-group'>
                 <Controller
                   name='class'
@@ -371,8 +371,8 @@ const Form = ({ dictionary, kidData, setKidData, profileUploadedFile }) => {
                   )}
                 />
               </div>
-            </Grid>
-            <Grid item xs={4}>
+            </Grid> */}
+            {/* <Grid item xs={4}>
               <div className='form-group'>
                 <Controller
                   name='grade'
@@ -388,7 +388,7 @@ const Form = ({ dictionary, kidData, setKidData, profileUploadedFile }) => {
                   )}
                 />
               </div>
-            </Grid>
+            </Grid> */}
             <Grid item xs={4}>
               <div className='form-group'>
                 <Controller
@@ -407,9 +407,10 @@ const Form = ({ dictionary, kidData, setKidData, profileUploadedFile }) => {
               </div>
             </Grid>
             <Grid item xs={6}>
-              <div className='form-group'>
+              <div className='form-group address-fill-common'>
                 <Controller
                   name='gender'
+                  className='diff-select-block'
                   control={control}
                   render={({ field }) => (
                     <CustomTextField
@@ -484,10 +485,10 @@ const Form = ({ dictionary, kidData, setKidData, profileUploadedFile }) => {
                       fullWidth
                       label={dictionary?.form?.label?.allergies_dietary_description}
                       placeholder={dictionary?.form?.placeholder?.allergies_dietary_description}
-                      {...(errors.allergiesOrDietaryDescription && {
-                        error: true,
-                        helperText: errors?.allergiesOrDietaryDescription?.message
-                      })}
+                      // {...(errors.allergiesOrDietaryDescription && {
+                      //   error: true,
+                      //   helperText: errors?.allergiesOrDietaryDescription?.message
+                      // })}
                     />
                   )}
                 />
@@ -530,9 +531,10 @@ const Form = ({ dictionary, kidData, setKidData, profileUploadedFile }) => {
               </div>
             </Grid>
             <Grid item xs={6}>
-              <div className='form-group'>
+              <div className='form-group address-fill-common'>
                 <Controller
                   name='schoolId'
+                  className='diff-select-block'
                   control={control}
                   render={({ field }) => (
                     <CustomTextField
@@ -564,7 +566,7 @@ const Form = ({ dictionary, kidData, setKidData, profileUploadedFile }) => {
               </div>
             </Grid>
             <Grid item xs={6}>
-              <div className='form-group'>
+              <div className='form-group address-fill-common'>
                 <Controller
                   name='activityLevel'
                   className='diff-select-block'

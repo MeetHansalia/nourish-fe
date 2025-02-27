@@ -27,7 +27,7 @@ export default function SchoolVendor({ dictionary }) {
   // Function to get school list with search filter
   const getSchoolList = async (searchQuery = '') => {
     try {
-      const apiUrl = `${API_ROUTER?.STATE?.GET_SCHOOL_LIST}`
+      const apiUrl = `${API_ROUTER?.DISTRICT.GET_SCHOOL_LIST}`
       const response = await axiosApiCall.get(apiUrl, { params: { searchQuery } })
 
       setSchoolData(response?.data?.response?.users)
@@ -39,7 +39,7 @@ export default function SchoolVendor({ dictionary }) {
   // Function to get vendor list with search filter
   const getVendorList = async (searchQuery = '') => {
     try {
-      const apiUrl = `${API_ROUTER?.STATE?.GET_VENDOR_LIST}`
+      const apiUrl = `${API_ROUTER?.DISTRICT.GET_VENDOR_LIST}`
       const response = await axiosApiCall.get(apiUrl, { params: { searchQuery } })
 
       setVendorData(response?.data?.response?.users)

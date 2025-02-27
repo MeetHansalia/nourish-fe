@@ -17,6 +17,7 @@ import { profileState } from '@/redux-store/slices/profile'
 import Statistics from './Statistics'
 import OrderDataTable from './OrderDataTable'
 import LocationSelectorForm from './LocationSelectorForm'
+import LastMomentOrderDataTable from './last-moment-cancellation/LastMomentOrderDataTable'
 
 /**
  * Page
@@ -53,8 +54,8 @@ const OrderManagement = props => {
     <Grid container spacing={6}>
       {isUserHasPermissionSections?.order_tracking && (
         <Grid item xs={6} sm={2} md={12}>
-          <Statistics dictionary={dictionary} setShowDropDown={setShowDropDown} />
-          {showDropDdown.last_moment_cancellation && <OrderDataTable dictionary={dictionary} />}
+          <Statistics dictionary={dictionary} setShowDropDown={setShowDropDown} showDropDdown={showDropDdown} />
+          {showDropDdown.last_moment_cancellation && <LastMomentOrderDataTable dictionary={dictionary} />}
           {showDropDdown.meal_monitoring && (
             <LocationSelectorForm dictionary={dictionary} showButton={true} spacing={4} lg={6} />
           )}

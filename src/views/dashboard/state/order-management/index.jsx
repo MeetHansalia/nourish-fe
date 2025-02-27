@@ -26,7 +26,11 @@ const OrderManagement = props => {
   const { dictionary = null } = props
 
   const { user = null } = useSelector(profileState)
-  const [showDropDdown, setShowDropDown] = useState(false)
+
+  const [showDropDdown, setShowDropDown] = useState({
+    last_moment_cancellation: true,
+    meal_monitoring: false
+  })
 
   const isUserHasPermissionSections = useMemo(
     () => ({
@@ -49,8 +53,11 @@ const OrderManagement = props => {
       {isUserHasPermissionSections?.order_tracking && (
         <Grid item xs={6} sm={2} md={12}>
           <Statistics dictionary={dictionary} setShowDropDown={setShowDropDown} showDropDdown={showDropDdown} />
-          {!showDropDdown && <ManageVendorRequest dictionary={dictionary} />}
-          {showDropDdown && <LocationSelectorForm dictionary={dictionary} showButton={true} spacing={4} lg={6} />}
+          <ManageVendorRequest dictionary={dictionary} />
+          {/* {showDropDdown.last_moment_cancellation && <ManageVendorRequest dictionary={dictionary} />}
+          {showDropDdown.meal_monitoring && (
+            <LocationSelectorForm dictionary={dictionary} showButton={true} spacing={4} lg={6} />
+          )} */}
         </Grid>
       )}
     </Grid>

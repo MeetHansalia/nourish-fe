@@ -174,8 +174,8 @@ const EventOrderDataTable = props => {
         id: 'vendorName'
       }),
 
-      columnHelper.accessor('deliveryType', {
-        header: `${dictionary?.datatable?.column?.event_type}`,
+      columnHelper.accessor(row => `${row?.eventName}`, {
+        header: `${dictionary?.form?.label?.event_name}`,
         enableSorting: false
       }),
       columnHelper.accessor(
@@ -192,7 +192,7 @@ const EventOrderDataTable = props => {
       columnHelper.accessor('deliveryAddress', {
         header: `${dictionary?.datatable?.column?.address}`
       }),
-      columnHelper.accessor('Dilivery Date', {
+      columnHelper.accessor('deliveryDate', {
         header: `${dictionary?.datatable?.column?.delivery_date}`
       }),
       columnHelper.accessor('orderStatus', {

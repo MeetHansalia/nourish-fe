@@ -24,6 +24,7 @@ import Statistics from './Statistics'
 // Util Imports
 import { API_ROUTER } from '@/utils/apiRoutes'
 import { useTranslation } from '@/utils/getDictionaryClient'
+import SchoolRegistrationRequestsTable from './school-registration-request/SchoolRegistrationRequestsTable'
 
 const DocumentVerifyManagement = props => {
   const { dictionary = null } = props
@@ -52,11 +53,14 @@ const DocumentVerifyManagement = props => {
   }, [page, itemsPerPage, globalFilter, sorting])
 
   return (
-    <div>
-      <Grid item xs={12}>
+    <Grid container spacing={2}>
+      {/* {isUserHasPermissionSections?.order_tracking && ( */}
+      <Grid item xs={6} sm={2} md={12}>
         <Statistics dictionary={dictionary} verificationRequestCount={verificationRequestCount} />
+        <SchoolRegistrationRequestsTable dictionary={dictionary} />
       </Grid>
-    </div>
+      {/* )} */}
+    </Grid>
   )
 }
 

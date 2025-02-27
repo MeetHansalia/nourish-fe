@@ -344,7 +344,7 @@ const OrderDataTable = props => {
                 customInput={<CustomTextField fullWidth />}
                 placeholderText={t('form.placeholder.date')}
               />
-              <FormControl sx={{ minWidth: 150 }}>
+              {/* <FormControl sx={{ minWidth: 150 }}>
                 <InputLabel id='demo-controlled-open-select-label'>{dictionary?.form?.label?.status}</InputLabel>
                 <Select
                   labelId='demo-controlled-open-select-label'
@@ -366,7 +366,7 @@ const OrderDataTable = props => {
                     </MenuItem>
                   ))}
                 </Select>
-              </FormControl>
+              </FormControl> */}
             </Grid>
           </Grid>
         </CardContent>

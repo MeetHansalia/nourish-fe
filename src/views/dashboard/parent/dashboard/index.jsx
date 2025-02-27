@@ -3,7 +3,9 @@
 // Mui Imports
 import { useEffect, useState } from 'react'
 
-import { Grid } from '@mui/material'
+import { useParams } from 'next/navigation'
+
+import { useTranslation } from '@/utils/getDictionaryClient'
 
 // Component Imports
 import Statistics from './StatisticsCard'
@@ -14,24 +16,27 @@ import { API_ROUTER } from '@/utils/apiRoutes'
 import ReviewTable from './OrderReviewTable'
 
 const StaffDashboard = ({ dictionary }) => {
+  const { lang: locale } = useParams()
+  const { t } = useTranslation(locale)
+
   const CARD_TITLE_DATA = [
     {
-      title: 'Total Orders',
+      title: t('form.label.total_orders'),
       // link: 'total-orders',
       key: 'totalOrders'
     },
     {
-      title: 'Approve Orders',
+      title: t('form.label.approved_orders'),
       // link: 'complete-orders',
       key: 'approveOrders'
     },
     {
-      title: 'Reject Orders',
+      title: t('form.label.rejected_orders'),
       // link: 'reject-orders',
       key: 'rejectOrders'
     },
     {
-      title: 'Total Amount',
+      title: t('form.label.total_amount'),
       // link: 'minimum-thresholds',
       key: 'totalAmount'
     }

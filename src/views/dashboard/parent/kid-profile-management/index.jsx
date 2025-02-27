@@ -27,6 +27,7 @@ import ProfileViewDialog from './ProfileViewDialogBox'
 // Core Component Imports
 import CustomAvatar from '@/@core/components/mui/Avatar'
 import CustomIconButton from '@/@core/components/mui/IconButton'
+import FullPageLoader from '@/components/FullPageLoader'
 
 /**
  * Page
@@ -94,7 +95,6 @@ const KidListing = ({ dictionary }) => {
           <div className='common-block-title'>
             <CardHeader
               className='p-0 w-100'
-              // title={dictionary?.page?.parent_kid_management?.add_kids_details}
               title={dictionary?.page?.parent_kid_management?.kid_profile}
               action={
                 <Button
@@ -119,22 +119,16 @@ const KidListing = ({ dictionary }) => {
                   key={kid._id}
                   className={kid.verificationStatus === 'pending' ? 'opacity-50 pointer-events-none' : ''}
                 >
-                  <div className='kids-profile-me border rounded sm:items-center flex-col !items-start sm:flex-row gap-2'>
+                  <div
+                    className='kids-profile-me border rounded sm:items-center flex-col !items-start sm:flex-row gap-2 cursor-pointer'
+                    onClick={() => handleSelectKid(kid._id)}
+                  >
                     <div className='kids-profile-me-inner'>
-                      <div className='flex justify-between'>
-                        <div className='radio-check-me flex align-center'>
-                          <Radio
-                            onChange={() => {
-                              handleSelectKid(kid._id)
-                            }}
-                            name='select-kid'
-                            disabled={kid.verificationStatus === 'pending'}
-                          />
-                          <div className='flex items-center gap-2'>
-                            <Typography className='title-semi-medium-custom' color='text.primary'>
-                              {getFullName({ first_name: kid?.first_name, last_name: kid?.last_name })}
-                            </Typography>
-                          </div>
+                      <div className='flex justify-between w-full'>
+                        <div className='flex items-center gap-2'>
+                          <Typography className='title-semi-medium-custom' color='text.primary'>
+                            {getFullName({ first_name: kid?.first_name, last_name: kid?.last_name })}
+                          </Typography>
                         </div>
                         <CustomAvatar
                           size={25}
@@ -185,27 +179,21 @@ const KidListing = ({ dictionary }) => {
                     </div>
                     <div className='flex flex-col gap-4'>
                       <div className='flex items-center justify-end gap-4'>
-                        {/* <CustomAvatar
-                          size={25}
-                          color='primary'
-                          src={kid?.imageUrl}
-                          alt={getFullName({ first_name: kid?.first_name, last_name: kid?.last_name })}
-                        >
-                          {getInitials(getFullName({ first_name: kid?.first_name, last_name: kid?.last_name }))}
-                        </CustomAvatar> */}
                         <CustomIconButton
                           color='primary'
                           variant='contained'
                           size='small'
                           className='rounded-full'
                           disabled={kid.verificationStatus === 'pending'}
+                          onClick={e => {
+                            e.stopPropagation() // Prevent the card click from triggering
+                            window.location.href = getLocalizedUrl(
+                              `/${panelName}/kid-profile-management/kid-update/${kid._id}`,
+                              locale
+                            )
+                          }}
                         >
-                          <Link
-                            href={getLocalizedUrl(`/${panelName}/kid-profile-management/kid-update/${kid._id}`, locale)}
-                            className='flex'
-                          >
-                            <i className='tabler-pencil' />
-                          </Link>
+                          <i className='tabler-pencil' />
                         </CustomIconButton>
                       </div>
                     </div>
@@ -214,7 +202,7 @@ const KidListing = ({ dictionary }) => {
               ))}
             </Grid>
 
-            {kidData.length == 0 && (
+            {kidData.length === 0 && (
               <Typography className='font-medium' color='text.primary'>
                 {dictionary?.datatable?.common?.no_data_available}
               </Typography>
@@ -227,12 +215,11 @@ const KidListing = ({ dictionary }) => {
             }}
             dialog={ProfileViewDialog}
             dialogProps={{ dictionary }}
-            // dialogProps={{ alertDetails }}
           />
         </Card>
       ) : (
         <div className='text-center'>
-          <CircularProgress />
+          <FullPageLoader open={true} color='primary' spinnerSize={60} />
         </div>
       )}
     </>

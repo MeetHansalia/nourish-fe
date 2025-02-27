@@ -1,5 +1,6 @@
 // View Imports
-import FoodChartCreation from '@/views/dashboard/school/food-chart-creation/index'
+// import FoodChartCreation from '@/views/dashboard/school/food-chart-creation/index'
+import FoodChartCreation from '@/views/dashboard/school/food-chart-creation'
 
 // Util Imports
 import { getDictionary } from '@/utils/getDictionary'

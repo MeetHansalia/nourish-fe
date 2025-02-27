@@ -48,6 +48,7 @@ import { getLocalizedUrl } from '@/utils/i18n'
 
 import { getPanelName } from '@/utils/globalFunctions'
 import { globalState } from '@/redux-store/slices/global'
+import TruncatedTextWithModal from '@/components/TruncatedTextWithModal'
 
 const validationSchema = selectedDish =>
   yup.object().shape({
@@ -124,12 +125,11 @@ const validationSchema = selectedDish =>
 
 const Menu = ({ dictionary, kidId, vendorId }) => {
   const router = useRouter()
-
   const { lang: locale } = useParams()
   const pathname = usePathname()
   const { t } = useTranslation(locale)
   const [selectedCategory, setSelectedCategory] = useState(null)
-
+  const [activeId, setActiveId] = useState(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [dialogOpen, setDialogOpen] = useState(false)
   const [selectedDish, setSelectedDish] = useState(null)
@@ -141,10 +141,7 @@ const Menu = ({ dictionary, kidId, vendorId }) => {
   const [totalPrice, setTotalPrice] = useState(0)
   const [selectedModifierIds, setSelectedModifierIds] = useState([])
   const { orderId } = useSelector(globalState)
-
-
   const selectedDates = useSelector(state => state.date.singleDate)
-
   const [cartData, setCartData] = useState([])
 
   const {
@@ -178,7 +175,7 @@ const Menu = ({ dictionary, kidId, vendorId }) => {
 
   const checkRun = useRef(false)
 
-  const CategoryApiCall = async (vendorId) => {
+  const CategoryApiCall = async vendorId => {
     await axiosApiCall
       .get(API_ROUTER.PARENT.GET_PARENT_ALL_CATEGORIES, { params: { vendorId: vendorId } })
       .then(response => {
@@ -333,8 +330,9 @@ const Menu = ({ dictionary, kidId, vendorId }) => {
       <Card className='mb-4'>
         <CardContent className='flex gap-4 overflow-x-auto'>
           <div
-            className={`cursor-pointer border p-4 rounded-lg flex flex-col items-center gap-2 ${selectedCategory === null ? 'bg-green-100' : ''
-              }`}
+            className={`cursor-pointer border p-4 rounded-lg flex flex-col items-center gap-2 ${
+              selectedCategory === null ? 'bg-green-100' : ''
+            }`}
             onClick={() => handleSelectCategory(null)}
           >
             <Typography className='font-medium text-center'>{dictionary?.form?.label?.all}</Typography>
@@ -343,8 +341,9 @@ const Menu = ({ dictionary, kidId, vendorId }) => {
           {categories.map(category => (
             <div
               key={category._id}
-              className={`cursor-pointer border p-4 rounded-lg flex flex-col items-center gap-2 ${selectedCategory?._id === category._id ? 'bg-green-100' : ''
-                }`}
+              className={`cursor-pointer border p-4 rounded-lg flex flex-col items-center gap-2 ${
+                selectedCategory?._id === category._id ? 'bg-green-100' : ''
+              }`}
               onClick={() => handleSelectCategory(category)}
             >
               <img src={category.imageUrl} alt={category.name} className='w-12 h-12' />
@@ -372,18 +371,14 @@ const Menu = ({ dictionary, kidId, vendorId }) => {
                       />
                     </Tooltip>
                     <Typography className='font-medium'>{dish.name}</Typography>
-                    <Typography
-                      className='text-sm text-gray-600 truncate'
-                      style={{
-                        maxHeight: '4.5rem',
-                        overflow: 'hidden',
-                        display: '-webkit-box',
-                        WebkitBoxOrient: 'vertical',
-                        WebkitLineClamp: 3
-                      }}
-                    >
-                      {dish.description}
-                    </Typography>
+                    <TruncatedTextWithModal
+                      id={dish._id}
+                      title={dish.name}
+                      text={dish.description}
+                      wordLimit={20}
+                      activeId={activeId}
+                      setActiveId={setActiveId}
+                    />
                     <Typography className='font-bold text-green-600'>${dish.pricing}</Typography>
                   </div>
                 </Grid>

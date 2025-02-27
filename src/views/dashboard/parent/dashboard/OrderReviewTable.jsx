@@ -164,10 +164,13 @@ const OrderReviewTable = props => {
       columnHelper.accessor('serialNumber', {
         header: `${dictionary?.datatable?.column?.sr_no}`
       }),
-
       columnHelper.accessor(row => `${row.vendorId.first_name} ${row.vendorId.last_name}`, {
         header: `${dictionary?.datatable?.column?.vendor_name}`
       }),
+      columnHelper.accessor(row => `${row.kidId.first_name} ${row.kidId.last_name}`, {
+        header: `${dictionary?.datatable?.column?.kid_name}`
+      }),
+
       columnHelper.accessor('orderType', {
         header: `${dictionary?.datatable?.column?.meal_type}`
       }),
@@ -296,7 +299,7 @@ const OrderReviewTable = props => {
         <CardContent className='flex flex-col gap-4'>
           <Grid container spacing={2} alignItems='center' justifyContent='space-between' sx={{ mb: 2 }}>
             <Grid item xs={12} md={4}>
-              <Typography variant='h5'>{dictionary?.datatable?.all_review?.table_title}</Typography>
+              <Typography variant='h5'>{dictionary?.datatable?.overview?.table_title}</Typography>
             </Grid>
             <Grid item xs={12} md={8} sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
               <FormControl sx={{ minWidth: 150 }}>
@@ -336,15 +339,15 @@ const OrderReviewTable = props => {
                   </MenuItem>
                 ))}
               </TextField>
-              <AppReactDatepicker
+              {/* <AppReactDatepicker
                 dateFormat='MM/dd/yyyy'
                 selected={orderDate}
                 onChange={date => handelDateChange(date)}
                 maxDate={new Date()}
                 customInput={<CustomTextField fullWidth />}
                 placeholderText={t('form.placeholder.date')}
-              />
-              <FormControl sx={{ minWidth: 150 }}>
+              /> */}
+              {/* <FormControl sx={{ minWidth: 150 }}>
                 <InputLabel id='demo-controlled-open-select-label'>{dictionary?.form?.label?.status}</InputLabel>
                 <Select
                   labelId='demo-controlled-open-select-label'
@@ -366,7 +369,7 @@ const OrderReviewTable = props => {
                     </MenuItem>
                   ))}
                 </Select>
-              </FormControl>
+              </FormControl> */}
             </Grid>
           </Grid>
         </CardContent>

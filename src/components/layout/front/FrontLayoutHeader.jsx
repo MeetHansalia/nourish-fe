@@ -95,9 +95,9 @@ const FrontLayoutHeader = props => {
       <div className='common-container'>
         <div className='header-inner'>
           <div className='header-left'>
-            <Link href={landingPageUrl}>
-              <img src='/images/nourishubs/front/logo.svg' alt='logo'></img>
-            </Link>
+            {/* <Link href={landingPageUrl}> */}
+            <img src='/images/nourishubs/front/logo.svg' alt='logo'></img>
+            {/* </Link> */}
           </div>
           <div className='header-right'>
             <div className='header-right-toggle-menu'>
@@ -121,9 +121,9 @@ const FrontLayoutHeader = props => {
             </div>
             <ul ref={sidebarRef} className={`dektop-view-block ${isToggleMenuOpen ? 'nh-menu-open' : ''}`}>
               <li className='logo-block-toggle'>
-                <Link href={landingPageUrl}>
-                  <img src='/images/nourishubs/front/logo.svg' alt='logo'></img>
-                </Link>
+                {/* <Link href={landingPageUrl}> */}
+                <img src='/images/nourishubs/front/logo.svg' alt='logo'></img>
+                {/* </Link> */}
               </li>
               <li>
                 <Link

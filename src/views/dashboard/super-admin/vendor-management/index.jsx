@@ -25,10 +25,8 @@ import {
   CardHeader,
   Table,
   TableBody,
-  TableCell,
   TableContainer,
   TableHead,
-  TableRow,
   Paper,
   Pagination,
   TextField,
@@ -44,6 +42,8 @@ import {
   CardContent,
   IconButton
 } from '@mui/material'
+
+import tableStyles from '@core/styles/table.module.css'
 
 // View Imports
 import Statistics from './Statistics'
@@ -172,6 +172,7 @@ const VendorManagement = props => {
       }),
       columnHelper.accessor('view', {
         header: `View Menu`,
+
         cell: ({ row }) => (
           <IconButton onClick={() => router.push(`vendor-management/${row?.original?._id}`)}>
             <i className='tabler-eye' />
@@ -258,38 +259,31 @@ const VendorManagement = props => {
             className='common-block-title'
             title={dictionary?.datatable?.vendor_management_table?.table_title}
             action={
-              // <TextField
-              //   label={dictionary?.datatable?.common?.search_placeholder}
-              //   // variant='outlined'
-              //   hiddenLabel
-              //   value={globalFilter}
-              //   onChange={e => setGlobalFilter(e.target.value)}
-              //   fullWidth
-              //   sx={{ maxWidth: 300 }}
-              // />
+              <div className="form-group">
               <DebouncedInput
                 value={globalFilter ?? ''}
                 onChange={value => setGlobalFilter(String(value))}
                 placeholder={dictionary?.datatable?.common?.search_placeholder}
               />
+              </div>
             }
           />
           <CardContent className='table-common-block p-0'>
-            <TableContainer component={Paper}>
-              <Table>
-                <TableHead>
+            <div className='overflow-x-auto'>
+              <table className={tableStyles.table}>
+                <thead>
                   {table.getHeaderGroups().map(headerGroup => (
-                    <TableRow key={headerGroup.id}>
+                    <tr key={headerGroup.id}>
                       {headerGroup.headers.map(header => (
-                        <TableCell key={header.id} onClick={header.column.getToggleSortingHandler()}>
+                        <th key={header.id} onClick={header.column.getToggleSortingHandler()}>
                           {flexRender(header.column.columnDef.header, header.getContext())}
                           {{
                             asc: <i className='tabler-chevron-up text-xl' />,
                             desc: <i className='tabler-chevron-down text-xl' />
                           }[header.column.getIsSorted()] ?? null}
-                        </TableCell>
+                        </th>
                       ))}
-                    </TableRow>
+                    </tr>
                   ))}
                   {isDataTableServerLoading && (
                     <tr>
@@ -298,37 +292,35 @@ const VendorManagement = props => {
                       </td>
                     </tr>
                   )}
-                </TableHead>
-                <TableBody>
+                </thead>
+                <tbody>
                   {globalFilter.length > 0 && table.getFilteredRowModel().rows.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={table.getVisibleFlatColumns().length} align='center'>
+                    <tr>
+                      <td colSpan={table.getVisibleFlatColumns().length} className='text-center'>
                         {t('datatable.common.no_matching_data_found')}
-                      </TableCell>
-                    </TableRow>
+                      </td>
+                    </tr>
                   ) : table.getFilteredRowModel().rows.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={table.getVisibleFlatColumns().length} align='center'>
+                    <tr>
+                      <td colSpan={table.getVisibleFlatColumns().length} className='text-center'>
                         {t('datatable.common.no_data_available')}
-                      </TableCell>
-                    </TableRow>
+                      </td>
+                    </tr>
                   ) : (
                     table
                       .getRowModel()
                       .rows.slice(0, table.getState().pagination.pageSize)
                       .map(row => (
-                        <TableRow key={row.id} className={classnames({ selected: row.getIsSelected() })}>
+                        <tr key={row.id} className={classnames({ selected: row.getIsSelected() })}>
                           {row.getVisibleCells().map(cell => (
-                            <TableCell key={cell.id}>
-                              {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                            </TableCell>
+                            <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
                           ))}
-                        </TableRow>
+                        </tr>
                       ))
                   )}
-                </TableBody>
-              </Table>
-            </TableContainer>
+                </tbody>
+              </table>
+            </div>
             <TablePagination
               component={() => (
                 <div className='flex common-pagination-block justify-between items-center flex-wrap  border-bs bs-auto gap-2'>

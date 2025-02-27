@@ -337,12 +337,14 @@ const DetailForm = ({ dictionary, kidData, staticIssues, refreshData, role }) =>
   }
 
   return (
-    <Card style={{ marginTop: '16px' }}>
+    <Card className='common-block-dashboard'>
       <CardHeader
+        className='common-block-title p-0'
         title={dictionary?.page?.issue_reporting?.issue_report}
         action={
           <>
             <Button
+              className='theme-common-btn'
               disabled={isFormSubmitLoading}
               variant='contained'
               sx={{ m: 1 }}
@@ -354,6 +356,7 @@ const DetailForm = ({ dictionary, kidData, staticIssues, refreshData, role }) =>
             </Button>
 
             <Button
+              className='theme-common-btn-second'
               style={{
                 backgroundColor: primaryColorConfig[0].light,
                 borderColor: primaryColorConfig[0].light,
@@ -372,125 +375,137 @@ const DetailForm = ({ dictionary, kidData, staticIssues, refreshData, role }) =>
         }
       />
       <form noValidate action={() => {}} onSubmit={handleSubmit(onSubmit)}>
-        <Grid container spacing={2} sx={{ p: 5 }}>
+        <Grid container spacing={6} sx={{ p: 0 }}>
           {role === 'parent_role' && (
             <Grid item xs={12}>
+              <div className='form-group select-input-common'>
+                <Controller
+                  name='childId'
+                  className=''
+                  control={control}
+                  render={({ field }) => (
+                    <CustomTextField
+                      {...field}
+                      select
+                      className='select-input-common'
+                      fullWidth
+                      label={dictionary?.form?.placeholder?.select_child}
+                      {...(errors.childId && { error: true, helperText: errors.childId.message })}
+                      SelectProps={{
+                        displayEmpty: true
+                      }}
+                      onChange={event => {
+                        field.onChange(event) // Update react-hook-form state
+                        handleKidChange(event) // Trigger API call
+                      }}
+                    >
+                      {kidData?.length > 0 ? (
+                        <MenuItem disabled value=''>
+                          <Typography color='text.disabled'>{dictionary?.form?.placeholder?.select_child}</Typography>
+                        </MenuItem>
+                      ) : (
+                        <MenuItem disabled value=''>
+                          <Typography color='text.disabled'>{dictionary?.form?.placeholder?.no_child_found}</Typography>
+                        </MenuItem>
+                      )}
+                      {kidData?.map(item => (
+                        <MenuItem value={item?._id} key={item?._id}>
+                          {`${item?.first_name} ${item?.last_name}`}
+                        </MenuItem>
+                      ))}
+                    </CustomTextField>
+                  )}
+                />
+              </div>
+            </Grid>
+          )}
+
+          <Grid item xs={6}>
+            <div className='form-group select-input-common'>
               <Controller
-                name='childId'
+                name='issue_name'
+                className='select-input-common'
                 control={control}
                 render={({ field }) => (
                   <CustomTextField
                     {...field}
                     select
+                    className='select-input-common'
                     fullWidth
-                    label={dictionary?.form?.placeholder?.select_child}
-                    {...(errors.childId && { error: true, helperText: errors.childId.message })}
+                    label={dictionary?.form?.label?.select_issue}
+                    {...(errors.issue_name && { error: true, helperText: errors.issue_name.message })}
                     SelectProps={{
                       displayEmpty: true
                     }}
-                    onChange={event => {
-                      field.onChange(event) // Update react-hook-form state
-                      handleKidChange(event) // Trigger API call
-                    }}
                   >
-                    {kidData?.length > 0 ? (
-                      <MenuItem disabled value=''>
-                        <Typography color='text.disabled'>{dictionary?.form?.placeholder?.select_child}</Typography>
-                      </MenuItem>
-                    ) : (
-                      <MenuItem disabled value=''>
-                        <Typography color='text.disabled'>{dictionary?.form?.placeholder?.no_child_found}</Typography>
-                      </MenuItem>
-                    )}
-                    {kidData?.map(item => (
-                      <MenuItem value={item?._id} key={item?._id}>
-                        {`${item?.first_name} ${item?.last_name}`}
+                    <MenuItem disabled value=''>
+                      <Typography color='text.disabled'>{dictionary?.form?.placeholder?.select_issue}</Typography>
+                    </MenuItem>
+                    {staticIssues?.map(item => (
+                      <MenuItem value={item?.name} key={item?.name}>
+                        {item?.name}
                       </MenuItem>
                     ))}
                   </CustomTextField>
                 )}
               />
-            </Grid>
-          )}
-
-          <Grid item xs={6}>
-            <Controller
-              name='issue_name'
-              control={control}
-              render={({ field }) => (
-                <CustomTextField
-                  {...field}
-                  select
-                  fullWidth
-                  label={dictionary?.form?.label?.select_issue}
-                  {...(errors.issue_name && { error: true, helperText: errors.issue_name.message })}
-                  SelectProps={{
-                    displayEmpty: true
-                  }}
-                >
-                  <MenuItem disabled value=''>
-                    <Typography color='text.disabled'>{dictionary?.form?.placeholder?.select_issue}</Typography>
-                  </MenuItem>
-                  {staticIssues?.map(item => (
-                    <MenuItem value={item?.name} key={item?.name}>
-                      {item?.name}
-                    </MenuItem>
-                  ))}
-                </CustomTextField>
-              )}
-            />
+            </div>
           </Grid>
           <Grid item xs={6}>
-            <Controller
-              name='date'
-              control={control}
-              render={({ field }) => (
-                <AppReactDatepicker
-                  disabled={availableDates?.length === 0}
-                  selected={selectedDate}
-                  onChange={date => {
-                    field.onChange(date)
+            <div className='form-group'>
+              <Controller
+                name='date'
+                control={control}
+                render={({ field }) => (
+                  <AppReactDatepicker
+                    disabled={availableDates?.length === 0}
+                    selected={selectedDate}
+                    onChange={date => {
+                      field.onChange(date)
 
-                    setSelectedDate(date)
-                  }}
-                  includeDates={availableDates}
-                  customInput={
-                    <CustomTextField
-                      disabled={isGetAvailableDatesLoading || availableDates?.length === 0}
-                      {...field}
-                      fullWidth
-                      label={dictionary?.form?.label?.issue_date}
-                      placeholder={dictionary?.form?.placeholder?.issue_date}
-                      {...(errors.date && { error: true, helperText: errors.date.message })}
-                    />
-                  }
-                  placeholderText={t('form.label.start_date')}
-                />
-                // </CustomTextField>
-              )}
-            />
+                      setSelectedDate(date)
+                    }}
+                    includeDates={availableDates}
+                    customInput={
+                      <CustomTextField
+                        disabled={isGetAvailableDatesLoading || availableDates?.length === 0}
+                        {...field}
+                        fullWidth
+                        label={dictionary?.form?.label?.issue_date}
+                        placeholder={dictionary?.form?.placeholder?.issue_date}
+                        {...(errors.date && { error: true, helperText: errors.date.message })}
+                      />
+                    }
+                    placeholderText={t('form.label.start_date')}
+                  />
+                  // </CustomTextField>
+                )}
+              />
+            </div>
           </Grid>
           <Grid item marginTop={2} xs={12}>
-            <TextareaAutosize
-              aria-label='minimum height'
-              minRows={3}
-              placeholder={dictionary?.form?.placeholder?.delivery_issue}
-              style={{
-                width: '100%',
-                border: errors.description ? '1px solid red' : '1px solid #ccc',
-                borderRadius: '4px',
-                padding: '8px',
-                outline: 'none',
-                color: 'var(--mui-palette-text-primary)',
-                fontFamily: 'inherit'
-              }}
-              {...register('description')}
-            />
-            {errors.description && (
-              <Typography color='error' variant='caption'>
-                {errors.description.message}
-              </Typography>
-            )}
+            <div className='form-group'>
+              <TextareaAutosize
+                aria-label='minimum height'
+                minRows={3}
+                placeholder={dictionary?.form?.placeholder?.delivery_issue}
+                // style={{
+                //   width: '100%',
+                //   border: errors.description ? '1px solid red' : '1px solid #ccc',
+                //   borderRadius: '4px',
+                //   padding: '8px',
+                //   outline: 'none',
+                //   color: 'var(--mui-palette-text-primary)',
+                //   fontFamily: 'inherit'
+                // }}
+                {...register('description')}
+              />
+              {errors.description && (
+                <Typography color='error' variant='caption'>
+                  {errors.description.message}
+                </Typography>
+              )}
+            </div>
           </Grid>
         </Grid>
       </form>

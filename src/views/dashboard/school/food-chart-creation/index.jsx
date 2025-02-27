@@ -350,7 +350,7 @@ const FoodChartCreation = props => {
           <Card>
             <CardContent>
               <div>
-                <Typography variant='h4'>{t('navigation.food_chart_creation')}</Typography>
+                <Typography variant='h4'>{t('navigation.catering_schedule')}</Typography>
               </div>
               <div>
                 <Grid container spacing={6}>
@@ -398,42 +398,42 @@ const FoodChartCreation = props => {
               <CircularProgress className='ml-1' size={20} />
             </div>
           )}
-          {minDate && maxDate && user && calendarEvents && !isGetChartDataLoading && (
-            <Card className='overflow-visible'>
-              <AppFullCalendar className='app-calendar'>
-                <div className='p-6 pbe-0 flex-grow overflow-visible bg-backgroundPaper rounded'>
-                  <Calendar
-                    calendarApi={calendarApi}
-                    setCalendarApi={setCalendarApi}
-                    handleAddEventSidebarToggle={handleAddEventSidebarToggle}
-                    calendarOptions={{
-                      validRange: {
-                        start: minDate ? `${format(minDate, 'yyyy-MM-dd')} 00:00:00` : null,
-                        end: maxDate ? `${format(maxDate, 'yyyy-MM-dd')} 23:59:59` : null
-                      },
-                      showNonCurrentDates: false,
-                      headerToolbar: {
-                        start: 'prev, next, title',
-                        end: ''
-                      },
-                      editable: false
-                    }}
-                    calendarEvents={calendarEvents}
-                  />
-                </div>
-
-                <AddEditVendorDialog
-                  addEventSidebarOpen={addEventSidebarOpen}
+          {/* {minDate && maxDate && user && calendarEvents && !isGetChartDataLoading && ( */}
+          <Card className='overflow-visible'>
+            <AppFullCalendar className='app-calendar'>
+              <div className='p-6 pbe-0 flex-grow overflow-visible bg-backgroundPaper rounded'>
+                <Calendar
+                  calendarApi={calendarApi}
+                  setCalendarApi={setCalendarApi}
                   handleAddEventSidebarToggle={handleAddEventSidebarToggle}
-                  selectedCalendarEvent={selectedCalendarEvent}
-                  location={user?.location || null}
-                  onEventSubmitHandler={onEventSubmitHandler}
-                  onEventDeleteHandler={onEventDeleteHandler}
-                  maxDate={maxDate}
+                  calendarOptions={{
+                    validRange: {
+                      start: minDate ? `${format(minDate, 'yyyy-MM-dd')} 00:00:00` : null,
+                      end: maxDate ? `${format(maxDate, 'yyyy-MM-dd')} 23:59:59` : null
+                    },
+                    showNonCurrentDates: false,
+                    headerToolbar: {
+                      start: 'prev, next, title',
+                      end: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
+                    },
+                    editable: false
+                  }}
+                  calendarEvents={calendarEvents}
                 />
-              </AppFullCalendar>
-            </Card>
-          )}
+              </div>
+
+              <AddEditVendorDialog
+                addEventSidebarOpen={addEventSidebarOpen}
+                handleAddEventSidebarToggle={handleAddEventSidebarToggle}
+                selectedCalendarEvent={selectedCalendarEvent}
+                location={user?.location || null}
+                onEventSubmitHandler={onEventSubmitHandler}
+                onEventDeleteHandler={onEventDeleteHandler}
+                maxDate={maxDate}
+              />
+            </AppFullCalendar>
+          </Card>
+          {/* // )} */}
         </Grid>
       </Grid>
     </>

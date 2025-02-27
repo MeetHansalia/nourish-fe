@@ -69,7 +69,7 @@ const VerticalMenuSuperAdmin = ({ dictionary, userRole, userPanel }) => {
         href={parentProfilePath}
         activeUrl={parentProfilePath}
         exactMatch={false}
-        icon={<i className='tabler-user' />}
+        icon={<i className='tabler-user-cog' />}
       >
         {dictionary['navigation'].parents_profile}
       </MenuItem>
@@ -78,7 +78,7 @@ const VerticalMenuSuperAdmin = ({ dictionary, userRole, userPanel }) => {
         href={kidProfilePath}
         activeUrl={kidProfilePath}
         exactMatch={false}
-        icon={<i className='tabler-user' />}
+        icon={<i className='tabler-user-pentagon' />}
       >
         {dictionary['navigation'].kids_profile_management}
       </MenuItem>
@@ -87,7 +87,7 @@ const VerticalMenuSuperAdmin = ({ dictionary, userRole, userPanel }) => {
         href={mealManagementPath}
         activeUrl={mealManagementPath}
         exactMatch={false}
-        icon={<i className='tabler-user' />}
+        icon={<i className='tabler-file-description' />}
         disabled={!isUserProfileValid}
       >
         {dictionary['navigation'].meal_selection}
@@ -98,7 +98,7 @@ const VerticalMenuSuperAdmin = ({ dictionary, userRole, userPanel }) => {
         activeUrl={reviewsPath}
         exactMatch={false}
         disabled={!isUserProfileValid}
-        icon={<i className='tabler-user' />}
+        icon={<i className='tabler-report-search' />}
       >
         {dictionary['navigation'].reviews_for_meals}
       </MenuItem>
@@ -108,14 +108,14 @@ const VerticalMenuSuperAdmin = ({ dictionary, userRole, userPanel }) => {
         activeUrl={orderTrakingPath}
         exactMatch={false}
         disabled={!isUserProfileValid}
-        icon={<i className='tabler-user' />}
+        icon={<i className='tabler-file-invoice' />}
       >
         {dictionary['navigation'].order_traking}
       </MenuItem>
 
       <MenuItem
         href={issueReportingPath}
-        icon={<i className='tabler-info-circle' />}
+        icon={<i className='tabler-device-imac-star' />}
         activeUrl={issueReportingPath}
         exactMatch={false}
         disabled={!isUserProfileValid}

@@ -99,7 +99,7 @@ export default function GoogleMaps({ setPlaceDetails, setCountry, setState, setC
             if (types.includes('country')) setCountry(component.long_name)
             if (types.includes('administrative_area_level_1')) setState(component.long_name)
             if (types.includes('locality')) setCity(component.long_name)
-            if (types.includes('administrative_area_level_3')) setDistrict(component.long_name)
+            if (types.includes('administrative_area_level_2')) setDistrict(component.long_name)
           })
         }
       })

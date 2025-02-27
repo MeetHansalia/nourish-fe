@@ -297,7 +297,6 @@ const SuspendedUsers = props => {
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    // getFilteredRowModel: getFilteredRowModel(),
     manualPagination: true,
     manualSorting: true
   })
@@ -331,7 +330,7 @@ const SuspendedUsers = props => {
         className='flex-wrap gap-4'
       />
       <div className='overflow-x-auto'>
-        <table className={tableStyles.table}>
+        <table className={tableStyles.table}> 
           <thead>
             {table.getHeaderGroups().map(headerGroup => (
               <tr key={headerGroup.id}>

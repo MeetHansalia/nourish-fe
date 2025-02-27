@@ -25,10 +25,8 @@ import {
   CardHeader,
   Table,
   TableBody,
-  TableCell,
   TableContainer,
   TableHead,
-  TableRow,
   Paper,
   Pagination,
   TextField,
@@ -40,13 +38,17 @@ import {
   LinearProgress,
   TablePagination,
   Grid,
-  Box
+  Box,
+  IconButton
 } from '@mui/material'
 
 // View Imports
 
-// Util Imports
 import { getSession } from 'next-auth/react'
+
+import tableStyles from '@core/styles/table.module.css'
+
+// Util Imports
 
 import { API_ROUTER } from '@/utils/apiRoutes'
 import { useTranslation } from '@/utils/getDictionaryClient'
@@ -211,7 +213,8 @@ const DisputeListManagement = props => {
   const columns = useMemo(
     () => [
       columnHelper.accessor('serialNumber', {
-        header: `${dictionary?.datatable?.column?.serial_number}`
+        header: `${dictionary?.datatable?.column?.serial_number}`,
+        enableSorting: false
       }),
       columnHelper.accessor('issue_topic', {
         header: `${dictionary?.datatable?.column?.issue_topic}`
@@ -240,17 +243,11 @@ const DisputeListManagement = props => {
       columnHelper.accessor('viewDetails', {
         header: dictionary?.datatable?.column?.view,
         cell: ({ row }) => (
-          <Box display='flex' alignItems='center' justifyContent='center' style={{ width: '50%', height: '40px' }}>
-            <img
-              src='/images/nourishubs/front/eye.png'
-              alt='view-icon'
-              style={{ width: '30px', height: '30px' }}
-              onClick={() => {
-                handleIssueDetails(row.original)
-              }}
-            />
-          </Box>
-        )
+          <IconButton onClick={() => handleIssueDetails(row.original)}>
+            <i className='tabler-eye' />
+          </IconButton>
+        ),
+        enableSorting: false
       }),
       columnHelper.accessor('view', {
         header: () => (
@@ -275,7 +272,8 @@ const DisputeListManagement = props => {
               {row?.original?.vendorId?.status === 'suspended' ? 'Suspended' : dictionary?.datatable?.button?.suspend}
             </Button>
           </Box>
-        )
+        ),
+        enableSorting: false
       })
     ],
     []
@@ -401,17 +399,17 @@ const DisputeListManagement = props => {
             </Box>
           }
         />
-        <TableContainer className='table-common-block p-0' component={Paper}>
-          <Table>
-            <TableHead>
+        <div className='overflow-x-auto'>
+          <table className={tableStyles.table}>
+            <thead>
               {table.getHeaderGroups().map(headerGroup => (
-                <TableRow key={headerGroup.id}>
+                <tr key={headerGroup.id}>
                   {headerGroup.headers.map(header => (
-                    <TableCell key={header.id} onClick={header.column.getToggleSortingHandler()}>
+                    <th key={header.id} onClick={header.column.getToggleSortingHandler()}>
                       {flexRender(header.column.columnDef.header, header.getContext())}
-                    </TableCell>
+                    </th>
                   ))}
-                </TableRow>
+                </tr>
               ))}
               {isDataTableServerLoading && (
                 <tr>
@@ -420,35 +418,35 @@ const DisputeListManagement = props => {
                   </td>
                 </tr>
               )}
-            </TableHead>
-            <TableBody>
+            </thead>
+            <tbody>
               {globalFilter.length > 0 && table.getFilteredRowModel().rows.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={table.getVisibleFlatColumns().length} align='center'>
+                <tr>
+                  <td colSpan={table.getVisibleFlatColumns().length} className='text-center'>
                     {t('datatable.common.no_matching_data_found')}
-                  </TableCell>
-                </TableRow>
+                  </td>
+                </tr>
               ) : table.getFilteredRowModel().rows.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={table.getVisibleFlatColumns().length} align='center'>
+                <tr>
+                  <td colSpan={table.getVisibleFlatColumns().length} className='text-center'>
                     {t('datatable.common.no_data_available')}
-                  </TableCell>
-                </TableRow>
+                  </td>
+                </tr>
               ) : (
                 table
                   .getRowModel()
                   .rows.slice(0, table.getState().pagination.pageSize)
                   .map(row => (
-                    <TableRow key={row.id} className={classnames({ selected: row.getIsSelected() })}>
+                    <tr key={row.id} className={classnames({ selected: row.getIsSelected() })}>
                       {row.getVisibleCells().map(cell => (
-                        <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                        <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
                       ))}
-                    </TableRow>
+                    </tr>
                   ))
               )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+            </tbody>
+          </table>
+        </div>
         {/* <Stack direction='row' justifyContent='space-between' sx={{ padding: 2 }}> */}
         <TablePagination
           component={() => (

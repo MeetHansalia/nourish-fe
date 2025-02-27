@@ -25,10 +25,8 @@ import {
   CardHeader,
   Table,
   TableBody,
-  TableCell,
   TableContainer,
   TableHead,
-  TableRow,
   Paper,
   Pagination,
   TextField,
@@ -55,6 +53,8 @@ import { format } from 'date-fns'
 import { isCancel } from 'axios'
 
 import { Controller } from 'react-hook-form'
+
+import tableStyles from '@core/styles/table.module.css'
 
 import { API_ROUTER } from '@/utils/apiRoutes'
 import { useTranslation } from '@/utils/getDictionaryClient'
@@ -482,17 +482,17 @@ const DisputeHistory = props => {
           }
         />
 
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
+        <div className='overflow-x-auto'>
+          <table className={tableStyles.table}>
+            <thead>
               {table.getHeaderGroups().map(headerGroup => (
-                <TableRow key={headerGroup.id}>
+                <tr key={headerGroup.id}>
                   {headerGroup.headers.map(header => (
-                    <TableCell key={header.id} onClick={header.column.getToggleSortingHandler()}>
+                    <th key={header.id} onClick={header.column.getToggleSortingHandler()}>
                       {flexRender(header.column.columnDef.header, header.getContext())}
-                    </TableCell>
+                    </th>
                   ))}
-                </TableRow>
+                </tr>
               ))}
               {isDataTableServerLoading && (
                 <tr>
@@ -501,35 +501,35 @@ const DisputeHistory = props => {
                   </td>
                 </tr>
               )}
-            </TableHead>
-            <TableBody>
+            </thead>
+            <tbody>
               {globalFilter.length > 0 && table.getFilteredRowModel().rows.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={table.getVisibleFlatColumns().length} align='center'>
+                <tr>
+                  <td colSpan={table.getVisibleFlatColumns().length} className='text-center'>
                     {t('datatable.common.no_matching_data_found')}
-                  </TableCell>
-                </TableRow>
+                  </td>
+                </tr>
               ) : table.getFilteredRowModel().rows.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={table.getVisibleFlatColumns().length} align='center'>
+                <tr>
+                  <td colSpan={table.getVisibleFlatColumns().length} className='text-center'>
                     {t('datatable.common.no_data_available')}
-                  </TableCell>
-                </TableRow>
+                  </td>
+                </tr>
               ) : (
                 table
                   .getRowModel()
                   .rows.slice(0, table.getState().pagination.pageSize)
                   .map(row => (
-                    <TableRow key={row.id} className={classnames({ selected: row.getIsSelected() })}>
+                    <tr key={row.id} className={classnames({ selected: row.getIsSelected() })}>
                       {row.getVisibleCells().map(cell => (
-                        <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                        <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
                       ))}
-                    </TableRow>
+                    </tr>
                   ))
               )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+            </tbody>
+          </table>
+        </div>
         {/* <Stack direction='row' justifyContent='space-between' sx={{ padding: 2 }}> */}
         <TablePagination
           component={() => (

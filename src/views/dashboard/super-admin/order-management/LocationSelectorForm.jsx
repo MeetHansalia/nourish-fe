@@ -47,9 +47,9 @@ const LocationSelectorForm = ({ dictionary, showButton, spacing, lg, onSchoolSel
   const getCountryListController = useRef()
 
   const getCountryList = () => {
-    if (getCountryListController.current) {
-      getCountryListController.current?.abort()
-    }
+    // if (getCountryListController.current) {
+    //   getCountryListController.current?.abort()
+    // }
 
     getCountryListController.current = new AbortController()
 
@@ -256,163 +256,179 @@ const LocationSelectorForm = ({ dictionary, showButton, spacing, lg, onSchoolSel
   }, [schools])
 
   return (
-    <Card sx={{ fontFamily: 'Mulish, sans-serif' }}>
+    <Card className='common-block-dashboard'>
       {showButton && (
         <CardHeader
+          className='common-block-title p-0'
           title={dictionary?.page?.meal_details?.meal_monitoring}
           action={
-            <Button variant='contained' sx={{ bgcolor: 'green', color: 'white' }} onClick={() => handleClick()}>
+            <Button
+              className='theme-common-btn theme-btn-color'
+              variant='contained'
+              sx={{ bgcolor: 'green', color: 'white' }}
+              onClick={() => handleClick()}
+            >
               {dictionary?.form?.button?.submit}
             </Button>
           }
         />
       )}
-      <CardContent>
-        <Grid container spacing={spacing}>
+      <CardContent className='p-0'>
+        <Grid container spacing={6}>
           <Grid item lg={lg} md={6} sm={12}>
-            <Typography variant='subtitle1' sx={{ mb: 2 }}>
-              {dictionary?.form?.label?.countries}
-            </Typography>
-            <CustomAutocomplete
-              fullWidth
-              options={countryOptions}
-              value={selectedData?.country}
-              getOptionLabel={option => option?.name || ''}
-              renderInput={params => <CustomTextField {...params} placeholder={t('form.placeholder.countries')} />}
-              onChange={(_, data) => {
-                setSelectedData(prev => ({
-                  ...prev,
-                  country: data || null,
-                  state: null,
-                  district: null,
-                  school: null,
-                  kidName: null
-                }))
-                // if (selectedData12) {
-                //   router.push(`/${locale}/${panelName}/order-management/monitor-orders?`);
-                // }
-                getStateList(data?.name)
-              }}
-              isOptionEqualToValue={(option, value) => option?._id === value?._id}
-              noOptionsText={t('form.placeholder.no_options')}
-            />
-          </Grid>
-
-          <Grid item lg={lg} md={6} sm={12}>
-            <Typography variant='subtitle1' sx={{ mb: 2 }}>
-              {dictionary?.form?.label?.state}
-            </Typography>
-            <CustomAutocomplete
-              fullWidth
-              options={stateOptions}
-              value={selectedData?.state}
-              getOptionLabel={option => option?.name || ''}
-              renderInput={params => <CustomTextField {...params} placeholder={t('form.placeholder.state')} />}
-              onChange={(_, data) => {
-                setSelectedData(prev => ({
-                  ...prev,
-                  state: data || null,
-                  district: null,
-                  school: null,
-                  kidName: null
-                }))
-                getDistrictList(data?.name, data?.countryName)
-              }}
-              isOptionEqualToValue={(option, value) => option?._id === value?._id}
-              noOptionsText={t('form.placeholder.no_options')}
-            />
-          </Grid>
-
-          <Grid item lg={lg} md={6} sm={12}>
-            <Typography variant='subtitle1' sx={{ mb: 2 }}>
-              {dictionary?.form?.label?.district}
-            </Typography>
-            <CustomAutocomplete
-              fullWidth
-              options={districtOptions}
-              value={selectedData?.district}
-              getOptionLabel={option => option?.districtName || ''}
-              renderInput={params => <CustomTextField {...params} placeholder={t('form.placeholder.district')} />}
-              onChange={(_, data) => {
-                setSelectedData(prev => ({
-                  ...prev,
-                  district: data || null,
-                  school: null,
-                  kidName: null
-                }))
-                fetchSchoolList(data?.countryName, data?.stateName, data?.districtName)
-              }}
-              isOptionEqualToValue={(option, value) => option?._id === value?._id}
-              noOptionsText={t('form.placeholder.no_options')}
-            />
-          </Grid>
-
-          <Grid item lg={lg} md={6} sm={12}>
-            <Typography variant='subtitle1' sx={{ mb: 2 }}>
-              {/* {dictionary?.form?.label?.school}
-               */}
-              {dictionary?.form?.label?.school}
-            </Typography>
-            <CustomAutocomplete
-              fullWidth
-              options={schools}
-              value={selectedData?.school}
-              getOptionLabel={option => option?.schoolName || ''}
-              renderInput={params => (
-                <CustomTextField
-                  {...params}
-                  placeholder={t(`Select school`)}
-                  InputProps={{
-                    ...params.InputProps,
-                    endAdornment: (
-                      <>
-                        {isGetSchoolListLoading ? <CircularProgress color='inherit' size={20} /> : null}
-                        {params.InputProps.endAdornment}
-                      </>
-                    )
-                  }}
-                />
-              )}
-              onChange={(_, data) => {
-                console.log(data?._id)
-
-                if (data?._id) {
-                  if (selectedData12) {
-                    onSchoolSelect(data?._id)
-                  }
-
+            <div className='form-group'>
+              <Typography className='label-block-subtitle' variant='subtitle1' sx={{ mb: 2 }}>
+                {dictionary?.form?.label?.countries}
+              </Typography>
+              <CustomAutocomplete
+                fullWidth
+                options={countryOptions}
+                value={selectedData?.country}
+                getOptionLabel={option => option?.name || ''}
+                renderInput={params => <CustomTextField {...params} placeholder={t('form.placeholder.countries')} />}
+                onChange={(_, data) => {
                   setSelectedData(prev => ({
                     ...prev,
-                    school: data || null,
+                    country: data || null,
+                    state: null,
+                    district: null,
+                    school: null,
                     kidName: null
                   }))
-                }
-              }}
-              isOptionEqualToValue={(option, value) => option?._id === value?._id}
-              noOptionsText={t('form.placeholder.no_options')}
-              loading={isGetSchoolListLoading}
-            />
+                  // if (selectedData12) {
+                  //   router.push(`/${locale}/${panelName}/order-management/monitor-orders?`);
+                  // }
+                  getStateList(data?.name)
+                }}
+                isOptionEqualToValue={(option, value) => option?._id === value?._id}
+                noOptionsText={t('form.placeholder.no_options')}
+              />
+            </div>
+          </Grid>
+
+          <Grid item lg={lg} md={6} sm={12}>
+            <div className='form-group'>
+              <Typography className='label-block-subtitle' variant='subtitle1' sx={{ mb: 2 }}>
+                {dictionary?.form?.label?.state}
+              </Typography>
+              <CustomAutocomplete
+                fullWidth
+                options={stateOptions}
+                value={selectedData?.state}
+                getOptionLabel={option => option?.name || ''}
+                renderInput={params => <CustomTextField {...params} placeholder={t('form.placeholder.state')} />}
+                onChange={(_, data) => {
+                  setSelectedData(prev => ({
+                    ...prev,
+                    state: data || null,
+                    district: null,
+                    school: null,
+                    kidName: null
+                  }))
+                  getDistrictList(data?.name, data?.countryName)
+                }}
+                isOptionEqualToValue={(option, value) => option?._id === value?._id}
+                noOptionsText={t('form.placeholder.no_options')}
+              />
+            </div>
+          </Grid>
+
+          <Grid item lg={lg} md={6} sm={12}>
+            <div className='form-group'>
+              <Typography className='label-block-subtitle' variant='subtitle1' sx={{ mb: 2 }}>
+                {dictionary?.form?.label?.district}
+              </Typography>
+              <CustomAutocomplete
+                fullWidth
+                options={districtOptions}
+                value={selectedData?.district}
+                getOptionLabel={option => option?.districtName || ''}
+                renderInput={params => <CustomTextField {...params} placeholder={t('form.placeholder.district')} />}
+                onChange={(_, data) => {
+                  setSelectedData(prev => ({
+                    ...prev,
+                    district: data || null,
+                    school: null,
+                    kidName: null
+                  }))
+                  fetchSchoolList(data?.countryName, data?.stateName, data?.districtName)
+                }}
+                isOptionEqualToValue={(option, value) => option?._id === value?._id}
+                noOptionsText={t('form.placeholder.no_options')}
+              />
+            </div>
+          </Grid>
+
+          <Grid item lg={lg} md={6} sm={12}>
+            <div className='form-group'>
+              <Typography className='label-block-subtitle' variant='subtitle1' sx={{ mb: 2 }}>
+                {/* {dictionary?.form?.label?.school}
+                 */}
+                {dictionary?.form?.label?.school}
+              </Typography>
+              <CustomAutocomplete
+                fullWidth
+                options={schools}
+                value={selectedData?.school}
+                getOptionLabel={option => option?.schoolName || ''}
+                renderInput={params => (
+                  <CustomTextField
+                    {...params}
+                    placeholder={t(`Select school`)}
+                    InputProps={{
+                      ...params.InputProps,
+                      endAdornment: (
+                        <>
+                          {isGetSchoolListLoading ? <CircularProgress color='inherit' size={20} /> : null}
+                          {params.InputProps.endAdornment}
+                        </>
+                      )
+                    }}
+                  />
+                )}
+                onChange={(_, data) => {
+                  console.log(data?._id)
+
+                  if (data?._id) {
+                    if (selectedData12) {
+                      onSchoolSelect(data?._id)
+                    }
+
+                    setSelectedData(prev => ({
+                      ...prev,
+                      school: data || null,
+                      kidName: null
+                    }))
+                  }
+                }}
+                isOptionEqualToValue={(option, value) => option?._id === value?._id}
+                noOptionsText={t('form.placeholder.no_options')}
+                loading={isGetSchoolListLoading}
+              />
+            </div>
           </Grid>
           {selectedData?.school && (
             <Grid item lg={lg} md={6} sm={12}>
-              <Typography variant='subtitle1' sx={{ mb: 2 }}>
-                {dictionary?.form?.label?.kidName}
-              </Typography>
-              <CustomTextField
-                fullWidth
-                placeholder={t('Kid Name')}
-                value={selectedData?.kidName || ''}
-                onChange={e => {
-                  setSelectedData(prev => ({
-                    ...prev,
-                    kidName: e.target.value
-                  }))
+              <div className='form-group'>
+                <Typography className='label-block-subtitle' variant='subtitle1' sx={{ mb: 2 }}>
+                  {dictionary?.form?.label?.kidName}
+                </Typography>
+                <CustomTextField
+                  fullWidth
+                  placeholder={t('Kid Name')}
+                  value={selectedData?.kidName || ''}
+                  onChange={e => {
+                    setSelectedData(prev => ({
+                      ...prev,
+                      kidName: e.target.value
+                    }))
 
-                  if (selectedData12) {
-                    setKidName(e.target.value)
-                  }
-                }}
-              />
+                    if (selectedData12) {
+                      setKidName(e.target.value)
+                    }
+                  }}
+                />
+              </div>
             </Grid>
           )}
         </Grid>

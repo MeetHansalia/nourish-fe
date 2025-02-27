@@ -1,63 +1,59 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+// React Imports
+import { useEffect, useMemo, useState } from 'react'
 
-import { Box, Grid } from '@mui/material'
+// Third-party Imports
+import { useSelector } from 'react-redux'
 
+// MUI Imports
+import { Grid } from '@mui/material'
+
+// Util Imports
+import { isUserHasPermission } from '@/utils/globalFunctions'
+
+// Redux Imports
+import { profileState } from '@/redux-store/slices/profile'
 import Statistics from './Statistics'
 import VendorRegistrationRequestsTable from './VendorRequestTable'
-import { API_ROUTER } from '@/utils/apiRoutes'
-import { toastError } from '@/utils/globalFunctions'
-import axiosApiCall from '@/utils/axiosApiCall'
 
-const VendorManagementComponent = ({ dictionary }) => {
-  const [isLoading, setIsLoading] = useState(false)
-  const [statisticData, setStatisticData] = useState({})
+/**
+ * Page
+ */
+const OrderManagement = props => {
+  // Hooks
+  const { dictionary = null } = props
 
-  const getStatistics = async () => {
-    setIsLoading(true)
-    await axiosApiCall
-      .get(API_ROUTER.ADMIN.GET_STATISTIC)
-      .then(response => {
-        setIsLoading(false)
-        setStatisticData(response?.data?.response)
-      })
-      .catch(error => {
-        setIsLoading(false)
-        toastError(error?.response?.message)
-      })
-  }
+  const { user = null } = useSelector(profileState)
 
-  useEffect(() => {
-    getStatistics()
-  }, [])
-
-  // console.log('statisticData', statisticData)
+  // Vars
+  // const isUserHasPermissionSections = useMemo(
+  //   () => ({
+  //     order_tracking: isUserHasPermission({
+  //       permissions: user?.permissions,
+  //       permissionToCheck: 'order_management',
+  //       subPermissionsToCheck: ['order_tracking']
+  //     }),
+  //     change_order: isUserHasPermission({
+  //       permissions: user?.permissions,
+  //       permissionToCheck: 'order_management',
+  //       subPermissionsToCheck: ['change_order']
+  //     })
+  //   }),
+  //   [user?.permissions]
+  // )
 
   return (
-    <Grid container spacing={6}>
-      {[
-        {
-          title: 'Vendor minimum thresholds requests',
-          link: 'vendor-management/vendor-minimum-threshold',
-          key: 'vendorThresholdRequests'
-        },
-        { title: 'Monitor Deliver Orders' },
-        {
-          title: 'Vendor Document Requests',
-          link: 'vendor-management/vendor-document-requests',
-          key: 'vendorDocumentRequests'
-        }
-      ]?.map((card, index) => (
-        <Grid item xs={12} sm={6} md={4} key={index}>
-          <Statistics title={card?.title} link={card?.link} isLoading={isLoading} value={statisticData[card.key]} />
-        </Grid>
-      ))}
-      <Grid item xs={12}>
+    <Grid container spacing={2}>
+      {/* {isUserHasPermissionSections?.order_tracking && ( */}
+      <Grid item xs={6} sm={2} md={12}>
+        <Statistics dictionary={dictionary} />
+
         <VendorRegistrationRequestsTable dictionary={dictionary} />
       </Grid>
+      {/* )} */}
     </Grid>
   )
 }
 
-export default VendorManagementComponent
+export default OrderManagement

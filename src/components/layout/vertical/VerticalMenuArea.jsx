@@ -34,6 +34,11 @@ const VerticalMenuArea = ({ dictionary, userRole, userPanel }) => {
         permissionToCheck: 'order_management',
         // subPermissionsToCheck: [],
         subPermissionsToCheck: ['order_tracking', 'change_order']
+      }),
+      foodchart_management: isUserHasPermission({
+        permissions: user?.permissions,
+        permissionToCheck: 'foodchart_management',
+        subPermissionsToCheck: ['create_foodchart', 'approve_foodchart', 'get_foodchart_requests']
       })
     }),
     [user?.permissions]
@@ -47,7 +52,7 @@ const VerticalMenuArea = ({ dictionary, userRole, userPanel }) => {
 
       <MenuItem
         href={`/${locale}/${userPanel}/order-management`}
-        icon={<i className='tabler-user' />}
+        icon={<i className='tabler-device-desktop-analytics' />}
         className={isUserHasPermissionNavigation?.order_management ? '' : 'hidden'}
       >
         {dictionary['navigation'].order_management}
@@ -55,7 +60,7 @@ const VerticalMenuArea = ({ dictionary, userRole, userPanel }) => {
 
       <MenuItem
         href={`/${locale}/${userPanel}/school-vendor-associates`}
-        icon={<i className='tabler-user' />}
+        icon={<i className='tabler-arrows-join-2' />}
         activeUrl={`/${locale}/${userPanel}/school-vendor-associates`}
         exactMatch={false}
       >
@@ -64,11 +69,23 @@ const VerticalMenuArea = ({ dictionary, userRole, userPanel }) => {
 
       <MenuItem
         href={`/${locale}/${userPanel}/food-chart-creation`}
-        icon={<i className='tabler-user' />}
+        icon={<i className='tabler-tools-kitchen-3' />}
         exactMatch={false}
         activeUrl={`/${locale}/${userPanel}/food-chart-creation`}
+        className={isUserHasPermissionNavigation?.foodchart_management ? '' : 'hidden'}
       >
         {dictionary['navigation'].food_chart_creation}
+      </MenuItem>
+      <MenuItem
+        href={`/${locale}/${userPanel}/menu-nutrition-manage`}
+        icon={<i className='tabler-salad' />}
+        activeUrl={`/${locale}/${userPanel}/menu-nutrition-manage`}
+        exactMatch={false}
+      >
+        {dictionary['navigation'].menu_nutrition_manage}
+      </MenuItem>
+      <MenuItem href={`/${locale}/${userPanel}/order-reviews`} icon={<i className='tabler-star' />}>
+        {dictionary['navigation'].review}
       </MenuItem>
     </>
   )

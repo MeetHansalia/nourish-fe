@@ -79,7 +79,7 @@ const DisputeReporting = props => {
         <Grid item xs={12}>
           <Reports dictionary={dictionary} isDispute={true} issueCounts={disputeCounts} role={role} disabled />
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={12} className='pt-0'>
           <DisputeListManagement dictionary={dictionary} refreshCounts={getDisputeCounts} />
         </Grid>
       </Grid>

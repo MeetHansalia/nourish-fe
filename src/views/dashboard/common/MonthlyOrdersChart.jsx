@@ -21,22 +21,24 @@ const data = [
 
 const MonthlyOrdersChart = () => {
   return (
-<div className="p-4 bg-white rounded-2xl shadow-md">
-      <h2 className="text-xl font-semibold text-gray-700 mb-4">Monthly Orders</h2>
-      <ResponsiveContainer width="100%" height={300}>
+    <div className='common-block-dashboard'>
+      <div className='common-block-title'>
+        <h4 className=''>Monthly Orders</h4>
+      </div>
+      <ResponsiveContainer width='100%' height={300}>
         <BarChart data={data} barSize={40}>
-          <XAxis dataKey="month" tick={{ fill: "#777" }} />
-          <YAxis tick={{ fill: "#777" }} />
+          <XAxis dataKey='month' tick={{ fill: '#777' }} />
+          <YAxis tick={{ fill: '#777' }} />
           <Tooltip />
-          <CartesianGrid strokeDasharray="3 3" stroke="#ddd" />
-          <Bar dataKey="orders" fill="#4CAF50" radius={[8, 8, 0, 0]}>
+          <CartesianGrid strokeDasharray='3 3' stroke='#ddd' />
+          <Bar dataKey='orders' fill='#4CAF50' radius={[8, 8, 0, 0]}>
             {/* Label for values above bars */}
-            <LabelList dataKey="orders" position="top" fill="#000" fontSize={14} />
+            <LabelList dataKey='orders' position='top' fill='#000' fontSize={14} />
           </Bar>
         </BarChart>
       </ResponsiveContainer>
     </div>
-  );
+  )
 };
 
 export default MonthlyOrdersChart;

@@ -6,6 +6,8 @@ import { useState, useEffect, useMemo, useRef } from 'react'
 // Next Imports
 import { useParams, usePathname } from 'next/navigation'
 
+import { useSelector } from 'react-redux'
+
 // React Table Imports
 import {
   useReactTable,
@@ -47,7 +49,8 @@ import {
   setFormFieldsErrors,
   successAlert,
   toastError,
-  toastSuccess
+  toastSuccess,
+  isUserHasPermission
 } from '@/utils/globalFunctions'
 import { API_ROUTER } from '@/utils/apiRoutes'
 
@@ -63,12 +66,13 @@ import Link from '@/components/Link'
 import { getLocalizedUrl } from '@/utils/i18n'
 import DebouncedInput from '@/components/nourishubs/DebouncedInput'
 
+// Redux Imports
+import { profileState } from '@/redux-store/slices/profile'
+
 const FoodChartCreationTable = ({ dictionary }) => {
   const { lang: locale } = useParams()
   const { t } = useTranslation(locale)
-  const [isLoading, setIsLoading] = useState(false)
   const pathname = usePathname()
-  // const { t: t_aboutUs } = useTranslation(locale, 'about-us')
   const panelName = getPanelName(pathname)
 
   // States
@@ -80,8 +84,31 @@ const FoodChartCreationTable = ({ dictionary }) => {
   const [recordMetaData, setRecordMetaData] = useState(null)
   const [page, setPage] = useState(1)
   const [isDataTableServerLoading, setIsDataTableServerLoading] = useState(true)
+  const { user = null } = useSelector(profileState)
 
   const abortController = useRef(null)
+
+  // User Operation Permissions
+  const userOperationPermissions = useMemo(
+    () => ({
+      create_foodchart: isUserHasPermission({
+        permissions: user?.permissions,
+        permissionToCheck: 'foodchart_management',
+        subPermissionsToCheck: ['create_foodchart']
+      }),
+      approve_foodchart: isUserHasPermission({
+        permissions: user?.permissions,
+        permissionToCheck: 'foodchart_management',
+        subPermissionsToCheck: ['approve_foodchart']
+      }),
+      get_foodchart_requests: isUserHasPermission({
+        permissions: user?.permissions,
+        permissionToCheck: 'foodchart_management',
+        subPermissionsToCheck: ['get_foodchart_requests']
+      })
+    }),
+    [user?.permissions]
+  )
 
   // Fetch Data
   const getAllRequests = async () => {
@@ -288,7 +315,6 @@ const FoodChartCreationTable = ({ dictionary }) => {
             title: `${dictionary?.sweet_alert?.foodchart_approve?.success}`,
             confirmButtonText: `${dictionary?.sweet_alert?.foodchart_approve?.ok}`
           })
-          setIsLoading(false)
           // router.back()
           getAllRequests()
         }
@@ -299,22 +325,24 @@ const FoodChartCreationTable = ({ dictionary }) => {
   return (
     <>
       <Card>
-        <CardHeader
-          title={dictionary?.navigation?.food_chart_creation}
-          action={
-            <div className='flex max-sm:flex-col max-sm:is-full sm:items-center gap-4'>
-              <Link href={getLocalizedUrl(`/${panelName}/food-chart-creation/new-food-chart-creation`, locale)}>
-                <Button variant='contained'>{dictionary?.common?.food_chart_creation}</Button>
-              </Link>
-              <DebouncedInput
-                value={globalFilter ?? ''}
-                onChange={value => setGlobalFilter(String(value))}
-                placeholder={dictionary?.datatable?.common?.search_placeholder}
-              />
-            </div>
-          }
-          className='flex-wrap gap-4'
-        />
+        {userOperationPermissions?.create_foodchart && (
+          <CardHeader
+            title={dictionary?.navigation?.food_chart_creation}
+            action={
+              <div className='flex max-sm:flex-col max-sm:is-full sm:items-center gap-4'>
+                <Link href={getLocalizedUrl(`/${panelName}/food-chart-creation/new-food-chart-creation`, locale)}>
+                  <Button variant='contained'>{dictionary?.common?.food_chart_creation}</Button>
+                </Link>
+                <DebouncedInput
+                  value={globalFilter ?? ''}
+                  onChange={value => setGlobalFilter(String(value))}
+                  placeholder={dictionary?.datatable?.common?.search_placeholder}
+                />
+              </div>
+            }
+            className='flex-wrap gap-4'
+          />
+        )}
         <div className='overflow-x-auto'>
           <table className={tableStyles.table}>
             <thead>

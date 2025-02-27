@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 
-import { Table, TableBody, TableRow, TableCell } from '@mui/material';
+import { Table, TableBody, TableRow, TableCell,TableHead } from '@mui/material';
 
 const MealNutritionTable = ({ dictionary, cartData }) => {
   const [nutrition, setNutrition] = useState({})
@@ -72,35 +72,59 @@ const MealNutritionTable = ({ dictionary, cartData }) => {
 
 
   return (
-    <Table size='small' sx={{ maxWidth: 200 }}>
+    <Table size='small' sx={{ maxWidth: 280 }}>
+      <TableHead>
+        <TableRow>
+          <TableCell>Ingredients</TableCell>
+          <TableCell>Per 100g</TableCell>
+        </TableRow>
+      </TableHead>
       <TableBody>
         <TableRow>
           <TableCell>{dictionary?.meal?.calories}</TableCell>
-          <TableCell>{nutrition.calories} {dictionary?.meal?.cal}</TableCell>
+          <TableCell>
+            {nutrition.calories} {dictionary?.meal?.cal}
+          </TableCell>
         </TableRow>
         <TableRow>
           <TableCell>{dictionary?.meal?.protein}</TableCell>
-          <TableCell>{nutrition.protein}{dictionary?.meal?.g}</TableCell>
+          <TableCell>
+            {nutrition.protein}
+            {dictionary?.meal?.g}
+          </TableCell>
         </TableRow>
         <TableRow>
           <TableCell>{dictionary?.meal?.total_sugar}</TableCell>
-          <TableCell>{nutrition.total_sugar}{dictionary?.meal?.g}</TableCell>
+          <TableCell>
+            {nutrition.total_sugar}
+            {dictionary?.meal?.g}
+          </TableCell>
         </TableRow>
         <TableRow>
           <TableCell>{dictionary?.meal?.total_fat}</TableCell>
-          <TableCell>{nutrition.total_fat}{dictionary?.meal?.g}</TableCell>
+          <TableCell>
+            {nutrition.total_fat}
+            {dictionary?.meal?.g}
+          </TableCell>
         </TableRow>
         <TableRow>
           <TableCell>{dictionary?.meal?.sodium}</TableCell>
-          <TableCell>{nutrition.sodium}{dictionary?.meal?.mg}</TableCell>
+          <TableCell>
+            {nutrition.sodium}
+            {dictionary?.meal?.mg}
+          </TableCell>
         </TableRow>
         <TableRow>
           <TableCell>{dictionary?.meal?.cholesterol}</TableCell>
-          <TableCell>{'<'}{nutrition.cholesterol}{dictionary?.meal?.mg}</TableCell>
+          <TableCell>
+            {'<'}
+            {nutrition.cholesterol}
+            {dictionary?.meal?.mg}
+          </TableCell>
         </TableRow>
       </TableBody>
     </Table>
-  );
+  )
 };
 
 export default MealNutritionTable;

@@ -293,11 +293,18 @@ const OrderDataTable = props => {
 
   return (
     <>
-      <Card>
-        <CardContent className='flex flex-col gap-4'>
-          <Grid container spacing={2} alignItems='center' justifyContent='space-between' sx={{ mb: 2 }}>
+      <Card className='common-block-dashboard table-block-no-pad'>
+        <CardContent className='p-0 flex flex-col gap-4'>
+          <Grid
+            container
+            spacing={2}
+            className='common-block-title'
+            alignItems='center'
+            justifyContent='space-between'
+            sx={{ mb: 2 }}
+          >
             <Grid item xs={12} md={4}>
-              <Typography variant='h5'>{dictionary?.datatable?.review_the_meal_table?.table_title}</Typography>
+              <Typography variant='h4'>{dictionary?.datatable?.review_the_meal_table?.table_title}</Typography>
             </Grid>
             <Grid item xs={12} md={8} sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
               <FormControl sx={{ minWidth: 150 }}>
@@ -341,7 +348,7 @@ const OrderDataTable = props => {
                 dateFormat='MM/dd/yyyy'
                 selected={orderDate}
                 onChange={date => handelDateChange(date)}
-                maxDate={new Date()}
+                // maxDate={new Date()}
                 customInput={<CustomTextField fullWidth />}
                 placeholderText={t('form.placeholder.date')}
               />
@@ -371,7 +378,7 @@ const OrderDataTable = props => {
             </Grid>
           </Grid>
         </CardContent>
-        <TableContainer component={Paper}>
+        <TableContainer className='table-common-block' component={Paper}>
           <Table>
             <TableHead>
               {table.getHeaderGroups().map(headerGroup => (
@@ -440,7 +447,7 @@ const OrderDataTable = props => {
         </TableContainer>
         <TablePagination
           component={() => (
-            <div className='flex justify-between items-center flex-wrap pli-6 border-bs bs-auto plb-[12.5px] gap-2'>
+            <div className='flex justify-between items-center flex-wrap pli-6 plb-[12.5px] gap-2'>
               <Typography color='text.disabled'>
                 {t('datatable.common.footer_showing_entries', {
                   startIndex: totalCount > 0 ? (page - 1) * itemsPerPage + 1 : 0,

@@ -12,11 +12,14 @@ import { API_ROUTER } from '@/utils/apiRoutes'
 
 import { toastError } from '@/utils/globalFunctions'
 
+import TruncatedTextWithModal from '@/components/TruncatedTextWithModal'
+
 const DishGrid = ({ dictionary = {}, getId = () => {} }) => {
   const [dishes, setDishes] = useState([])
   const [page, setPage] = useState(1)
   const [hasMoreDishes, setHasMoreDishes] = useState(true)
   const abortController = useRef(null)
+  const [activeId, setActiveId] = useState(null)
 
   useEffect(() => {
     fetchDishes(1)
@@ -113,9 +116,18 @@ const DishGrid = ({ dictionary = {}, getId = () => {} }) => {
                   <Typography variant='h6' fontWeight='bold'>
                     {dish.name || dictionary.dishName || 'Dish Name'}
                   </Typography>
-                  <Typography variant='body2' color='textSecondary'>
+                  {/* <Typography variant='body2' color='textSecondary'>
                     <strong>{dictionary.description || 'Description'}:</strong> {dish.description || 'N/A'}
-                  </Typography>
+                  </Typography> */}
+                  <TruncatedTextWithModal
+                    id={dish._id}
+                    title={dish.name}
+                    text={dish.description}
+                    wordLimit={20}
+                    activeId={activeId}
+                    setActiveId={setActiveId}
+                  />
+
                   <Typography variant='body2' color='textSecondary'>
                     <strong>{dictionary.categories || 'Categories'}:</strong>{' '}
                     {dish?.categoryIds?.map(category => category.name).join(', ') || 'N/A'}

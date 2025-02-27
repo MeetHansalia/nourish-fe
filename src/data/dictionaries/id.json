@@ -11,19 +11,29 @@
     "vendor_management": "Manajemen Vendor",
     "order_management": "Manajemen Pesanan",
     "parents_profile": "Profil Orang Tua",
+    "schools_profile": "Profil Sekolah",
     "kids_profile_management": "Manajemen Profil Anak",
+    "schools_and_vendors_verify": "Verifikasi Sekolah & Vendor",
+    "vendor_selection_chart": "Bagan Pemilihan Vendor",
+    "document_verify": "Verifikasi Dokumen",
     "food_chart_creation": "Pembuatan Grafik Makanan",
+    "catering_schedule": "Jadwal Katering",
     "add_staff": "Tambah Staf",
+    "staff_management": "Manajemen Staf",
     "meal_selection": "Pemilihan Makanan",
     "menu_management": "Manajemen Menu",
     "reviews_for_meals": "Ulasan untuk makanan",
-    "document_verify": "Verifikasi Dokumen",
+    "vendor_approval": "Persetujuan Vendor",
+    "document_approval": "Persetujuan Dokumen",
     "issue_reporting": "Pelaporan Masalah",
     "dispute_resolution": "Penyelesaian Sengketa",
     "feedback": "Masukan",
     "school_vendor_associates": "Asosiasi Sekolah Vendor",
     "manage_Vendors_Requests": "Kelola Permintaan Vendor",
-    "order_traking": "Pelacakan Pesanan"
+    "foodchart_creation_approval": "Pembuatan & Persetujuan Bagan Makanan",
+    "order_traking": "Pelacakan Pesanan",
+    "review": "Ulasan",
+    "menu_nutrition_manage": "Kelola Menu & Nutrisi"
   },
   "form": {
     "label": {
@@ -70,7 +80,7 @@
       "gender": "Jenis kelamin",
       "weight": "Berat",
       "height": "Tinggi",
-      "allergies_dietary_description": "Allergies or Dietary: Description",
+      "allergies_dietary_description": "Alergi atau Diet: Deskripsi",
       "name": "Nama",
       "start_date": "Tanggal Mulai",
       "end_date": "Tanggal Selesai",
@@ -118,7 +128,7 @@
       "select_child": "Pilih Anak",
       "select_issue": "Pilih Masalah",
       "issue_date": "Pilih Tanggal",
-      "delivery_issue": "Masalah Pengiriman Di Sini",
+      "delivery_issue": "Jelaskan masalah Anda",
       "select_duration": "Pilih Durasi",
       "vendor_names": "Nama Vendor",
       "order_details": "Rincian Pesanan",
@@ -132,7 +142,21 @@
       "state": "Negara Bagian",
       "district": "Distrik",
       "admin_name": "Nama Admin",
-      "language": "Bahasa"
+      "language": "Bahasa",
+      "old_password": "Kata sandi lama",
+      "school": "Pilih Sekolah",
+      "reviewedBy": "Ditinjau Oleh",
+      "total_orders": "Total Pesanan",
+      "approved_orders": "Pesanan Disetujui",
+      "rejected_orders": "Pesanan Ditolak",
+      "total_amount": "Total Jumlah",
+      "total_profiles": "Total Profil",
+      "total_sales": "Total Penjualan",
+      "total_income": "Total Pendapatan",
+      "parent_registration_requests": "Permintaan Pendaftaran Orang Tua",
+      "reject": "Tolak",
+      "food_chart": "Diagram Makanan",
+      "nutrition_suggestion": "Saran Nutrisi"
     },
     "placeholder": {
       "name": "Masukkan Nama",
@@ -193,7 +217,10 @@
       "district": "Pilih Distrik",
       "countries": "Pilih Negara",
       "search_school": "Cari Sekolah",
-      "search_vendor": "Cari Vendor"
+      "search_vendor": "Cari Vendor",
+      "enter_old_password": "Masukkan kata sandi lama",
+      "enter_new_password": "Masukkan kata sandi baru",
+      "enter_confirm_password": "Masukkan konfirmasi kata sandi"
     },
     "validation": {
       "required": "Kolom ini wajib diisi",
@@ -251,7 +278,15 @@
       "invalid_class": "Kelas harus 'Nursery', 'KG1', 'KG2', atau angka antara 1 hingga 12",
       "invalid_number": "Harap masukkan angka yang valid",
       "invalid_weight": "Berat harus berupa angka",
-      "invalid_height": "Tinggi harus berupa angka"
+      "invalid_height": "Tinggi harus berupa angka",
+      "max_dish": "Anda dapat memilih maksimal {{max_selection}} hidangan.",
+      "atleast_dish": "Anda harus memilih setidaknya {{quantity}} hidangan.",
+      "exact_dish": "Anda harus memilih tepat {{quantity}} hidangan.",
+      "max_dish_qty": "Anda dapat memilih maksimal {{quantity}} hidangan.",
+      "atleast_modifier": "Setidaknya satu modifikator diperlukan.",
+      "selection_rule": "Aturan pemilihan diperlukan.",
+      "modifier_name": "Nama modifikator diperlukan.",
+      "validation": "Validasi gagal berdasarkan kondisi."
     },
     "button": {
       "create": "Buat",
@@ -275,7 +310,9 @@
       "back": "Kembali",
       "warning": "Peringatan",
       "send": "Kirim",
-      "ok": "OK"
+      "ok": "OK",
+      "accept": "Terima",
+      "view": "Lihat Permintaan"
     },
     "dropdown": {
       "genders": [
@@ -308,7 +345,7 @@
     "modify_group": "Ubah Grup",
     "total": "Total",
     "checkout": "Checkout",
-    "total_pay": "Jumlah Bayaran",
+    "total_pay": "Jumlah",
     "bill_details": "Detail Tagihan",
     "item_total": "Jumlah Barang",
     "delivery_fees": "Biaya Pengiriman",
@@ -332,7 +369,8 @@
     "weekly_order": "Lingguhang Order",
     "no_more_data_to_load": "Tidak ada lagi data untuk dimuat",
     "exit_access": "Akses Keluar",
-    "my_profile": "Profil Saya"
+    "my_profile": "Profil Saya",
+    "change_password": "Ubah Kata Sandi"
   },
   "dialog": {
     "delete_category_confirmation": "Apakah Anda yakin ingin menghapus kategori ini?",
@@ -472,7 +510,7 @@
         "create_user": "Buat Pengguna"
       },
       "update_user": {
-        "update_user": "Perbarui Pengguna"
+        "update_user": "Perbarui & Edit Peran & Izin"
       },
       "suspended_accounts": {
         "suspended_accounts": "Akun yang Diblokir",
@@ -513,10 +551,14 @@
       "vendor_address": "Alamat Penjual"
     },
     "order_management": {
+      "last_moment_cancellation": "Pembatalan di Saat Terakhir",
+      "vendor_minimum_thresholds_verfication_requests": "Permintaan verifikasi ambang batas minimum vendor",
+      "monitor_deliverd_order": "Pantau Pesanan yang Telah Dikirim",
       "event_orders_request": "Permintaan pesanan acara",
       "add_new_order": "Tambahkan Pesanan Baru",
       "select_vendor": "Pilih Vendor",
-      "view_minimum_threshold_of_vendors": "Lihat ambang batas minimum vendor"
+      "view_minimum_threshold_of_vendors": "Lihat ambang batas minimum vendor",
+      "order_delivery_approval": "Persetujuan Pengiriman Pesanan"
     },
     "school_management": {
       "school_document_verification_requests": "Permintaan Verifikasi Dokumen Sekolah",
@@ -568,11 +610,15 @@
       "vendor_list": "Daftar Vendor"
     },
     "food_chart_creation": {
-      "vendor_near_by": "Vendor Terdekat"
+      "vendor_near_by": "Vendor Terdekat",
+      "vendor_nearby": "Penjual Terdekat"
     },
     "issue_reporting": {
       "issue_report": "Laporkan Masalah",
-      "issue_counting": "Hitung Masalah"
+      "issue_counting": "Masalah"
+    },
+    "meal_details": {
+      "meal_monitoring": "Memantau Pesanan Makanan"
     },
     "dispute_management": {
       "dispute_resolution": "Penyelesaian Sengketa"
@@ -690,6 +736,9 @@
     "suspended_user_table": {
       "table_title": "Pengguna yang Ditangguhkan"
     },
+    "review_vendor_table": {
+      "table_title": "Tinjau menu vendor & tambahkan saran"
+    },
     "vendor_management_table": {
       "table_title": "Daftar Semua Vendor"
     },
@@ -711,6 +760,9 @@
     "event_orders_requests": {
       "table_title": "Permintaan Pesanan Acara"
     },
+    "overview": {
+      "table_title": "Ringkasan"
+    },
     "common": {
       "footer_showing_entries": "Menampilkan {{startIndex}} hingga {{endIndex}} dari {{totalFiltered}} entri",
       "no_data_available": "Tidak ada data yang tersedia",
@@ -722,6 +774,7 @@
       "delivery_date": "Tanggal Pengiriman",
       "min_threshold_qty": "Jumlah Ambang Minimum",
       "serial_number": "No. Seri",
+      "verification_status": "Status Verifikasi",
       "first_name": "Nama Depan",
       "last_name": "Nama Belakang",
       "vendor_name": "Nama Vendor",
@@ -751,9 +804,9 @@
       "name": "Nama",
       "applied_rule": "Aturan yang Diterapkan",
       "meal_details": "Detail Makanan",
-      "issue_topic": "Topik Isu",
-      "issue_description": "Deskripsi Isu",
-      "issue_status": "Status Isu",
+      "issue_topic": "Masalah",
+      "issue_description": "Deskripsi",
+      "issue_status": "Status",
       "issue_raise": "Mengangkat Isu",
       "issue_authority": "Otoritas Isu",
       "all": "Semua",

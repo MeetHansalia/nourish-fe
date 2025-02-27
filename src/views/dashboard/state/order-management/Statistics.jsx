@@ -3,15 +3,27 @@
 import { useEffect, useState } from 'react'
 
 // MUI Imports
+import { useParams, usePathname } from 'next/navigation'
+
 import { Card, CardContent, Typography } from '@mui/material'
 
 // Core Component Imports
+import { isCancel } from 'axios'
+
 import CustomAvatar from '@/@core/components/mui/Avatar'
 
 // Util Imports
 import { numberFormat } from '@utils/globalFilters'
 import axiosApiCall from '@/utils/axiosApiCall'
 import { API_ROUTER } from '@/utils/apiRoutes'
+import {
+  apiResponseErrorHandling,
+  getPanelName,
+  isVariableAnObject,
+  setFormFieldsErrors,
+  toastError
+} from '@/utils/globalFunctions'
+import Link from '@/components/Link'
 
 /**
  * Page
@@ -22,8 +34,30 @@ const Statistics = props => {
   const [orderStatistics, setOrderStatistics] = useState(0)
 
   // HOOKS
-  const handleNavigation = () => {
-    setShowDropDown(!showDropDdown)
+  // const handleNavigation = () => {
+  //   setShowDropDown(!showDropDdown)
+  // }
+  const { lang: locale } = useParams()
+  const pathname = usePathname()
+  const panelName = getPanelName(pathname)
+
+  const handleClick = name => {
+    setShowDropDown(prevState => {
+      switch (name) {
+        case 'last_moment_cancellation':
+          return {
+            last_moment_cancellation: true,
+            meal_monitoring: false
+          }
+        case 'meal_monitoring':
+          return {
+            last_moment_cancellation: false,
+            meal_monitoring: true
+          }
+        default:
+          return prevState
+      }
+    })
   }
 
   const getLastMomentCancelationStatistic = async () => {
@@ -56,7 +90,10 @@ const Statistics = props => {
   return (
     <div className='top-block-card'>
       <div className='card-block-inner two-block-card'>
-        <div className='card-block'>
+        <div
+          className={`card-block ${showDropDdown.last_moment_cancellation ? 'active' : ''}`}
+          onClick={() => handleClick('last_moment_cancellation')}
+        >
           <Card className='card-link-a cursor-pointer' onClick={() => setShowDropDown(false)}>
             <CardContent className='flex flex-col gap-1'>
               <div className='flex items-center gap-4'>
@@ -74,22 +111,27 @@ const Statistics = props => {
           </Card>
         </div>
 
-        <div className='card-block'>
-          <Card onClick={handleNavigation} className='card-link-a cursor-pointer'>
-            <CardContent className='flex flex-col gap-1'>
-              <div className='flex items-center gap-4'>
-                <CustomAvatar className='custom-avatar' color='primary' skin='light' variant='rounded'>
-                  <i className='tabler-clipboard-check text-xl' />
-                </CustomAvatar>
-                <Typography variant='h4'>{dictionary?.page?.order_management?.monitor_deliverd_order}</Typography>
-              </div>
-              <div className='number-text-block flex flex-col gap-1'>
-                <div className='number-text-block-inner flex items-center gap-2'>
-                  <Typography variant='h4'>{numberFormat(orderStatistics.completeOrders)}</Typography>
+        <div
+          className={`card-block ${showDropDdown.meal_monitoring ? 'active' : ''}`}
+          onClick={() => handleClick('meal_monitoring')}
+        >
+          <Link href={`/${locale}/${panelName}/order-management/monitor-orders`}>
+            <Card className='card-link-a cursor-pointer'>
+              <CardContent className='flex flex-col gap-1'>
+                <div className='flex items-center gap-4'>
+                  <CustomAvatar className='custom-avatar' color='primary' skin='light' variant='rounded'>
+                    <i className='tabler-clipboard-check text-xl' />
+                  </CustomAvatar>
+                  <Typography variant='h4'>{dictionary?.page?.order_management?.monitor_deliverd_order}</Typography>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+                <div className='number-text-block flex flex-col gap-1'>
+                  <div className='number-text-block-inner flex items-center gap-2'>
+                    <Typography variant='h4'>{numberFormat(orderStatistics.completeOrders)}</Typography>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
         </div>
       </div>
     </div>

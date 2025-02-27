@@ -29,7 +29,7 @@ const VerticalMenuSuperAdmin = ({ dictionary, userRole, userPanel, serverSession
   }, [session])
 
   const isUserProfileValid = user?.verificationStatus === 'approved' ? true : false
-
+  const schoolProfilePath = `/${locale}/${userPanel}/profile`
   const foodChartCreationPath = `/${locale}/${userPanel}/food-chart-creation`
   const staffManagementPath = `/${locale}/${userPanel}/staff-management`
   const feedbackPath = `/${locale}/${userPanel}/feedback`
@@ -47,13 +47,21 @@ const VerticalMenuSuperAdmin = ({ dictionary, userRole, userPanel, serverSession
         {dictionary['navigation'].dashboard}
       </MenuItem>
       <MenuItem
+        href={schoolProfilePath}
+        activeUrl={schoolProfilePath}
+        exactMatch={false}
+        icon={<i className='tabler-user-cog' />}
+      >
+        {dictionary['navigation'].schools_profile}
+      </MenuItem>
+      <MenuItem
         href={foodChartCreationPath}
-        icon={<i className='tabler-user' />}
+        icon={<i className='tabler-tools-kitchen-3' />}
         activeUrl={foodChartCreationPath}
         exactMatch={false}
         disabled={!isUserProfileValid}
       >
-        {dictionary['navigation'].food_chart_creation}
+        {dictionary['navigation'].catering_schedule}
       </MenuItem>
       <MenuItem
         href={staffManagementPath}
@@ -62,11 +70,11 @@ const VerticalMenuSuperAdmin = ({ dictionary, userRole, userPanel, serverSession
         exactMatch={false}
         disabled={!isUserProfileValid}
       >
-        {dictionary['navigation'].add_staff}
+        {dictionary['navigation'].staff_management}
       </MenuItem>
       <MenuItem
         href={orderManagementPath}
-        icon={<i className='tabler-user' />}
+        icon={<i className='tabler-device-desktop-analytics' />}
         activeUrl={orderManagementPath}
         exactMatch={false}
         disabled={!isUserProfileValid}
@@ -82,6 +90,10 @@ const VerticalMenuSuperAdmin = ({ dictionary, userRole, userPanel, serverSession
       >
         {dictionary['navigation'].feedback}
       </MenuItem>
+      <MenuItem href={`/${locale}/${userPanel}/order-reviews`} icon={<i className='tabler-star' />}>
+        {dictionary['navigation'].review}
+      </MenuItem>
+
       <MenuItem
         href={orderTrakingPath}
         icon={<i className='tabler-user' />}

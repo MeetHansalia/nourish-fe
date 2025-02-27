@@ -21,6 +21,7 @@ import axiosApiCall from '@/utils/axiosApiCall'
 import { API_ROUTER } from '@/utils/apiRoutes'
 import { getFullName, toastError } from '@/utils/globalFunctions'
 import { useTranslation } from '@/utils/getDictionaryClient'
+import FullPageLoader from '@/components/FullPageLoader'
 
 const StaffListingComponent = ({ dictionary }) => {
   const [allStaff, setAllStaff] = useState([])
@@ -94,7 +95,7 @@ const StaffListingComponent = ({ dictionary }) => {
 
       {loading && (
         <Box display='flex' justifyContent='center' alignItems='center' mt={2}>
-          <CircularProgress className='ml-2' size={40} sx={{ color: 'primary.main' }} />
+          <FullPageLoader open={true} color='primary' spinnerSize={60} />
         </Box>
       )}
 

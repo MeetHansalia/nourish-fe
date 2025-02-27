@@ -11,22 +11,32 @@
     "vendor_management": "การจัดการผู้ขาย",
     "order_management": "การจัดการคำสั่งซื้อ",
     "parents_profile": "โปรไฟล์ผู้ปกครอง",
+    "schools_profile": "โปรไฟล์โรงเรียน",
     "kids_profile_management": "การจัดการโปรไฟล์เด็ก",
     "food_chart_creation": "การสร้างแผนภูมิอาหาร",
+    "catering_schedule": "ตารางเวลาจัดเลี้ยง",
     "add_staff": "เพิ่มพนักงาน",
+    "staff_management": "การจัดการพนักงาน",
     "meal_selection": "การเลือกมื้ออาหาร",
     "menu_management": "การจัดการเมนู",
     "reviews_for_meals": "รีวิวสำหรับมื้ออาหาร",
-    "document_verify": "การยืนยันเอกสาร",
+    "vendor_approval": "การอนุมัติผู้ขาย",
+    "document_approval": "การอนุมัติเอกสาร",
     "issue_reporting": "การรายงานปัญหา",
     "dispute_resolution": "การแก้ไขข้อพิพาท",
     "feedback": "ข้อเสนอแนะ",
     "school_vendor_associates": "โรงเรียน & ผู้ขาย",
     "manage_Vendors_Requests": "จัดการคำขอของผู้ขาย",
+    "schools_and_vendors_verify": "โรงเรียนและผู้ขายยืนยัน",
+    "vendor_selection_chart": "แผนภูมิการเลือกผู้ขาย",
+    "document_verify": "การยืนยันเอกสาร",
     "order_traking": "การติดตามคำสั่งซื้อ",
     "state": "เลือกสถานะ",
+    "foodchart_creation_approval": "การสร้างและอนุมัติแผนภูมิอาหาร",
     "district": "เลือกเขต",
-    "countries": "เลือกประเทศ"
+    "countries": "เลือกประเทศ",
+    "review": "รีวิว",
+    "menu_nutrition_manage": "จัดการเมนูและโภชนาการ"
   },
   "form": {
     "label": {
@@ -73,7 +83,7 @@
       "gender": "เพศ",
       "weight": "น้ำหนัก",
       "height": "ความสูง",
-      "allergies_dietary_description": "Allergies or Dietary: Description",
+      "allergies_dietary_description": "อาการแพ้หรืออาหารพิเศษ: คำอธิบาย",
       "name": "ชื่อ",
       "start_date": "วันที่เริ่มต้น",
       "end_date": "วันที่สิ้นสุด",
@@ -122,7 +132,7 @@
       "select_child": "เลือกเด็ก",
       "select_issue": "เลือกปัญหา",
       "issue_date": "เลือกวันที่",
-      "delivery_issue": "ปัญหาการจัดส่งที่นี่",
+      "delivery_issue": "อธิบายปัญหาของคุณ",
       "select_duration": "เลือกระยะเวลา",
       "vendor_names": "ชื่อผู้ขาย",
       "order_details": "รายละเอียดคำสั่งซื้อ",
@@ -136,7 +146,21 @@
       "state": "รัฐ",
       "district": "เขต",
       "admin_name": "ชื่อผู้ดูแลระบบ",
-      "language": "ภาษา"
+      "language": "ภาษา",
+      "old_password": "รหัสผ่านเก่า",
+      "school": "เลือกโรงเรียน",
+      "reviewedBy": "รีวิวโดย",
+      "total_orders": "ยอดรวมคำสั่งซื้อ",
+      "approved_orders": "คำสั่งซื้อที่ได้รับอนุมัติ",
+      "rejected_orders": "คำสั่งซื้อที่ถูกปฏิเสธ",
+      "total_amount": "ยอดรวม",
+      "total_profiles": "โปรไฟล์ทั้งหมด",
+      "total_sales": "ยอดขายทั้งหมด",
+      "total_income": "รายได้รวม",
+      "parent_registration_requests": "คำขอลงทะเบียนผู้ปกครอง",
+      "reject": "ปฏิเสธ",
+      "food_chart": "แผนภูมิอาหาร",
+      "nutrition_suggestion": "คำแนะนำด้านโภชนาการ"
     },
     "placeholder": {
       "name": "กรอกชื่อ",
@@ -198,7 +222,10 @@
       "state": "รัฐ",
       "district": "เขต",
       "search_school": "ค้นหาโรงเรียน",
-      "search_vendor": "ค้นหาผู้ขาย"
+      "search_vendor": "ค้นหาผู้ขาย",
+      "enter_old_password": "ป้อนรหัสผ่านเก่า",
+      "enter_new_password": "ป้อนรหัสผ่านใหม่",
+      "enter_confirm_password": "ป้อนการยืนยันรหัสผ่าน"
     },
     "validation": {
       "required": "ฟิลด์นี้เป็นข้อมูลที่จำเป็น",
@@ -256,7 +283,15 @@
       "invalid_class": "ชั้นเรียนต้องเป็น 'Nursery', 'KG1', 'KG2' หรือเป็นตัวเลขระหว่าง 1 ถึง 12",
       "invalid_number": "โปรดป้อนตัวเลขที่ถูกต้อง",
       "invalid_weight": "น้ำหนักต้องเป็นตัวเลข",
-      "invalid_height": "ความสูงต้องเป็นตัวเลข"
+      "invalid_height": "ความสูงต้องเป็นตัวเลข",
+      "max_dish": "คุณสามารถเลือกได้สูงสุด {{max_selection}} จาน",
+      "atleast_dish": "คุณต้องเลือกอย่างน้อย {{quantity}} จาน",
+      "exact_dish": "คุณต้องเลือกจำนวน {{quantity}} จานพอดี",
+      "max_dish_qty": "คุณสามารถเลือกได้สูงสุด {{quantity}} จาน",
+      "atleast_modifier": "ต้องมีตัวปรับแต่งอย่างน้อยหนึ่งรายการ",
+      "selection_rule": "ต้องระบุเงื่อนไขการเลือก",
+      "modifier_name": "ต้องระบุชื่อตัวปรับแต่ง",
+      "validation": "การตรวจสอบล้มเหลวตามเงื่อนไข"
     },
     "button": {
       "create": "สร้าง",
@@ -280,7 +315,9 @@
       "back": "Quay lại",
       "warning": "คำเตือน",
       "send": "ส่ง",
-      "ok": "โอเค"
+      "ok": "โอเค",
+      "accept": "ยอมรับ",
+      "view": "ดูคำขอ"
     },
     "dropdown": {
       "genders": [
@@ -337,7 +374,8 @@
     "weekly_order": "คำสั่งซื้อรายสัปดาห์",
     "no_more_data_to_load": "ไม่มีข้อมูลเพิ่มเติมให้โหลด",
     "exit_access": "ทางออกการเข้าถึง",
-    "my_profile": "โปรไฟล์ของฉัน"
+    "my_profile": "โปรไฟล์ของฉัน",
+    "change_password": "เปลี่ยนรหัสผ่าน"
   },
   "dialog": {
     "delete_category_confirmation": "คุณแน่ใจหรือไม่ว่าต้องการลบหมวดหมู่นี้?",
@@ -477,7 +515,7 @@
         "create_user": "สร้างผู้ใช้"
       },
       "update_user": {
-        "update_user": "อัปเดตผู้ใช้"
+        "update_user": "อัปเดต แก้ไข บทบาทและสิทธิ์"
       },
       "suspended_accounts": {
         "suspended_accounts": "บัญชีที่ถูกระงับ",
@@ -527,10 +565,14 @@
       }
     },
     "order_management": {
-      "event_orders_request": "คำขอคำสั่งซื้อกิจกรรม",
+      "last_moment_cancellation": "ยกเลิกในนาทีสุดท้าย",
+      "vendor_minimum_thresholds_verfication_requests": "คำขอตรวจสอบเกณฑ์ขั้นต่ำของผู้ขาย",
+      "monitor_deliverd_order": "ติดตามคำสั่งซื้อที่จัดส่งแล้ว",
+      "event_orders_request": "คำขอสั่งซื้อสำหรับกิจกรรม",
       "add_new_order": "เพิ่มคำสั่งซื้อใหม่",
       "select_vendor": "เลือกผู้ขาย",
-      "view_minimum_threshold_of_vendors": "ดูเกณฑ์ขั้นต่ำของผู้ขาย"
+      "view_minimum_threshold_of_vendors": "ดูเกณฑ์ขั้นต่ำของผู้ขาย",
+      "order_delivery_approval": "อนุมัติการจัดส่งคำสั่งซื้อ"
     },
     "vendor_profile": {
       "title": "รายละเอียดผู้ขาย",
@@ -573,11 +615,15 @@
       "vendor_list": "รายการผู้ขาย"
     },
     "food_chart_creation": {
-      "vendor_near_by": "ผู้ขายใกล้เคียง"
+      "vendor_near_by": "ผู้ขายใกล้เคียง",
+      "vendor_nearby": "ผู้ขายที่อยู่ใกล้เคียง"
     },
     "issue_reporting": {
       "issue_report": "รายงานปัญหา",
-      "issue_counting": "จำนวนปัญหา"
+      "issue_counting": "ปัญหา"
+    },
+    "meal_details": {
+      "meal_monitoring": "ตรวจสอบคำสั่งซื้ออาหาร"
     },
     "dispute_management": {
       "dispute_resolution": "การแก้ไขข้อพิพาท"
@@ -695,6 +741,9 @@
     "suspended_user_table": {
       "table_title": "ผู้ใช้ที่ถูกระงับ"
     },
+    "review_vendor_table": {
+      "table_title": "ตรวจสอบเมนูของผู้ขายและเพิ่มข้อเสนอแนะ"
+    },
     "vendor_management_table": {
       "table_title": "รายชื่อผู้ขายทั้งหมด"
     },
@@ -716,6 +765,9 @@
     "event_orders_requests": {
       "table_title": "คำขอคำสั่งงาน"
     },
+    "overview": {
+      "table_title": "ภาพรวม"
+    },
     "common": {
       "footer_showing_entries": "แสดง {{startIndex}} ถึง {{endIndex}} จาก {{totalFiltered}} รายการ",
       "no_data_available": "ไม่มีข้อมูล",
@@ -727,6 +779,7 @@
       "delivery_date": "วันที่จัดส่ง",
       "min_threshold_qty": "ปริมาณขั้นต่ำ",
       "serial_number": "หมายเลขลำดับ",
+      "verification_status": "สถานะการตรวจสอบ",
       "first_name": "ชื่อ",
       "last_name": "นามสกุล",
       "vendor_name": "ชื่อผู้ขาย",
@@ -756,9 +809,9 @@
       "name": "Tên",
       "applied_rule": "Quy tắc áp dụng",
       "meal_details": "รายละเอียดมื้ออาหาร",
-      "issue_topic": "หัวข้อปัญหา",
-      "issue_description": "รายละเอียดปัญหา",
-      "issue_status": "สถานะปัญหา",
+      "issue_topic": "ปัญหา",
+      "issue_description": "คำอธิบาย",
+      "issue_status": "สถานะ",
       "issue_raise": "ยกเลิกปัญหา",
       "issue_authority": "ผู้มีอำนาจในการยกเลิกปัญหา",
       "all": "ทั้งหมด",

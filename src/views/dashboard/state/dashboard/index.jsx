@@ -3,7 +3,9 @@
 // Mui Imports
 import { useEffect, useState } from 'react'
 
-import { Grid } from '@mui/material'
+import { useParams } from 'next/navigation'
+
+import { useTranslation } from '@/utils/getDictionaryClient'
 
 // Component Imports
 import Statistics from './StatisticsCard'
@@ -15,6 +17,9 @@ import { API_ROUTER } from '@/utils/apiRoutes'
 import MonthlyOrdersChart from '../../common/MonthlyOrdersChart'
 
 const StateDashboard = ({ dictionary }) => {
+  const { lang: locale } = useParams()
+  const { t } = useTranslation(locale)
+
   const CARD_TITLE_DATA = [
     {
       title: 'Total Orders',

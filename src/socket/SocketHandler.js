@@ -55,11 +55,13 @@ const SocketHandler = () => {
         //   dispatch(setDialogData(data))
         // })
         socket.on('orderCompleted', data => {
+          console.log('data orderCompleted')
           dispatch(setIsDialogShow(true))
           dispatch(setDialogData(data))
         })
 
         socket.on('orderCompletedByVendor', data => {
+          console.log('data orderCompletedByVendor')
           dispatch(setIsDialogFromDeliveryPage(true))
           dispatch(setDialogData(data))
         })

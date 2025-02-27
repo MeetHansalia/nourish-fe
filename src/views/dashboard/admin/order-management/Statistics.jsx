@@ -25,20 +25,20 @@ import { getPanelName, toastError } from '@/utils/globalFunctions'
  */
 const Statistics = props => {
   // Props
-  const { dictionary = null, setShowDropDown } = props
+  const { dictionary = null, setShowDropDown, showDropDdown } = props
 
   // HOOKS
   const { lang: locale } = useParams()
   const pathname = usePathname()
   const panelName = getPanelName(pathname)
 
-  const [vednerMinimumThresholdsVerificationCount, setVednerMinimumThresholdsVerificationCount] = useState(0)
+  const [statisticsCount, setStatisticsCount] = useState(0)
 
   const getTotalSuspendedAccountNumber = async () => {
     try {
-      const response = await axiosApiCall.get(API_ROUTER.SUPER_ADMIN_ORDER.MINIMUM_THRESHOLD)
+      const response = await axiosApiCall.get(API_ROUTER.ADMIN.GET_STATISTIC_ADMIN_ORDERS)
 
-      setVednerMinimumThresholdsVerificationCount(response?.data?.response?.thresholdRequestCount || 0)
+      setStatisticsCount(response?.data?.response || 0)
     } catch (error) {
       toastError(error?.response?.message || 'An error occurred while fetching data.')
     }
@@ -72,8 +72,11 @@ const Statistics = props => {
   return (
     <div className='top-block-card'>
       <div className='card-block-inner two-block-card'>
-        <div className='card-block' onClick={() => handleClick('last_moment_cancellation')}>
-          <Card className='card-link-a'>
+        <div
+          className={`card-block ${showDropDdown.last_moment_cancellation ? 'active' : ''}`}
+          onClick={() => handleClick('last_moment_cancellation')}
+        >
+          <Card className='card-link-a cursor-pointer'>
             <CardContent className='flex flex-col gap-1'>
               <div className='flex items-center gap-4'>
                 <CustomAvatar className='custom-avatar' color={'primary'} skin='light' variant='rounded'>
@@ -92,24 +95,29 @@ const Statistics = props => {
           </Card>
         </div>
 
-        <div className='card-block' onClick={() => handleClick('meal_monitoring')}>
-          <Card className='card-link-a'>
-            <CardContent className='flex flex-col gap-1'>
-              <div className='flex items-center gap-4'>
-                <CustomAvatar className='custom-avatar' color={'primary'} skin='light' variant='rounded'>
-                  <i className='tabler-clipboard-check text-xl' />
-                </CustomAvatar>
-                <Typography variant='h4'> {dictionary?.page?.order_management?.monitor_deliverd_order}</Typography>
-              </div>
-              <div className='number-text-block flex flex-col gap-1'>
-                <div className='number-text-block-inner flex items-center gap-2'>
-                  <Typography variant='h4' color='text.primary'>
-                    {numberFormat(0)}
-                  </Typography>
+        <div
+          className={`card-block ${showDropDdown.meal_monitoring ? 'active' : ''}`}
+          onClick={() => handleClick('meal_monitoring')}
+        >
+          <Link href={`/${locale}/${panelName}/order-management/monitor-orders`}>
+            <Card className='card-link-a cursor-pointer'>
+              <CardContent className='flex flex-col gap-1'>
+                <div className='flex items-center gap-4'>
+                  <CustomAvatar className='custom-avatar' color={'primary'} skin='light' variant='rounded'>
+                    <i className='tabler-clipboard-check text-xl' />
+                  </CustomAvatar>
+                  <Typography variant='h4'> {dictionary?.page?.order_management?.monitor_deliverd_order}</Typography>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+                <div className='number-text-block flex flex-col gap-1'>
+                  <div className='number-text-block-inner flex items-center gap-2'>
+                    <Typography variant='h4' color='text.primary'>
+                      {numberFormat(0)}
+                    </Typography>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
         </div>
       </div>
     </div>

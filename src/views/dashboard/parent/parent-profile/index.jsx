@@ -21,6 +21,7 @@ import EditDetails from './EditDetails'
 
 // Redux Imports
 import { profileState } from '@/redux-store/slices/profile'
+import FullPageLoader from '@/components/FullPageLoader'
 
 /**
  *
@@ -72,7 +73,7 @@ const ParentProfile = ({ dictionary }) => {
         </Grid>
       ) : isUserDataLoading ? (
         <div className='text-center'>
-          <CircularProgress />
+          <FullPageLoader open={true} color='primary' spinnerSize={60} />
         </div>
       ) : (
         <div className='text-center'>No Data</div>

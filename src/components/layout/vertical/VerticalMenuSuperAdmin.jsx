@@ -29,17 +29,32 @@ const VerticalMenuSuperAdmin = ({ dictionary, userRole, userPanel }) => {
       </MenuItem>
       <MenuItem
         href={`/${locale}/${userPanel}/vendor-management`}
-        icon={<i className='tabler-user' />}
+        icon={<i className='tabler-clipboard-text' />}
         activeUrl={`/${locale}/${userPanel}/vendor-management`}
         exactMatch={false}
       >
         {dictionary['navigation'].vendor_management}
       </MenuItem>
-      <MenuItem href={`/${locale}/${userPanel}/order-management`} icon={<i className='tabler-user' />}>
+      <MenuItem
+        href={`/${locale}/${userPanel}/order-management`}
+        icon={<i className='tabler-device-desktop-analytics' />}
+      >
         {dictionary['navigation'].order_management}
       </MenuItem>
-      <MenuItem href={`/${locale}/${userPanel}/dispute-management`} icon={<i className='tabler-user' />}>
+      <MenuItem href={`/${locale}/${userPanel}/dispute-management`} icon={<i className='tabler-alert-circle' />}>
         {dictionary['navigation'].dispute_resolution}
+      </MenuItem>
+
+      <MenuItem href={`/${locale}/${userPanel}/order-reviews`} icon={<i className='tabler-star' />}>
+        {dictionary['navigation'].review}
+      </MenuItem>
+      <MenuItem
+        href={`/${locale}/${userPanel}/menu-nutrition-manage`}
+        icon={<i className='tabler-salad' />}
+        activeUrl={`/${locale}/${userPanel}/menu-nutrition-manage`}
+        exactMatch={false}
+      >
+        {dictionary['navigation'].menu_nutrition_manage}
       </MenuItem>
     </>
   )

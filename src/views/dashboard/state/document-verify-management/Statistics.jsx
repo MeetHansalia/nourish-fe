@@ -47,7 +47,7 @@ const Statistics = props => {
         setIsLoading(false)
       })
       .catch(error => {
-        toastError(error.response.message)
+        toastError(error?.response?.message)
         setIsLoading(false)
       })
   }
@@ -59,10 +59,11 @@ const Statistics = props => {
   // console.log('statisticData', statisticData)
 
   return (
-    <Grid container spacing={6}>
-      <Grid item xs={12} sm={6} md={4}>
-        <Link href={`/${locale}/${panelName}/document-verify/school-registration-request`}>
-          <Card>
+    <div className='top-block-card'>
+      <div className='card-block-inner two-block-card'>
+        <div className='card-block'>
+          {/* <Link href={`/${locale}/${panelName}/document-verify/school-registration-request`}> */}
+          <Card className='card-link-a'>
             <CardContent className='flex flex-col gap-1'>
               <div className='flex items-center gap-4'>
                 <CustomAvatar className='custom-avatar' color={'primary'} skin='light' variant='rounded'>
@@ -70,90 +71,95 @@ const Statistics = props => {
                 </CustomAvatar>
                 <Typography variant='h4'>{dictionary?.page?.common?.School_registration_request}</Typography>
               </div>
-              <div className='flex flex-col gap-1'>
-                <div className='flex items-center gap-2'>
-                  <Typography color='text.primary' className='font-bold text-3xl'>
+              <div className='number-text-block flex flex-col gap-1'>
+                <div className='number-text-block-inner flex items-center gap-4'>
+                  <Typography variant='h4' color='text.primary'>
                     {isLoading ? <CircularProgress size={20} /> : numberFormat(statisticData?.schoolDocumentRequests)}
                   </Typography>
                 </div>
               </div>
             </CardContent>
           </Card>
-        </Link>
-      </Grid>
-      <Grid item xs={12} sm={6} md={4}>
-        <Link
-          href={`/${locale}/${panelName}/document-verify/parent-registration-request
-        `}
-        >
-          <Card>
-            <CardContent className='flex flex-col gap-1'>
-              <div className='flex items-center gap-4'>
-                <CustomAvatar className='custom-avatar' color={'primary'} skin='light' variant='rounded'>
-                  <i className='tabler-clipboard-check text-xl' />
-                </CustomAvatar>
-                <Typography variant='h4'>{dictionary?.page?.common?.parent_registration_request}</Typography>
-              </div>
-              <div className='flex flex-col gap-1'>
-                <div className='flex items-center gap-2'>
-                  <Typography color='text.primary' className='font-bold text-3xl'>
-                    {isLoading ? (
-                      <CircularProgress size={20} />
-                    ) : (
-                      numberFormat(statisticData?.parentRegistrationRequests)
-                    )}
+          {/* </Link> */}
+        </div>
+
+        <div className='card-block'>
+          <Link href={`/${locale}/${panelName}/document-verify/parent-registration-request`}>
+            <Card className='card-link-a cursor-pointer'>
+              <CardContent className='flex flex-col gap-1'>
+                <div className='flex items-center gap-4'>
+                  <CustomAvatar className='custom-avatar' color={'primary'} skin='light' variant='rounded'>
+                    <i className='tabler-clipboard-check text-xl' />
+                  </CustomAvatar>
+                  <Typography variant='h4'>{dictionary?.page?.common?.parent_registration_request}</Typography>
+                </div>
+                <div className='number-text-block flex flex-col gap-1'>
+                  <div className='number-text-block-inner flex items-center gap-4'>
+                    <Typography variant='h4' color='text.primary'>
+                      {isLoading ? (
+                        <CircularProgress size={20} />
+                      ) : (
+                        numberFormat(statisticData?.parentRegistrationRequests)
+                      )}
+                    </Typography>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+        </div>
+
+        <div className='card-block'>
+          <Link href={`/${locale}/${panelName}/document-verify/vendor-registration-request`}>
+            <Card className='card-link-a cursor-pointer'>
+              <CardContent className='flex flex-col gap-1'>
+                <div className='flex items-center gap-4'>
+                  <CustomAvatar className='custom-avatar' color={'primary'} skin='light' variant='rounded'>
+                    <i className='tabler-clipboard-check text-xl' />
+                  </CustomAvatar>
+                  <Typography variant='h4'>{dictionary?.page?.common?.Vendor_registration_request}</Typography>
+                </div>
+                <div className='number-text-block flex flex-col gap-1'>
+                  <div className='number-text-block-inner flex items-center gap-4'>
+                    <Typography variant='h4' color='text.primary'>
+                      {isLoading ? <CircularProgress size={20} /> : numberFormat(statisticData?.vendorDocumentRequests)}{' '}
+                    </Typography>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+        </div>
+
+        <div className='card-block'>
+          <Link href={`/${locale}/${panelName}/document-verify/threshold-registration-request`}>
+            <Card className='card-link-a cursor-pointer'>
+              <CardContent className='flex flex-col gap-1'>
+                <div className='flex items-center gap-4'>
+                  <CustomAvatar className='custom-avatar' color={'primary'} skin='light' variant='rounded'>
+                    <i className='tabler-clipboard-check text-xl' />
+                  </CustomAvatar>
+                  <Typography variant='h4'>
+                    {dictionary?.page?.order_management?.vendor_minimum_thresholds_verfication_requests}
                   </Typography>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        </Link>
-      </Grid>
-      <Grid item xs={12} sm={6} md={4}>
-        <Link href={`/${locale}/${panelName}/document-verify/vendor-registration-request`}>
-          <Card>
-            <CardContent className='flex flex-col gap-1'>
-              <div className='flex items-center gap-4'>
-                <CustomAvatar className='custom-avatar' color={'primary'} skin='light' variant='rounded'>
-                  <i className='tabler-clipboard-check text-xl' />
-                </CustomAvatar>
-                <Typography variant='h4'>{dictionary?.page?.common?.Vendor_registration_request}</Typography>
-              </div>
-              <div className='flex flex-col gap-1'>
-                <div className='flex items-center gap-2'>
-                  <Typography color='text.primary' className='font-bold text-3xl'>
-                    {isLoading ? <CircularProgress size={20} /> : numberFormat(statisticData?.vendorDocumentRequests)}
-                  </Typography>
+                <div className='number-text-block flex flex-col gap-1'>
+                  <div className='number-text-block-inner flex items-center gap-4'>
+                    <Typography variant='h4' color='text.primary'>
+                      {isLoading ? (
+                        <CircularProgress size={20} />
+                      ) : (
+                        numberFormat(statisticData?.vendorThresholdRequests)
+                      )}
+                    </Typography>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        </Link>
-      </Grid>
-      <Grid item xs={12} sm={6} md={4}>
-        <Link href={`/${locale}/${panelName}/document-verify/threshold-registration-request`}>
-          <Card>
-            <CardContent className='flex flex-col gap-1'>
-              <div className='flex items-center gap-4'>
-                <CustomAvatar className='custom-avatar' color={'primary'} skin='light' variant='rounded'>
-                  <i className='tabler-clipboard-check text-xl' />
-                </CustomAvatar>
-                <Typography variant='h4'>
-                  {dictionary?.page?.order_management?.vendor_minimum_thresholds_verfication_requests}
-                </Typography>
-              </div>
-              <div className='flex flex-col gap-1'>
-                <div className='flex items-center gap-2'>
-                  <Typography color='text.primary' className='font-bold text-3xl'>
-                    {isLoading ? <CircularProgress size={20} /> : numberFormat(statisticData?.vendorThresholdRequests)}
-                  </Typography>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </Link>
-      </Grid>
-    </Grid>
+              </CardContent>
+            </Card>
+          </Link>
+        </div>
+      </div>
+    </div>
   )
 }
 

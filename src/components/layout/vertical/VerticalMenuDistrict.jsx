@@ -39,6 +39,11 @@ const VerticalMenuDistrict = ({ dictionary, userRole, userPanel }) => {
         permissions: user?.permissions,
         permissionToCheck: 'user_management',
         subPermissionsToCheck: ['get_users', 'create_user', 'get_suspend_users']
+      }),
+      foodchart_management: isUserHasPermission({
+        permissions: user?.permissions,
+        permissionToCheck: 'foodchart_management',
+        subPermissionsToCheck: ['create_foodchart', 'approve_foodchart', 'get_foodchart_requests']
       })
     }),
     [user?.permissions]
@@ -60,24 +65,24 @@ const VerticalMenuDistrict = ({ dictionary, userRole, userPanel }) => {
       </MenuItem>
       <MenuItem
         href={`/${locale}/${userPanel}/order-management`}
-        icon={<i className='tabler-user' />}
+        icon={<i className='tabler-device-desktop-analytics' />}
         className={isUserHasPermissionNavigation?.order_management ? '' : 'hidden'}
       >
         {dictionary['navigation'].order_management}
       </MenuItem>
       <MenuItem
         href={`/${locale}/${userPanel}/schools-vendors-verify`}
-        icon={<i className='tabler-user' />}
+        icon={<i className='tabler-clipboard-text' />}
         // className={isUserHasPermissionNavigation?.schools_and_vendors_verify ? '' : 'hidden'}
         activeUrl={`/${locale}/${userPanel}/schools-vendors-verify`}
         exactMatch={false}
       >
-        {dictionary['navigation'].schools_and_vendors_verify}
+        {dictionary['navigation'].document_verify}
       </MenuItem>
 
       <MenuItem
         href={`/${locale}/${userPanel}/school-vendor-associates`}
-        icon={<i className='tabler-user' />}
+        icon={<i className='tabler-arrows-join-2' />}
         activeUrl={`/${locale}/${userPanel}/school-vendor-associates`}
         exactMatch={false}
       >
@@ -85,7 +90,7 @@ const VerticalMenuDistrict = ({ dictionary, userRole, userPanel }) => {
       </MenuItem>
       <MenuItem
         href={`/${locale}/${userPanel}/vendor-selection-chart`}
-        icon={<i className='tabler-user' />}
+        icon={<i className='tabler-tools-kitchen-3' />}
         activeUrl={`/${locale}/${userPanel}/vendor-selection-chart`}
         exactMatch={false}
       >
@@ -93,12 +98,26 @@ const VerticalMenuDistrict = ({ dictionary, userRole, userPanel }) => {
       </MenuItem>
       <MenuItem
         href={`/${locale}/${userPanel}/menu-nutrition-manage`}
-        icon={<i className='tabler-user' />}
+        icon={<i className='tabler-salad' />}
         activeUrl={`/${locale}/${userPanel}/menu-nutrition-manage`}
         exactMatch={false}
       >
         {dictionary['navigation'].menu_nutrition_manage}
       </MenuItem>
+
+      {/* <MenuItem
+        href={`/${locale}/${userPanel}/food-chart-creation`}
+        icon={<i className='tabler-tools-kitchen-3' />}
+        exactMatch={false}
+        activeUrl={`/${locale}/${userPanel}/food-chart-creation`}
+        className={isUserHasPermissionNavigation?.foodchart_management ? '' : 'hidden'}
+      >
+        {dictionary['navigation'].food_chart_creation}
+      </MenuItem> */}
+      <MenuItem href={`/${locale}/${userPanel}/order-reviews`} icon={<i className='tabler-star' />}>
+        {dictionary['navigation'].review}
+      </MenuItem>
+      {/* </MenuItem>  */}
     </>
   )
 }

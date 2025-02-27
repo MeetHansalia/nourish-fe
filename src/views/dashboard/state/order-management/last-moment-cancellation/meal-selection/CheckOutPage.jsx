@@ -141,7 +141,6 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
   const selectedDates = useSelector(state => state.date.singleDate)
   const { orderId } = useSelector(globalState)
 
-
   const {
     control,
     handleSubmit,
@@ -224,7 +223,7 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
         toastSuccess(message)
         router.push(getLocalizedUrl(`${getPanelName(pathname)}/order-management`, locale))
       }
-    } catch (error) { }
+    } catch (error) {}
   }
 
   const emptyCart = () => {
@@ -282,7 +281,7 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
           modifierId: mod.modifierId._id,
           dishId: mod.dishId._id
         })),
-        kidId
+        cartId: cartData._id
       }
 
       const response = await axiosApiCall.post(API_ROUTER.STATE.UPDATE_CART_QUANTITY, payload)
@@ -527,13 +526,13 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
             ) : (
               <CardContent>
                 <Typography variant='h6'>{dictionary?.common?.bill_details}</Typography>
-                {/* Item Total Calculation */}
+                {/ Item Total Calculation /}
                 <Box display='flex' justifyContent='space-between' mt={2}>
                   <Typography>{dictionary?.common?.item_total}</Typography>
                   <Typography>${itemTotal.toFixed(2)}</Typography>
                 </Box>
 
-                {/* Delivery Fees */}
+                {/ Delivery Fees /}
                 <Box display='flex' justifyContent='space-between' mt={1}>
                   <Typography>{dictionary?.common?.delivery_fees}</Typography>
                   <Typography>${deliveryPrice}</Typography>
@@ -547,7 +546,7 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
               <CircularProgress size={40} />
             ) : (
               <CardContent>
-                {/* Total Pay */}
+                {/ Total Pay /}
                 <Box display='flex' justifyContent='space-between' mt={2}>
                   <Typography variant='subtitle1' fontWeight='bold'>
                     {dictionary?.common?.total_pay}

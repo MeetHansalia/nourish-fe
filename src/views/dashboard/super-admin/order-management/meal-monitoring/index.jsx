@@ -29,7 +29,7 @@ import LocationSelectorForm from '../LocationSelectorForm'
  */
 const MealMonitoring = props => {
   // Hooks
-  const { lang: locale, dictionary: dictionary } = useParams()
+  const { lang: locale } = useParams()
   const { t } = useTranslation(locale)
 
   // Calendar States
@@ -74,7 +74,7 @@ const MealMonitoring = props => {
 
         return {
           id: order._id,
-          title: `${order?.orderItems[0]?.dishId?.name || 'Unknown Dish'} - ${order?.orderStatus || 'Pending'}`,
+          title: `${order?.kidId?.first_name || 'No-Kid'} - ${order?.orderItems[0]?.dishId?.name || 'Unknown Dish'} - ${order?.orderStatus || 'Pending'}`,
           start: order.orderDate,
           extendedProps: {
             vendorId: order?.vendorId?._id,
@@ -126,8 +126,9 @@ const MealMonitoring = props => {
       <Grid container spacing={6}>
         <Grid item xs={12}>
           <LocationSelectorForm
-            dictionary={dictionary}
-            showButton={false}
+            dictionary={props?.dictionary}
+            showButton={true}
+            // showButton={false}
             spacing={2}
             lg={3}
             selectedData12={selectedData}

@@ -250,7 +250,6 @@ const ManageVendorRequest = ({ dictionary }) => {
                     children: `${dictionary?.common?.reject}`,
                     onClick: e => {
                       e.stopPropagation()
-
                     }
                   }}
                   dialog={RejectConfirmationDialogBox}
@@ -450,34 +449,32 @@ const ManageVendorRequest = ({ dictionary }) => {
             )}
           </table>
         </div>
-        {recordMetaData?.total > 0 && (
-          <TablePagination
-            component={() => (
-              <div className='flex justify-between items-center flex-wrap pli-6 border-bs bs-auto plb-[12.5px] gap-2'>
-                <Typography color='text.disabled'>
-                  {t('datatable.common.footer_showing_entries', {
-                    startIndex: recordMetaData?.startIndex || 0,
-                    endIndex: recordMetaData?.endIndex || 0,
-                    totalFiltered: recordMetaData?.totalFiltered || 0
-                  })}
-                </Typography>
+        <TablePagination
+          component={() => (
+            <div className='flex justify-between items-center flex-wrap pli-6 border-bs bs-auto plb-[12.5px] gap-2'>
+              <Typography color='text.disabled'>
+                {t('datatable.common.footer_showing_entries', {
+                  startIndex: recordMetaData?.startIndex || 0,
+                  endIndex: recordMetaData?.endIndex || 0,
+                  totalFiltered: recordMetaData?.totalFiltered || 0
+                })}
+              </Typography>
 
-                <Pagination
-                  shape='rounded'
-                  color='primary'
-                  variant='tonal'
-                  count={recordMetaData?.totalPage}
-                  page={page}
-                  onChange={handlePageChange}
-                  showFirstButton
-                  showLastButton
+              <Pagination
+                shape='rounded'
+                color='primary'
+                variant='tonal'
+                count={recordMetaData?.totalPage}
+                page={page}
+                onChange={handlePageChange}
+                showFirstButton
+                showLastButton
                 //   onPageChange={handlePageChange}
                 // rowsPerPageOptions={[10, 25, 50]}
-                />
-              </div>
-            )}
-          />
-        )}
+              />
+            </div>
+          )}
+        />
       </Card>
       <NearByVendorDialog
         isNearVendorDialogShow={isNearVendorDialogShow}

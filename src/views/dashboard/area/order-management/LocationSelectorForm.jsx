@@ -217,11 +217,11 @@ const LocationSelectorForm = ({
           {selectedData?.school && (
             <Grid item lg={lg} md={6} sm={12}>
               <Typography variant='subtitle1' sx={{ mb: 2 }}>
-                {dictionary?.form?.label?.kidName}
+                {dictionary?.form?.label?.kid_name}
               </Typography>
               <CustomTextField
                 fullWidth
-                placeholder={t('Kid Name')}
+                placeholder={t('form.label.kid_name')}
                 value={selectedData?.kidName || ''}
                 onChange={e => {
                   setSelectedData(prev => ({

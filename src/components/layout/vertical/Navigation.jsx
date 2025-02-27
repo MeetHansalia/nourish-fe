@@ -109,14 +109,14 @@ const Navigation = props => {
     >
       {/* Nav Header including Logo & nav toggle icons  */}
       <NavHeader>
-        <Link href={getLocalizedUrl('/', locale)} className='m-auto'>
+        <Link href='' className='m-auto'>
           {/* <Logo /> */}
           <NourishubsLogo width={undefined} height={!(isCollapsed && !isHovered) ? 100 : 25} />
         </Link>
         {!(isCollapsed && !isHovered) && (
           <NavCollapseIcons
-            lockedIcon={<i className='tabler-circle-dot text-xl' />}
-            unlockedIcon={<i className='tabler-circle text-xl' />}
+            lockedIcon={<i className='tabler-circle-chevron-left text-xl' />}
+            unlockedIcon={<i className='tabler-circle-chevron-right text-xl' />}
             closeIcon={<i className='tabler-x text-xl' />}
             onClick={() => updateSettings({ layout: !isCollapsed ? 'collapsed' : 'vertical' })}
           />

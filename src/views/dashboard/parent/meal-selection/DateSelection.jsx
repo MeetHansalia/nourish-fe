@@ -43,6 +43,7 @@ import AppFullCalendar from '@/libs/styles/AppFullCalendar'
 import AppReactDatepicker from '@/libs/styles/AppReactDatepicker'
 
 import CustomTextField from '@/@core/components/mui/TextField'
+import FullPageLoader from '@/components/FullPageLoader'
 
 const DateSelection = ({ dictionary, kidId }) => {
   const router = useRouter()
@@ -53,7 +54,7 @@ const DateSelection = ({ dictionary, kidId }) => {
 
   const { t } = useTranslation(locale)
 
-  const calendarRef = useRef(null)
+  // const calendarRef = useRef(null)
 
   const pathname = usePathname()
 
@@ -72,6 +73,10 @@ const DateSelection = ({ dictionary, kidId }) => {
   const [startDate, setStartDate] = useState(null)
 
   const [endDate, setEndDate] = useState(null)
+
+  const [calStartDate, setCalStartDate] = useState(null)
+
+  const [calEndDate, setCalEndDate] = useState(null)
 
   const [selectedDates, setSelectedDates] = useState([])
 
@@ -104,7 +109,12 @@ const DateSelection = ({ dictionary, kidId }) => {
       setStartDate(start)
       setEndDate(end)
 
-      const allDates = eachDayOfInterval({ start, end })
+      // Get all dates in the range and filter out weekends
+      const allDates = eachDayOfInterval({ start, end }).filter(date => {
+        const day = date.getDay()
+
+        return day !== 0 && day !== 6 // Exclude Sundays (0) and Saturdays (6)
+      })
 
       setSelectedDates(allDates)
     }
@@ -156,18 +166,10 @@ const DateSelection = ({ dictionary, kidId }) => {
 
         setIsDataLoaded(true)
 
-        if (calendarRef.current) {
-          const calendarApi = calendarRef.current.getApi()
-          const visibleStart = calendarApi.view.currentStart
-          const visibleEnd = calendarApi.view.currentEnd
-
-          const formattedStartDate = visibleStart.toISOString().slice(0, 10)
-
-          const formattedEndDate = visibleEnd.toISOString().slice(0, 10)
-
+        if (calStartDate && calEndDate) {
           const params = new URLSearchParams({
-            startDate: formattedStartDate,
-            endDate: formattedEndDate,
+            startDate: calStartDate,
+            endDate: calEndDate,
             kidId: kidId
           }).toString()
 
@@ -175,15 +177,8 @@ const DateSelection = ({ dictionary, kidId }) => {
 
           const vendors = response.data?.response || []
 
-          const mappedEvents = vendors.map(item => ({
-            title: item.vendorId?.first_name || 'Unknown Vendor',
-            start: item.date,
-            details: item.details,
-            id: item.vendorId?._id
-          }))
-
-          setEvents(mappedEvents)
-
+          setEvents(vendors)
+          setIsDataLoaded(false)
           toastSuccess(response?.data?.message)
         }
       } catch (error) {
@@ -191,12 +186,13 @@ const DateSelection = ({ dictionary, kidId }) => {
 
         toastError(errorMessage)
       } finally {
+        setIsDataLoaded(false)
         setIsSubmitting(false)
       }
     }
 
     fetchData()
-  }, [kidId])
+  }, [kidId, calStartDate, calEndDate])
 
   const fetchLatestMultipleCartDetails = async kidId => {
     try {
@@ -257,88 +253,94 @@ const DateSelection = ({ dictionary, kidId }) => {
 
   return (
     <>
-      <Grid container spacing={6}>
-        <Grid item xs={12}>
-          <Card className='common-block-dashboard'>
-            <CardContent className='common-form-dashboard p-0'>
-              <div className='common-datepiker-block'>
-                <CardHeader
-                  className='p-0'
-                  title={isDataLoaded ? `${kidData?.first_name || ''} ${kidData?.last_name || ''}` : 'Loading...'}
-                />
+      {isDataLoaded ? (
+        <FullPageLoader open={isDataLoaded} color='primary' spinnerSize={60} />
+      ) : (
+        <>
+          <Grid container spacing={6}>
+            <Grid item xs={12}>
+              <Card className='common-block-dashboard'>
+                <CardContent className='common-form-dashboard p-0'>
+                  <div className='common-datepiker-block'>
+                    <CardHeader className='p-0' title={`${kidData?.first_name || ''} ${kidData?.last_name || ''}`} />
 
-                {/* <Grid container spacing={6}>
-                <Grid item xs={12}> */}
-                <div className='form-group'>
-                  <AppReactDatepicker
-                    selectsRange
-                    startDate={startDate}
-                    endDate={endDate}
-                    selected={startDate}
-                    id='date-range-picker'
-                    onChange={handleOnChange}
-                    shouldCloseOnSelect={false}
-                    minDate={addDays(new Date(), 7)}
-                    maxDate={endDate ? addDays(startDate, 14) : null}
-                    customInput={<CustomInput label='Date Range' start={startDate} end={endDate} />}
-                  />
-                  {error && <span style={{ color: 'red' }}>{error}</span>}
-                </div>
-                {/* </Grid>
-              </Grid> */}
-              </div>
-              <div className='flex justify-center' sx={{ alignItems: 'center' }}>
-                <Button
-                  variant='contained'
-                  color='primary'
-                  // sx={{ mt: 2 }}
-                  className='theme-common-btn min-width-auto'
-                  onClick={handleRedirect}
-                  disabled={!startDate || !endDate || isSubmitting}
-                >
-                  {isSubmitting ? 'Loading...' : `${dictionary?.common?.weekly_order}`}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </Grid>
+                    <div className='form-group'>
+                      <AppReactDatepicker
+                        selectsRange
+                        startDate={startDate}
+                        endDate={endDate}
+                        selected={startDate}
+                        id='date-range-picker'
+                        onChange={handleOnChange}
+                        shouldCloseOnSelect={false}
+                        minDate={addDays(new Date(), 7)}
+                        maxDate={addDays(new Date(), 21)}
+                        filterDate={date => {
+                          const day = date.getDay()
 
-        <Grid item xs={12} className='pt-0'>
-          <Card className='overflow-visible common-block-dashboard p-0'>
-            <AppFullCalendar className='app-calendar'>
-              <div className='p-6 pbe-0 flex-grow overflow-visible bg-backgroundPaper rounded'>
-                <Calendar
-                  events={events}
-                  calendarRef={calendarRef}
-                  // onOrderNow={handleOrderNow}
-                  setSelectedVendor={setSelectedVendor}
-                />
-              </div>
-            </AppFullCalendar>
-          </Card>
-        </Grid>
-      </Grid>
+                          return day !== 0 && day !== 6
+                        }}
+                        customInput={<CustomInput label='Date Range' start={startDate} end={endDate} />}
+                      />
+                      {error && <span style={{ color: 'red' }}>{error}</span>}
+                    </div>
+                  </div>
+                  <div className='flex justify-center' sx={{ alignItems: 'center' }}>
+                    <Button
+                      variant='contained'
+                      color='primary'
+                      // sx={{ mt: 2 }}
+                      className='theme-common-btn min-width-auto'
+                      onClick={handleRedirect}
+                      disabled={!startDate || !endDate || isSubmitting}
+                    >
+                      {isSubmitting ? 'Loading...' : `${dictionary?.common?.weekly_order}`}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </Grid>
 
-      <Dialog
-        open={dialogReplaceOpen}
-        onClose={handleReplaceDialogClose}
-        aria-labelledby='alert-dialog-title'
-        aria-describedby='alert-dialog-description'
-        closeAfterTransition={false}
-      >
-        <DialogTitle id='alert-dialog-title'>{dictionary?.form?.placeholder?.replace_cart_item}?</DialogTitle>
-        <DialogContent>
-          <DialogContentText id='alert-dialog-description'>
-            {dictionary?.dialog?.your_cart_contains_dishes_for} {oldCartDate}.{' '}
-            {orderType == 'single' ? dictionary?.dialog?.do_you_want_to_discard : dictionary?.dialog?.do_you_want_to}{' '}
-            {orderType == 'single' ? singleDate : ''}
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions className='dialog-actions-dense'>
-          <Button onClick={handleReplaceDialogClose}>{dictionary?.form?.placeholder?.no}</Button>
-          <Button onClick={() => replaceOrder()}>{dictionary?.form?.placeholder?.replace}</Button>
-        </DialogActions>
-      </Dialog>
+            <Grid item xs={12} className='pt-0'>
+              <Card className='overflow-visible common-block-dashboard p-0'>
+                <AppFullCalendar className='app-calendar'>
+                  <div className='p-6 pbe-0 flex-grow overflow-visible bg-backgroundPaper rounded'>
+                    <Calendar
+                      events={events}
+                      setCalStartDate={setCalStartDate}
+                      setCalEndDate={setCalEndDate}
+                      // onOrderNow={handleOrderNow}
+                      setSelectedVendor={setSelectedVendor}
+                    />
+                  </div>
+                </AppFullCalendar>
+              </Card>
+            </Grid>
+          </Grid>
+          <Dialog
+            open={dialogReplaceOpen}
+            onClose={handleReplaceDialogClose}
+            aria-labelledby='alert-dialog-title'
+            aria-describedby='alert-dialog-description'
+            closeAfterTransition={false}
+          >
+            <DialogTitle id='alert-dialog-title'>{dictionary?.form?.placeholder?.replace_cart_item}?</DialogTitle>
+            <DialogContent>
+              <DialogContentText id='alert-dialog-description'>
+                {dictionary?.dialog?.your_cart_contains_dishes_for} {oldCartDate}.{' '}
+                {orderType == 'single'
+                  ? dictionary?.dialog?.do_you_want_to_discard
+                  : dictionary?.dialog?.do_you_want_to}{' '}
+                {orderType == 'single' ? singleDate : ''}
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions className='dialog-actions-dense'>
+              <Button onClick={handleReplaceDialogClose}>{dictionary?.form?.placeholder?.no}</Button>
+              <Button onClick={() => replaceOrder()}>{dictionary?.form?.placeholder?.replace}</Button>
+            </DialogActions>
+          </Dialog>
+        </>
+      )}
     </>
   )
 }

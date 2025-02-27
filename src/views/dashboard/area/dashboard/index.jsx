@@ -3,8 +3,9 @@
 // Mui Imports
 import { useEffect, useState } from 'react'
 
-import { Grid } from '@mui/material'
+import { useParams } from 'next/navigation'
 
+import { useTranslation } from '@/utils/getDictionaryClient'
 // Component Imports
 import Statistics from './StatisticsCard'
 import BelowStatistics from './BelowStatisticsCard'
@@ -15,24 +16,28 @@ import { API_ROUTER } from '@/utils/apiRoutes'
 import MonthlyOrdersChart from '../../common/MonthlyOrdersChart'
 
 const AreaDashboard = ({ dictionary }) => {
+  const { lang: locale } = useParams()
+
+  const { t } = useTranslation(locale)
+
   const CARD_TITLE_DATA = [
     {
-      title: 'Total Orders',
+      title: t('form.label.total_orders'),
       // link: 'total-orders',
       key: 'totalOrders'
     },
     {
-      title: 'Total Profiles',
+      title: t('form.label.total_profiles'),
       // link: 'complete-orders',
       key: 'totalProfiles'
     },
     {
-      title: 'Total Sales',
+      title: t('form.label.total_sales'),
       // link: 'reject-orders',
       key: 'totalSales'
     },
     {
-      title: 'Total Income',
+      title: t('form.label.total_income'),
       // link: 'minimum-thresholds',
       key: 'totalIncome'
     }

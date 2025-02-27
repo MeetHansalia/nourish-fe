@@ -3,7 +3,9 @@
 // Mui Imports
 import { useEffect, useState } from 'react'
 
-import { Grid } from '@mui/material'
+import { useParams } from 'next/navigation'
+
+import { useTranslation } from '@/utils/getDictionaryClient'
 
 // Component Imports
 import Statistics from './StatisticsCard'
@@ -14,33 +16,37 @@ import { API_ROUTER } from '@/utils/apiRoutes'
 import MonthlyOrdersChart from '../../common/MonthlyOrdersChart'
 
 const SchoolDashboard = () => {
+  const { lang: locale } = useParams()
+
+  const { t } = useTranslation(locale)
+
   const CARD_TITLE_DATA = [
     {
-      title: 'Parent Registration Requests',
+      title: t('form.label.parent_registration_requests'),
       link: 'parent-registration-request',
       key: 'parentRegistrationRequests'
     },
     {
-      title: 'Approve Orders',
+      title: t('form.label.approved_orders'),
       // link: 'complete-orders',
       key: 'approveOrders'
     },
     {
-      title: 'Reject Orders',
+      title: t('form.label.reject'),
       // link: 'reject-orders',
       key: 'rejectOrders'
     },
     {
-      title: 'Total Amount',
+      title: t('form.label.total_amount'),
       // link: 'minimum-thresholds',
       key: 'totalAmount'
     },
     {
-      title: 'Food Chart'
+      title: t('form.label.food_chart')
       // link: 'menu-suggestions'
     },
     {
-      title: 'Nutrition Suggestion'
+      title: t('form.label.nutrition_suggestion')
       // link: 'total-revenue'
     }
   ]

@@ -17,6 +17,9 @@ export const API_ROUTER = {
   // get district
   GET_DISTRICT: '/v1/districts',
 
+  //change password
+  PATCH_CHANGE_PASSWORD: '/v1/users/change-password',
+
   // roles
   ROLE: {
     GET_ROLE: '/v1/role',
@@ -45,6 +48,7 @@ export const API_ROUTER = {
     CREATE_USER: '/v1/super-admin/user-management/create-user',
     SUSPENDED_USERS: '/v1/super-admin/user-management/suspended-users',
     STATISTIC: '/v1/super-admin-dashboard/statistics',
+    USER_MANAGEMENT_STATISTIC: '/v1/super-admin/user-management/statistics',
 
     // GET, PUT, PATCH, DELETE (PUT->suspend user, DELETE->delete user)
     SPECIFIC_USER_WITH_ID: id => `/v1/super-admin/user-management/${id}`,
@@ -64,7 +68,8 @@ export const API_ROUTER = {
     VENDOR_THRESHOLD_REQ_BY_ID: id => `/v1/super-admin/vendor-managemnet/threshold-request/${id}`,
     VENDOR_BY_ID: id => `/v1/super-admin/vendor-management/${id}`,
 
-    GET_STATISTIC: '/v1/super-admin/vendor-management/statistics'
+    GET_STATISTIC: '/v1/super-admin/vendor-management/statistics',
+    REVIEW_LIST: '/v1/super-admin-review-list'
   },
 
   // super admin /order-management
@@ -72,13 +77,25 @@ export const API_ROUTER = {
     MINIMUM_THRESHOLD: '/v1/super-admin-order-management/threshold',
     MIN_THRESHOLD_APPROVE_REJECT: id => `/v1/super-admin-order-management/threshold-request/${id}`,
     GET_SCHOOLS: '/v1/super-admin-order-management/schools',
-    GET_SCHOOL_ORDERS: id => `/v1/super-admin-order-management/get-school-orders/${id}`
+    GET_SCHOOL_ORDERS: id => `/v1/super-admin-order-management/get-school-orders/${id}`,
+    GET_ALL_CANCEL_ORDER: `/v1/super-admin-order-management/all-cancle-orders`,
+    GET_NEAR_BY_VENDOR: `/v1/super-admin-order-management/nearby-vendors`,
+    APPROVE_REJECT_VENDOR_ORDER_REQUEST: id => `/v1/super-admin-order-management/cancle-order-request/${id}`,
+    POST_SUGGESTION_BOX: '/v1/super-admin-menu-suggestions/create-menu-suggestions',
+    ADD_TO_CART: '/v1/super-admin-order-management/add-to-cart',
+    GET_CART_DETAILS: id => `/v1/super-admin-order-management/cart/${id}`,
+    UPDATE_CART_QUANTITY: '/v1/super-admin-order-management/update-cart-items',
+    PLACE_ORDER: id => `/v1/super-admin-order-management/place-order/${id}`,
+    GET_CART_MODIFIER_DISH: id => `/v1/super-admin-order-management/cart-dish-details/${id}`,
+    GET_CART_MODIFIER_DISH: id => `/v1/super-admin-order-management/cart-dish-details/${id}`,
+    GET_SUPER_ADMIN_VENDOR_LIST: '/v1/super-admin-menu-suggestions/vendors'
   },
 
   // school /dashboard
   SCHOOL: {
     GET_PARENT_REQUESTS: '/v1/school-admin-dashboard/registration-requests',
-    POST_APPROVE_REJECT_PARENT_REQUESTS: '/v1/school-admin-dashboard/update-request-status'
+    POST_APPROVE_REJECT_PARENT_REQUESTS: '/v1/school-admin-dashboard/update-request-status',
+    REVIEW_LIST: '/v1/school-admin-review-meal',
   },
 
   // school /foodchart
@@ -112,6 +129,17 @@ export const API_ROUTER = {
     GET_SCHOOLS: '/v1/district-executive-order-management/schools',
     GET_SCHOOL_ORDERS: id => `/v1/district-executive-order-management/get-school-orders/${id}`,
 
+    //reorder last moment cancellation
+    GET_NEAR_BY_VENDOR: `/v1/district-executive-order-management/nearby-vendors`,
+    ADD_TO_CART: '/v1/district-executive-order-management/add-to-cart',
+    GET_CART_DETAILS: id => `/v1/district-executive-order-management/cart/${id}`,
+    UPDATE_CART_QUANTITY: '/v1/district-executive-order-management/update-cart-items',
+    PLACE_ORDER: id => `/v1/district-executive-order-management/place-order/${id}`,
+    GET_CART_MODIFIER_DISH: id => `/v1/district-executive-order-management/cart-dish-details/${id}`,
+    GET_STATISTIC_ADMIN_ORDERS: '/v1/district-executive-order-management/statistics',
+    GET_ALL_CATEGORIES: `/v1/district-executive-order-management/get-all-categories`,
+    APPROVE_REJECT_VENDOR_ORDER_REQUEST: id => `/v1/district-executive-order-management/cancle-order-request/${id}`,
+
     // parent request for kid
     GET_PARENT_REGISTRATIN_KID: '/v1/district-document-approval/kids-registration-requests',
     UPDATE_KID_REGISTRATION_STATUS: '/v1/district-document-approval/update-kid-request-status',
@@ -121,9 +149,10 @@ export const API_ROUTER = {
     POST_FOOD_CHART: '/v1/distric-executive-foodchart',
     APPROVE_FOOD_CHART_CREATION: '/v1/distric-executive-foodchart/approve',
     GET_FOODCHART_DATA: '/v1/distric-executive-foodchart/get-foodchart-data',
-    GET_NEAR_BY_VENDORS: 'v1/distric-executive-order-management/nearby-vendors',
 
     GET_STATISTIC: '/v1/district-executive-school-and-vendor-assosiate/statistics',
+    GET_VENDOR_LIST: '/v1/district-executive-school-and-vendor-assosiate/vendors',
+    GET_SCHOOL_LIST: '/v1/district-executive-school-and-vendor-assosiate/schools',
 
     GET_SUGGESTION_VENDOR_LIST: '/v1/vendor-orders/suggestions-on-menu',
 
@@ -131,7 +160,9 @@ export const API_ROUTER = {
 
     POST_SUGGESTION_BOX: '/v1/area-executive-menu-suggestions/create-menu-suggestions',
 
-    GET_STATISTIC_DISTRICT: '/v1/district-executive-dashboard/statistics'
+    GET_STATISTIC_DISTRICT: '/v1/district-executive-dashboard/statistics',
+
+    REVIEW_LIST: '/v1/district-executive-review-list'
   },
 
   VENDOR: {
@@ -268,7 +299,8 @@ export const API_ROUTER = {
     GET_VENDOR_SCHOOL_LIST_BY_ID: id => `/v1/state-executive-school-and-vendor-assosiate/user/${id}`,
     UPDATE_SCHOOL: id => `/v1/state-executive-school-and-vendor-assosiate/update-school/${id}`,
     UPDATE_VENDOR: id => `/v1/state-executive-school-and-vendor-assosiate/update-vendor/${id}`,
-
+    POST_SUGGESTION_BOX: '/v1/state-executive-menu-suggestions/create-menu-suggestions',
+    GET_STATE_VENDOR_LIST: '/v1/state-executive-menu-suggestions/vendors',
     // threshold
     GET_THRESHOLD_REQUESTS: '/v1/state-executive-order-management/threshold',
     APPROVE_REJECT_THRESHOLD_REQUEST: id => `/v1/state-executive-order-management/threshold-request/${id}`,
@@ -278,7 +310,6 @@ export const API_ROUTER = {
     GET_VENDOR_UPLOADED_DOC: id => `/v1/state-document-approval/vendor-document-request/${id}`,
 
     GET_ALL_CANCEL_ORDER: `/v1/state-executive-order-management/all-cancle-orders`,
-    GET_NEAR_BY_VENDOR: `/v1/state-executive-order-management/nearby-vendors`,
     APPROVE_REJECT_VENDOR_ORDER_REQUEST: id => `/v1/state-executive-order-management/cancle-order-request/${id}`,
 
     ADD_TO_CART: '/v1/state-executive-order-management/add-to-cart',
@@ -295,7 +326,8 @@ export const API_ROUTER = {
     STATISTIC: '/v1/state-executive-school-and-vendor-assosiate/statistics',
     GET_STATISTIC: '/v1/state-executive-dashboard/statistics',
 
-    GET_LAST_MOMENT_STATISTIC: '/v1/state-executive-order-management/statistics'
+    GET_LAST_MOMENT_STATISTIC: '/v1/state-executive-order-management/statistics',
+    REVIEW_LIST: '/v1/state-executive-review-list'
   },
   STAFF: {
     REVIEW_MEAL: '/v1/staff-review-meal/create',
@@ -338,11 +370,11 @@ export const API_ROUTER = {
     DISPUTE_RESPONSE: '/v1/dispute/authority/respond',
     MARK_AS_COMPLETE: '/v1/issue-reporting/markAsComplete',
     ISSUE_REPORTING_COUNT: '/v1/issue-reporting/issueCount',
-
+    POST_SUGGESTION_BOX: '/v1/admin-menu-suggestions/create-menu-suggestions',
     // vendor management
     GET_ALL_VENDOR: '/v1/admin/vendor-management',
     GET_SPECIFIC_VENDOR: id => `/v1/admin/vendor-management/${id}`,
-
+    GET_ADMIN_VENDOR_LIST: '/v1/sadmin-menu-suggestions/vendors',
     SUSPEND_VENDOR: id => `/v1/admin/vendor-management/suspend/${id}`,
 
     // threshold
@@ -351,13 +383,26 @@ export const API_ROUTER = {
     GET_SCHOOLS: '/v1/admin-order-management/schools',
     GET_SCHOOL_ORDERS: id => `/v1/admin-order-management/get-school-orders/${id}`,
 
+    GET_ALL_CANCEL_ORDER: `/v1/admin-order-management/all-cancle-orders`,
+    GET_NEAR_BY_VENDOR: `/v1/admin-order-management/nearby-vendors`,
+    APPROVE_REJECT_VENDOR_ORDER_REQUEST: id => `/v1/admin-order-management/cancle-order-request/${id}`,
+
+    ADD_TO_CART: '/v1/admin-order-management/add-to-cart',
+    GET_CART_DETAILS: id => `/v1/admin-order-management/cart/${id}`,
+    UPDATE_CART_QUANTITY: '/v1/admin-order-management/update-cart-items',
+    PLACE_ORDER: id => `/v1/admin-order-management/place-order/${id}`,
+    GET_CART_MODIFIER_DISH: id => `/v1/admin-order-management/cart-dish-details/${id}`,
+
     // vendor document
     GET_ALL_DOCUMENT: '/v1/admin/vendor-management/documnets',
     DOC_APPROVE_REJECT: id => `/v1/admin/vendor-management/document/${id}`,
     VENDOR_DOC_APPROVE_REJECT: id => `/v1/admin/vendor-management/document-request/${id}`,
 
     GET_STATISTIC: '/v1/admin/vendor-management/statistics',
-    GET_STATISTIC_ADMIN: '/v1/admin-dashboard/statistics'
+    GET_STATISTIC_ADMIN: '/v1/admin-dashboard/statistics',
+    GET_STATISTIC_ADMIN_ORDERS: '/v1/admin-order-management/statistics',
+    GET_ALL_CATEGORIES: `/v1/admin-order-management/get-all-categories`,
+    REVIEW_LIST: '/v1/admin-review-list'
   },
 
   AREA_EXECUTIVE: {
@@ -371,7 +416,20 @@ export const API_ROUTER = {
 
     GET_SCHOOLS: '/v1/area-executive-order-management/schools',
     GET_SCHOOL_ORDERS: id => `/v1/area-executive-order-management/get-school-orders/${id}`,
-    GET_STATISTIC: '/v1/area-executive-dashboard/statistics'
+    GET_STATISTIC: '/v1/area-executive-dashboard/statistics',
+    GET_AREA_VENDOR_LIST: '/v1/area-executive-menu-suggestions/vendors',
+
+    GET_ALL_CANCEL_ORDER: `/v1/area-executive-order-management/all-cancle-orders`,
+    GET_NEAR_BY_VENDOR: `/v1/area-executive-order-management/nearby-vendors`,
+    APPROVE_REJECT_VENDOR_ORDER_REQUEST: id => `/v1/area-executive-order-management/cancle-order-request/${id}`,
+    POST_SUGGESTION_BOX: '/v1/area-executive-menu-suggestions/create-menu-suggestions',
+    ADD_TO_CART: '/v1/area-executive-order-management/add-to-cart',
+    GET_CART_DETAILS: id => `/v1/area-executive-order-management/cart/${id}`,
+    UPDATE_CART_QUANTITY: '/v1/area-executive-order-management/update-cart-items',
+    PLACE_ORDER: id => `/v1/area-executive-order-management/place-order/${id}`,
+    GET_CART_MODIFIER_DISH: id => `/v1/area-executive-order-management/cart-dish-details/${id}`,
+    GET_ALL_CATEGORIES: `/v1/area-executive-order-management/get-all-categories`,
+    REVIEW_LIST: '/v1/area-executive-review-list'
   },
 
   /**

@@ -359,7 +359,7 @@ const AddEventSidebar = props => {
       sx={{ '& .MuiDialog-paper': { overflow: 'visible' } }}
     >
       <DialogTitle variant='h4' className='flex gap-2 flex-col text-center sm:pbs-16 sm:pbe-6 sm:pli-16'>
-        {t('page.food_chart_creation.vendor_near_by')}
+        {t('page.food_chart_creation.vendor_nearby')}
       </DialogTitle>
 
       <DialogContent className='pbs-0 sm:pli-16'>
@@ -415,8 +415,8 @@ const AddEventSidebar = props => {
                     <RadioGroup className='role-radio-block w-full' row {...field} name='radio-buttons-group'>
                       <div
                         className='
-                        p-2 w-full h-60 
-                        overflow-y-auto border rounded-lg 
+                        p-2 w-full h-60
+                        overflow-y-auto border rounded-lg
                         scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200
                       '
                       >

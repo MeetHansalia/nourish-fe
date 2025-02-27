@@ -123,7 +123,7 @@ const IssueReporting = props => {
         <Grid item xs={12}>
           <Reports dictionary={dictionary} issueCounts={issueCounts} role={role} />
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={12} className='pt-0'>
           {role && (
             <DetailForm
               dictionary={dictionary}

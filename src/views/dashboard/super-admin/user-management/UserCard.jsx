@@ -61,7 +61,7 @@ const UserCard = ({
       <div className='two-block-user-middle'>
         <Box display='flex' flexDirection='column' justifyContent='flex-start' mt={1}>
           <Typography variant='body2' color='textPrimary'>
-            {dictionary?.page?.user_management?.users?.admin_country}: <span>{user?.location?.country}</span>
+            {user?.role} {dictionary?.form?.label?.country}: <span>{user?.location?.country}</span>
           </Typography>
           <Typography variant='body2' color='textPrimary'>
             {dictionary?.page?.user_management?.users?.email}: <span>{user?.email}</span>

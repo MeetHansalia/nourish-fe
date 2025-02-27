@@ -321,7 +321,7 @@ const OrderDataTable = props => {
                 dateFormat='MM/dd/yyyy'
                 selected={orderDate}
                 onChange={date => handelDateChange(date)}
-                maxDate={new Date()}
+                // maxDate={new Date()}
                 customInput={<CustomTextField fullWidth />}
                 placeholderText={t('form.placeholder.date')}
               />

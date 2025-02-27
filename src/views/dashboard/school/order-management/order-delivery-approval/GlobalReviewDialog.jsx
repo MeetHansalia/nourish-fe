@@ -26,18 +26,9 @@ import {
   setDialogData,
   setIsCompleteOrderApiCall,
   setIsDialogFromDeliveryPage,
-  setIsFromPendingApi,
+  setIsFromPendingApi
 } from '@/redux-store/slices/reviewDialog'
 
-import { API_ROUTER } from '@/utils/apiRoutes'
-import axiosApiCall from '@/utils/axiosApiCall'
-import {
-  apiResponseErrorHandling,
-  isVariableAnObject,
-  setFormFieldsErrors,
-  toastError,
-  toastSuccess
-} from '@/utils/globalFunctions'
 import { getPathnameWithoutPanel } from '@/app/server/actions'
 import { USER_PANELS } from '@/utils/constants'
 
@@ -50,9 +41,6 @@ const GlobalReviewDialog = () => {
   const { locale } = useRedirect()
   const { t } = useTranslation(locale)
   const [dialogDetailData, setDialogDetailData] = useState(dialogData)
-  const [isLoading, setIsLoading] = useState(false)
-
-  // const abortController = useRef(null)
 
   useEffect(() => {
     if (isDialogShowFromDeliveryPage) {
@@ -60,42 +48,6 @@ const GlobalReviewDialog = () => {
       setIsOpenDialog(true)
     }
   }, [isDialogShowFromDeliveryPage])
-
-  // useEffect(() => {
-  //   if (!dialogData) {
-  //     if (isFromPendingApi) {
-  //       getPendingReviewList()
-  //     }
-
-  //     dispatch(setIsFromPendingApi(true))
-  //   }
-  // }, [])
-
-  const [rating, setRating] = useState(3)
-  const [loading, setLoading] = useState(false)
-
-  //** VALIDATION SCHEMA */
-  const schema = yup.object().shape({
-    reviewDescription: yup
-      .string()
-      .nullable()
-      .matches(/^[a-zA-Z0-9\s.!?]+$/, {
-        message: t('form.validation.alphanumeric', { field: t('page.common.review') }),
-        excludeEmptyString: true
-      })
-  })
-
-  //** HOOK FORM */
-  const {
-    handleSubmit,
-    control,
-    formState: { errors },
-    reset,
-    setError
-  } = useForm({
-    defaultValues: { reviewDescription: '' },
-    resolver: yupResolver(schema)
-  })
 
   const handleDialogClose = async e => {
     e.preventDefault()
@@ -114,7 +66,7 @@ const GlobalReviewDialog = () => {
     }
   }
 
-  //** MEMO */
+  //* MEMO /
   const orderInfo = useMemo(() => {
     if (!dialogDetailData?.order) {
       return []
@@ -132,18 +84,18 @@ const GlobalReviewDialog = () => {
 
       ...(dialogDetailData?.order?.kidId
         ? [
-          {
-            label: t('form.label.kid_name'),
-            value: `${dialogDetailData?.order?.kidId?.first_name} ${dialogDetailData?.order?.kidId?.last_name}`
-          }
-        ]
+            {
+              label: t('form.label.kid_name'),
+              value: `${dialogDetailData?.order?.kidId?.first_name} ${dialogDetailData?.order?.kidId?.last_name}`
+            }
+          ]
         : []),
       { label: t('page.common.order_date'), value: dialogDetailData?.order?.orderDate },
       { label: t('page.common.details'), value: orderDetails }
     ]
   }, [dialogDetailData?.order])
 
-  //** MEMO */
+  //* MEMO /
 
   return (
     <Dialog
@@ -197,7 +149,7 @@ const GlobalReviewDialog = () => {
           ))}
         </Box>
         <Box display='flex' justifyContent='center' mt={3} gap={2}>
-          <Button variant='contained' disabled={loading} onClick={handleDialogClose}>
+          <Button variant='contained' onClick={handleDialogClose}>
             {t('form.button.view')}
           </Button>
         </Box>

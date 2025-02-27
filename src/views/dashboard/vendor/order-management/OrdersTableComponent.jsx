@@ -58,25 +58,7 @@ import { API_ROUTER } from '@/utils/apiRoutes'
 
 // Style Imports
 import tableStyles from '@core/styles/table.module.css'
-
-const DebouncedInput = ({ value: initialValue, onChange, debounce = 500, ...props }) => {
-  // States
-  const [value, setValue] = useState(initialValue)
-
-  useEffect(() => {
-    setValue(initialValue)
-  }, [initialValue])
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      onChange(value)
-    }, debounce)
-
-    return () => clearTimeout(timeout)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value])
-
-  return <CustomTextField {...props} value={value} onChange={e => setValue(e.target.value)} />
-}
+import DebouncedInput from '@/components/nourishubs/DebouncedInput'
 
 const CustomWidthTooltip = styled(({ className, ...props }) => <Tooltip {...props} classes={{ popper: className }} />)({
   [`& .${tooltipClasses.tooltip}`]: {
@@ -295,14 +277,16 @@ const OrdersTableComponent = ({ mode, dictionary, setUpdateData, updateData }) =
               <Button
                 variant='contained'
                 color='primary'
+                className='theme-common-btn small-table-font'
                 onClick={() => handleAction('accept', row?.original?._id?.schoolId, row?.original?.orders)}
                 disabled={row?.original?.status === 'Accepted'}
               >
-                Accept
+                {dictionary?.form?.button?.accept}
               </Button>
               <Button
                 variant='outlined'
                 color='error'
+                className='theme-common-btn-red-border small-table-font'
                 // onClick={() => handleAction('reject', row?.original?._id?.schoolId, row?.original?.orders)}
                 // onClick={() => setIsDialogOpen(true)}
 
@@ -313,7 +297,7 @@ const OrdersTableComponent = ({ mode, dictionary, setUpdateData, updateData }) =
                 }}
                 disabled={row?.original?.status === 'Rejected'}
               >
-                Reject
+                {dictionary?.common?.reject}
               </Button>
             </Box>
           </Box>
@@ -326,6 +310,7 @@ const OrdersTableComponent = ({ mode, dictionary, setUpdateData, updateData }) =
             <div>{row?.original?.message}</div>
             <Box display='flex' gap={1}>
               <Button
+                className='theme-common-btn small-table-font'
                 variant='contained'
                 color='primary'
                 onClick={() => handleDownload('accept', row?.original?._id?.schoolId, row?.original?.orders)}
@@ -366,7 +351,6 @@ const OrdersTableComponent = ({ mode, dictionary, setUpdateData, updateData }) =
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
     manualPagination: true,
     manualSorting: true
   })
@@ -437,171 +421,185 @@ const OrdersTableComponent = ({ mode, dictionary, setUpdateData, updateData }) =
             </h1>
           </div>
         </div> */}
-        <div className='my-10'>
+        {/* <div className='my-10'>
           <div className='common-container'>
-            <div className='about-title-block-inner-block'>
-              <Card>
-                <CardContent className='flex justify-between flex-col items-start md:items-center md:flex-row gap-4'>
-                  <div className='flex flex-col sm:flex-row items-center justify-between gap-4 is-full sm:is-auto'>
-                    <div className='flex items-center gap-2 is-full sm:is-auto'>
-                      <Typography className='hidden sm:block'>{dictionary?.datatable?.common?.show}</Typography>
-                      <CustomTextField
-                        select
-                        value={itemsPerPage || 10}
-                        onChange={e => setItemsPerPage(e.target.value)}
-                        className='is-[70px] max-sm:is-full'
-                      >
-                        <MenuItem value='5'>05</MenuItem>
-                        <MenuItem value='10'>10</MenuItem>
-                        <MenuItem value='25'>25</MenuItem>
-                        <MenuItem value='50'>50</MenuItem>
-                      </CustomTextField>
-                    </div>
-                  </div>
-                  <div className='flex max-sm:flex-col max-sm:is-full sm:items-center gap-4'>
-                    <DebouncedInput
-                      value={globalFilter ?? ''}
-                      onChange={value => setGlobalFilter(String(value))}
-                      placeholder={dictionary?.datatable?.common?.search_placeholder}
-                      className='max-sm:is-full sm:is-[250px]'
-                    />
-                  </div>
-                </CardContent>
-                <div className='overflow-x-auto'>
-                  <table className={tableStyles.table}>
-                    <thead>
-                      {table.getHeaderGroups().map(headerGroup => (
-                        <tr key={headerGroup.id}>
-                          {headerGroup.headers.map(header => (
-                            <th key={header.id}>
-                              {header.isPlaceholder ? null : (
-                                <>
-                                  <div
-                                    className={classnames({
-                                      'flex items-center': header.column.getIsSorted(),
-                                      'select-none': header.column.getCanSort()
-                                    })}
-                                    onClick={header.column.getToggleSortingHandler()}
-                                  >
-                                    {flexRender(header.column.columnDef.header, header.getContext())}
-                                  </div>
-                                </>
-                              )}
-                            </th>
-                          ))}
-                        </tr>
-                      ))}
-                      {isDataTableServerLoading && (
-                        <tr>
-                          <td colSpan={columns?.length}>
-                            <LinearProgress color='primary' sx={{ height: '2px' }} />
-                          </td>
-                        </tr>
-                      )}
-                    </thead>
-                    {globalFilter.length > 0 && table.getFilteredRowModel().rows.length === 0 ? (
-                      <tbody>
-                        <tr>
-                          <td colSpan={table.getVisibleFlatColumns().length} className='text-center'>
-                            {t('datatable.common.no_matching_data_found')}
-                          </td>
-                        </tr>
-                      </tbody>
-                    ) : table.getFilteredRowModel().rows.length === 0 ? (
-                      <tbody>
-                        <tr>
-                          <td colSpan={table.getVisibleFlatColumns().length} className='text-center'>
-                            {t('datatable.common.no_data_available')}
-                          </td>
-                        </tr>
-                      </tbody>
-                    ) : (
-                      <tbody>
-                        {table
-                          .getRowModel()
-                          .rows.slice(0, table.getState().pagination.pageSize)
-                          .map(row => (
-                            <tr key={row.id} className={classnames({ selected: row.getIsSelected() })}>
-                              {row.getVisibleCells().map(cell => (
-                                <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
-                              ))}
-                            </tr>
-                          ))}
-                      </tbody>
-                    )}
-                  </table>
-                </div>
-                {recordMetaData?.total > 0 && (
-                  <TablePagination
-                    component={() => (
-                      <div className='flex justify-between items-center flex-wrap pli-6 border-bs bs-auto plb-[12.5px] gap-2'>
-                        <Typography color='text.disabled'>
-                          {t('datatable.common.footer_showing_entries', {
-                            startIndex: recordMetaData?.startIndex || 0,
-                            endIndex: recordMetaData?.endIndex || 0,
-                            totalFiltered: recordMetaData?.totalFiltered || 0
-                          })}
-                        </Typography>
-
-                        <Pagination
-                          shape='rounded'
-                          color='primary'
-                          variant='tonal'
-                          count={recordMetaData?.totalPage}
-                          page={page}
-                          onChange={handlePageChange}
-                          showFirstButton
-                          showLastButton
-                          onPageChange={handlePageChange}
-                          rowsPerPageOptions={[10, 25, 50]}
-                        />
-                      </div>
-                    )}
-                  />
-                )}
-
-                {/*---DIALOG BOX---  */}
-                <Dialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)} fullWidth maxWidth='sm'>
-                  <DialogTitle>{dictionary?.page?.school_management?.school_reject_title}</DialogTitle>
-                  <DialogContent>
-                    <Typography variant='body1' mb={2}>
-                      {dictionary?.page?.school_management?.school_reject_text}
-                    </Typography>
-                    <TextField
-                      label={dictionary?.form?.placeholder?.reason}
-                      multiline
-                      rows={4}
-                      fullWidth
-                      variant='outlined'
-                      value={reasonText}
-                      onChange={e => setReasonText(e.target.value)}
-                    />
-                  </DialogContent>
-                  <DialogActions>
-                    <Button
-                      onClick={() => {
-                        setReasonText('') // Clear reasonText
-                        setIsDialogOpen(false) // Close the dialog
-                      }}
-                      color='secondary'
-                    >
-                      {dictionary?.form?.button?.cancel}
-                    </Button>
-                    <Button
-                      onClick={handleReject}
-                      variant='contained'
-                      color='primary'
-                      disabled={!reasonText.trim() || isLoading}
-                    >
-                      {dictionary?.common?.reject}
-                      {isLoading && <CircularProgress className='ml-2' size={20} sx={{ color: 'white' }} />}
-                    </Button>
-                  </DialogActions>
-                </Dialog>
-              </Card>
+            <div className='about-title-block-inner-block'> */}
+        <Card class='common-block-dashboard p-0'>
+          <CardContent className='common-block-title mb-0'>
+            <Typography variant='h4'>Order Management</Typography>
+            {/* <div className='flex flex-col sm:flex-row items-center justify-between gap-4 is-full sm:is-auto'>
+              <div className='flex items-center gap-2 is-full sm:is-auto'>
+                <Typography className='hidden sm:block'>{dictionary?.datatable?.common?.show}</Typography>
+                <CustomTextField
+                  select
+                  value={itemsPerPage || 10}
+                  onChange={e => setItemsPerPage(e.target.value)}
+                  className='is-[70px] max-sm:is-full'
+                >
+                  <MenuItem value='5'>05</MenuItem>
+                  <MenuItem value='10'>10</MenuItem>
+                  <MenuItem value='25'>25</MenuItem>
+                  <MenuItem value='50'>50</MenuItem>
+                </CustomTextField>
+              </div>
+            </div> */}
+            <div className='form-group'>
+              <DebouncedInput
+                value={globalFilter ?? ''}
+                onChange={value => setGlobalFilter(String(value))}
+                placeholder={dictionary?.datatable?.common?.search_placeholder}
+                className='max-sm:is-full sm:is-[250px]'
+              />
             </div>
+          </CardContent>
+          <div className='table-common-block overflow-x-auto'>
+            <table className={tableStyles.table}>
+              <thead>
+                {table.getHeaderGroups().map(headerGroup => (
+                  <tr key={headerGroup.id}>
+                    {headerGroup.headers.map(header => (
+                      <th key={header.id}>
+                        {header.isPlaceholder ? null : (
+                          <>
+                            <div
+                              className={classnames({
+                                'flex items-center': header.column.getIsSorted(),
+                                'select-none': header.column.getCanSort()
+                              })}
+                              onClick={header.column.getToggleSortingHandler()}
+                            >
+                              {flexRender(header.column.columnDef.header, header.getContext())}
+                            </div>
+                          </>
+                        )}
+                      </th>
+                    ))}
+                  </tr>
+                ))}
+                {isDataTableServerLoading && (
+                  <tr>
+                    <td className='no-pad-td' colSpan={columns?.length}>
+                      <LinearProgress color='primary' sx={{ height: '2px' }} />
+                    </td>
+                  </tr>
+                )}
+              </thead>
+              {globalFilter.length > 0 && table.getFilteredRowModel().rows.length === 0 ? (
+                <tbody>
+                  <tr>
+                    <td colSpan={table.getVisibleFlatColumns().length} className='text-center'>
+                      {t('datatable.common.no_matching_data_found')}
+                    </td>
+                  </tr>
+                </tbody>
+              ) : table.getFilteredRowModel().rows.length === 0 ? (
+                <tbody>
+                  <tr>
+                    <td colSpan={table.getVisibleFlatColumns().length} className='text-center'>
+                      {t('datatable.common.no_data_available')}
+                    </td>
+                  </tr>
+                </tbody>
+              ) : (
+                <tbody>
+                  {table
+                    .getRowModel()
+                    .rows.slice(0, table.getState().pagination.pageSize)
+                    .map(row => (
+                      <tr key={row.id} className={classnames({ selected: row.getIsSelected() })}>
+                        {row.getVisibleCells().map(cell => (
+                          <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
+                        ))}
+                      </tr>
+                    ))}
+                </tbody>
+              )}
+            </table>
           </div>
-        </div>
+          {/* {recordMetaData?.total > 0 && ( */}
+          <TablePagination
+            component={() => (
+              <div className='flex justify-between items-center flex-wrap pli-6 border-bs bs-auto plb-[12.5px] gap-2'>
+                <Typography color='text.disabled'>
+                  {t('datatable.common.footer_showing_entries', {
+                    startIndex: recordMetaData?.startIndex || 0,
+                    endIndex: recordMetaData?.endIndex || 0,
+                    totalFiltered: recordMetaData?.totalFiltered || 0
+                  })}
+                </Typography>
+                <div className='flex items-center gap-2 is-full sm:is-auto'>
+                  <Typography className='hidden sm:block'>{dictionary?.datatable?.common?.show}</Typography>
+                  <CustomTextField
+                    select
+                    value={itemsPerPage || 10}
+                    onChange={e => setItemsPerPage(e.target.value)}
+                    className='is-[70px] max-sm:is-full'
+                  >
+                    <MenuItem value='5'>05</MenuItem>
+                    <MenuItem value='10'>10</MenuItem>
+                    <MenuItem value='25'>25</MenuItem>
+                    <MenuItem value='50'>50</MenuItem>
+                  </CustomTextField>
+                </div>
+                <Pagination
+                  shape='rounded'
+                  color='primary'
+                  variant='tonal'
+                  count={recordMetaData?.totalPage}
+                  page={page}
+                  onChange={handlePageChange}
+                  showFirstButton
+                  showLastButton
+                  onPageChange={handlePageChange}
+                  rowsPerPageOptions={[10, 25, 50]}
+                />
+              </div>
+            )}
+          />
+          {/* )} */}
+
+          {/*---DIALOG BOX---  */}
+          <Dialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)} fullWidth maxWidth='sm'>
+            <DialogTitle>{dictionary?.page?.school_management?.school_reject_title}</DialogTitle>
+            <DialogContent>
+              <Typography variant='body1' mb={2}>
+                {dictionary?.page?.school_management?.school_reject_text}
+              </Typography>
+              <TextField
+                label={dictionary?.form?.placeholder?.reason}
+                multiline
+                rows={4}
+                fullWidth
+                variant='outlined'
+                value={reasonText}
+                onChange={e => setReasonText(e.target.value)}
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button
+                onClick={() => {
+                  setReasonText('') // Clear reasonText
+                  setIsDialogOpen(false) // Close the dialog
+                }}
+                color='secondary'
+              >
+                {dictionary?.form?.button?.cancel}
+              </Button>
+              <Button
+                onClick={handleReject}
+                variant='contained'
+                color='primary'
+                disabled={!reasonText.trim() || isLoading}
+              >
+                {dictionary?.common?.reject}
+                {isLoading && <CircularProgress className='ml-2' size={20} sx={{ color: 'white' }} />}
+              </Button>
+            </DialogActions>
+          </Dialog>
+        </Card>
+        {/* </div>
+          </div>
+        </div> */}
       </div>
     </div>
   )

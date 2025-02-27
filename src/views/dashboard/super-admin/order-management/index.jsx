@@ -6,19 +6,19 @@ import { Grid, Stack } from '@mui/material'
 
 import Statistics from './Statistics'
 
-import OrderDataTable from './OrderDataTable'
+import OrderDataTable from '../vendor-management/vendor-threshold/OrderDataTable'
 import { API_ROUTER } from '@/utils/apiRoutes'
 import { toastError } from '@/utils/globalFunctions'
 import LocationSelectorForm from './LocationSelectorForm'
-import LastMomentOrderDataTable from './LastMomentOrderDataTable'
+import LastMomentOrderDataTable from './last-moment-cancellation/LastMomentOrderDataTable'
+import MealMonitoring from './meal-monitoring'
 
 const OrderManagement = props => {
   const { dictionary = null } = props
   const [totalCount, setTotalCount] = useState(null)
 
   const [showDropDdown, setShowDropDown] = useState({
-    last_moment_cancellation: false,
-    minimum_threshold: true,
+    last_moment_cancellation: true,
     meal_monitoring: false
   })
 
@@ -38,29 +38,11 @@ const OrderManagement = props => {
   }
 
   useEffect(() => {
-    getStatistics()
+    // getStatistics()
   }, [])
 
-  const CARD_TITLE_DATA = [
-    {
-      title: 'Regular School Order Request',
-      link: 'order-management/regular-order-request',
-      count: totalCount?.regularOrders
-    },
-    {
-      title: 'Special Event Order Request',
-      link: 'order-management/event-order-request',
-      count: totalCount?.eventOrders
-    },
-    {
-      title: 'Order Cancellation Request Status',
-      link: 'order-management/cancle-order-status',
-      count: totalCount?.cancellationRequestsStatus
-    }
-  ]
-
   return (
-    <Stack spacing={5}>
+    <Stack spacing={6} className='full-width-custom'>
       {/* <Grid container spacing={2}>
         {CARD_TITLE_DATA?.map((card, index) => (
           <Grid item xs={6} sm={2} md={4} key={index}>
@@ -71,15 +53,15 @@ const OrderManagement = props => {
       {/* <Statistics dictionary={dictionary} />
       <OrderDataTable dictionary={dictionary} /> */}
 
-      <Grid container spacing={6}>
-        <Grid item xs={6} sm={2} md={12}>
-          <Statistics dictionary={dictionary} setShowDropDown={setShowDropDown} />
-          {showDropDdown.last_moment_cancellation && <LastMomentOrderDataTable dictionary={dictionary} />}
-          {showDropDdown.minimum_threshold && <OrderDataTable dictionary={dictionary} />}
-
+      <Grid container spacing={6} className='full-width-custom'>
+        <Grid item xs={6} sm={2} md={12} className='pl-0'>
+          <Statistics dictionary={dictionary} setShowDropDown={setShowDropDown} showDropDdown={showDropDdown} />
+          <LastMomentOrderDataTable dictionary={dictionary} />
+          {/* {showDropDdown.last_moment_cancellation && <LastMomentOrderDataTable dictionary={dictionary} />}
           {showDropDdown.meal_monitoring && (
-            <LocationSelectorForm dictionary={dictionary} showButton={true} spacing={4} lg={6} />
-          )}
+            // <LocationSelectorForm dictionary={dictionary} showButton={true} spacing={6} lg={6} />
+            <MealMonitoring dictionary={dictionary} />
+          )} */}
         </Grid>
       </Grid>
     </Stack>

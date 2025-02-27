@@ -51,22 +51,14 @@ const Statistics = props => {
   const handleClick = name => {
     setShowDropDown(prevState => {
       switch (name) {
-        case 'minimum_threshold':
-          return {
-            last_moment_cancellation: false,
-            minimum_threshold: true,
-            meal_monitoring: false
-          }
         case 'last_moment_cancellation':
           return {
             last_moment_cancellation: true,
-            minimum_threshold: false,
             meal_monitoring: false
           }
         case 'meal_monitoring':
           return {
             last_moment_cancellation: false,
-            minimum_threshold: false,
             meal_monitoring: true
           }
         default:
@@ -80,29 +72,10 @@ const Statistics = props => {
   return (
     <div className='top-block-card'>
       <div className='card-block-inner two-block-card'>
-        <div className='card-block' onClick={() => handleClick('minimum_threshold')}>
-          <Card className='card-link-a'>
-            <CardContent className='flex flex-col gap-1'>
-              <div className='flex items-center gap-4'>
-                <CustomAvatar className='custom-avatar' color={'primary'} skin='light' variant='rounded'>
-                  <i className='tabler-clipboard-check text-xl' />
-                </CustomAvatar>
-                <Typography variant='h4'>
-                  {dictionary?.page?.order_management?.vendor_minimum_thresholds_verfication_requests}
-                </Typography>
-              </div>
-              <div className='number-text-block flex flex-col gap-1'>
-                <div className='number-text-block-inner flex items-center gap-2'>
-                  <Typography variant='h4' color='text.primary'>
-                    {numberFormat(vednerMinimumThresholdsVerificationCount)}
-                  </Typography>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className='card-block' onClick={() => handleClick('last_moment_cancellation')}>
+        <div
+          className={`card-block ${showDropDdown.last_moment_cancellation ? 'active' : ''}`}
+          onClick={() => handleClick('last_moment_cancellation')}
+        >
           <Card className='card-link-a'>
             <CardContent className='flex flex-col gap-1'>
               <div className='flex items-center gap-4'>
@@ -122,26 +95,29 @@ const Statistics = props => {
           </Card>
         </div>
 
-        <div className='card-block' onClick={() => handleClick('meal_monitoring')}>
-          {/* <Link href={`/${locale}/${panelName}/order-management/monitor-orders`}> */}
-          <Card className='card-link-a'>
-            <CardContent className='flex flex-col gap-1'>
-              <div className='flex items-center gap-4'>
-                <CustomAvatar className='custom-avatar' color={'primary'} skin='light' variant='rounded'>
-                  <i className='tabler-clipboard-check text-xl' />
-                </CustomAvatar>
-                <Typography variant='h4'> {dictionary?.page?.order_management?.monitor_deliverd_order}</Typography>
-              </div>
-              <div className='number-text-block flex flex-col gap-1'>
-                <div className='number-text-block-inner flex items-center gap-2'>
-                  <Typography variant='h4' color='text.primary'>
-                    {numberFormat(0)}
-                  </Typography>
+        <div
+          className={`card-block ${showDropDdown.meal_monitoring ? 'active' : ''}`}
+          onClick={() => handleClick('meal_monitoring')}
+        >
+          <Link href={`/${locale}/${panelName}/order-management/monitor-orders`}>
+            <Card className='card-link-a'>
+              <CardContent className='flex flex-col gap-1'>
+                <div className='flex items-center gap-4'>
+                  <CustomAvatar className='custom-avatar' color={'primary'} skin='light' variant='rounded'>
+                    <i className='tabler-clipboard-check text-xl' />
+                  </CustomAvatar>
+                  <Typography variant='h4'> {dictionary?.page?.order_management?.monitor_deliverd_order}</Typography>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-          {/* </Link> */}
+                <div className='number-text-block flex flex-col gap-1'>
+                  <div className='number-text-block-inner flex items-center gap-2'>
+                    <Typography variant='h4' color='text.primary'>
+                      {numberFormat(0)}
+                    </Typography>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
         </div>
       </div>
     </div>

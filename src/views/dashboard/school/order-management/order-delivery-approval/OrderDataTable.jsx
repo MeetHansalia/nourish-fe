@@ -99,9 +99,6 @@ const OrdersTableComponent = ({ mode, dictionary }) => {
 
   const { isDialogShowFromDeliveryPage, isDialogShow } = useSelector(reviewDialogState)
 
-
-
-
   const abortController = useRef(null)
 
   const columnHelper = createColumnHelper()
@@ -532,7 +529,7 @@ const OrdersTableComponent = ({ mode, dictionary }) => {
           )}
         </table>
       </div>
-      {/* {recordMetaData?.total > 0 && ( */}
+      {/* {/ {recordMetaData?.total > 0 && ( /} */}
       <TablePagination
         component={() => (
           <div className='flex justify-between items-center flex-wrap pli-6 border-bs bs-auto plb-[12.5px] gap-2'>
@@ -575,7 +572,7 @@ const OrdersTableComponent = ({ mode, dictionary }) => {
           </div>
         )}
       />
-      {/* )} */}
+      {/* {/ )} /} */}
 
       {isDialogShow && <GlobalReviewDialog onClose={() => setIsDialogOpen(false)} />}
 

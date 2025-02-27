@@ -27,6 +27,7 @@ import OpenDialogOnElementClick from '@/components/layout/OpenDialogOnElementCli
 
 // Redux Imports
 import { profileState } from '@/redux-store/slices/profile'
+import FullPageLoader from '@/components/FullPageLoader'
 
 /**
  * Page
@@ -59,11 +60,11 @@ const ProfileManagement = ({ dictionary }) => {
   return (
     <>
       {userData ? (
-        <Grid container spacing={6}>
-          <Grid item xs={12} sm={12} md={4} lg={4}>
+        <Grid container spacing={6} className='profile-block'>
+          <Grid item xs={12} sm={12} md={4}>
             <Details dictionary={dictionary} userData={userData} />
           </Grid>
-          <Grid item xs={12} sm={12} md={8} lg={8}>
+          <Grid item xs={12} sm={12} md={8}>
             <EditDetails dictionary={dictionary} userData={userData} setUserData={setUserData} />
           </Grid>
           <Grid item xs={12} sm={12} md={12} lg={12}>
@@ -78,7 +79,7 @@ const ProfileManagement = ({ dictionary }) => {
         </Grid>
       ) : isUserDataLoading ? (
         <div className='text-center'>
-          <CircularProgress />
+          <FullPageLoader open={true} color='primary' spinnerSize={60} />
         </div>
       ) : (
         <div className='text-center'>No Data</div>

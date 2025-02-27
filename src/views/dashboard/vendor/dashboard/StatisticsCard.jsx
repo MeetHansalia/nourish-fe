@@ -35,19 +35,6 @@ const Statistics = props => {
   // Vars
   const panelName = getPanelName(pathname)
 
-  const [suspendedAccountNumbers, setSuspendedAccountNumber] = useState()
-
-  //   const getTotalSuspendedAccountNumber = async () => {
-  //     await axiosApiCall
-  //       .get(API_ROUTER.USER_MANAGEMENT_STATISTICS)
-  //       .then(response => {
-  //         setSuspendedAccountNumber(response?.data?.response?.suspended_accounts)
-  //       })
-  //       .catch(error => {
-  //         toastError(error?.response?.message)
-  //       })
-  //   }
-
   //  Page Life Cycle: Start
   useEffect(() => {
     // getTotalSuspendedAccountNumber()

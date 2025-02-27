@@ -193,7 +193,7 @@ const AddEventSidebar = props => {
     }
 
     axiosApiCall
-      .get(API_ROUTER.DISTRICT.GET_NEAR_BY_VENDORS, {
+      .get(API_ROUTER.DISTRICT.GET_NEAR_BY_VENDOR, {
         signal: getNearByVendorsListController?.current?.signal,
         params: {
           ...vendorsListApiInput,

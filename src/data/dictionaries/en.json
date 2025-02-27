@@ -12,14 +12,19 @@
     "order_management": "Order Management",
     "menu_management": "Menu Management",
     "parents_profile": "Parents Profile",
+    "schools_profile": "Schools Profile",
     "kids_profile_management": "Kids Profile Management",
     "food_chart_creation": "Food Chart Creation",
+    "catering_schedule": "Catering Schedule",
     "add_staff": "Add Staff",
+    "staff_management": "Staff Management",
     "meal_selection": "Meal Selection",
     "issue_reporting": "Issue Reporting",
+    "document_verify": "Document Verify",
     "reviews_for_meals": "Reviews for meals",
     "dispute_resolution": "Dispute Resolution",
-    "document_verify": "Document Verify",
+    "vendor_approval": "Vendor Approval",
+    "document_approval": "Document Approval",
     "feedback": "Feedback",
     "schools_and_vendors_verify": "Schools & Vendors verify",
     "school_vendor_associates": "School Vendor Associates",
@@ -27,7 +32,8 @@
     "vendor_selection_chart": "Vendor Selection Chart",
     "foodchart_creation_approval": "Foodchart creation & Approval",
     "order_traking": "Order Tracking",
-    "menu_nutrition_manage": "Menu & Nutrition Manage"
+    "menu_nutrition_manage": "Menu & Nutrition Manage",
+    "review": "Reviews"
   },
   "form": {
     "label": {
@@ -72,11 +78,11 @@
       "kid_name": "Kid Name",
       "grade": "Grade",
       "class": "Class",
-      "gender": "Gender",
+      "gender": "Sex",
       "weight": "Weight",
       "height": "Height",
       "verification_status": "VerificationStatus",
-      "allergies_dietary_description": "Allergies or Dietary: Description",
+      "allergies_dietary_description": "Allergies and/or Dietary Restrictions: Description",
       "name": "Name",
       "start_date": "Start Date",
       "end_date": "End Date",
@@ -84,7 +90,7 @@
       "select_child": "Select Kid",
       "select_issue": "Select Issue",
       "issue_date": "Select Date",
-      "delivery_issue": "Delivery Issues Here",
+      "delivery_issue": "Describe your issue",
       "category_name": "Category Name",
       "category_image": "Category Image",
       "add_category": "Add Category",
@@ -141,7 +147,20 @@
       "school": "Select School",
       "kidName": "Kid Name",
       "admin_name": "Admin Name",
-      "language": "Language"
+      "language": "Language",
+      "old_password": "Old Password",
+      "reviewedBy": "Reviewed By",
+      "total_orders": "Total Orders",
+      "approved_orders": "Approved Orders",
+      "rejected_orders": "Rejected Orders",
+      "total_amount": "Total Amount",
+      "total_profiles": "Total Profiles",
+      "total_sales": "Total Sales",
+      "total_income": "Total Income",
+      "parent_registration_requests": "Parent Registration Requests",
+      "reject": "Reject",
+      "food_chart": "Food Chart",
+      "nutrition_suggestion": "Nutrition Suggestion"
     },
     "placeholder": {
       "name": "Enter Name",
@@ -174,12 +193,12 @@
       "no": "No",
       "replace": "Replace",
       "replace_cart_item": "Replace cart item",
-      "gender": "Select Gender",
+      "gender": "Select Sex",
       "class": "Enter Class",
       "weight": "Enter Weight in Kg",
       "height": "Enter Height in cm",
       "reason": "Reason",
-      "allergies_dietary_description": "Enter Allergies or Dietary: Description",
+      "allergies_dietary_description": "Enter Allergies and/or Dietary Restrictions: Description",
       "category_name": "Enter Category Name",
       "category_image": "Enter Category Image",
       "enter_dish_name": "Enter Dish Name",
@@ -204,7 +223,10 @@
       "district": "Select District",
       "countries": "Select Country",
       "search_school": "Search School",
-      "search_vendor": "Search Vendor"
+      "search_vendor": "Search Vendor",
+      "enter_old_password": "Enter Old Password",
+      "enter_new_password": "Enter New Password",
+      "enter_confirm_password": "Enter Confirm Password"
     },
     "validation": {
       "required": "This field is required",
@@ -231,11 +253,19 @@
       "ingredients": "Ingredients is required",
       "name": "Name is required",
       "quantity": "Quantity is required",
+      "modifier_name": "Modifier name is required",
+      "validation": "Validation failed based on conditions",
       "unit": "Unit is required",
       "min": "At least one ingredient is required",
       "rules": "Rules is required",
       "max_seaction": "Max Selaction is required",
       "no_dishes_selected.": "No dishes selected.",
+      "max_dish": "You can select a maximum of {{max_selection}} dish(es).",
+      "atleast_dish": "You must select at least {{quantity}} dish(es).",
+      "exact_dish": "You must select exactly {{quantity}} dish(es).",
+      "max_dish_qty": "You can select a maximum of {{quantity}} dish(es).",
+      "atleast_modifier": "At least one modifier is required",
+      "selection_rule": "Selection rule is required",
       "min_length": "{{field}} must be at least {{length}} characters.",
       "max_length": "{{field}} cannot exceed {{length}} characters.",
       "alphanumeric": "{{field}} can only contain letters, numbers, and spaces.",
@@ -287,7 +317,9 @@
       "back": "Back",
       "warning": "Warning",
       "send": "Send",
-      "ok": "OK"
+      "ok": "OK",
+      "accept": "Accept",
+      "view": "View Request"
     },
     "dropdown": {
       "genders": [
@@ -298,6 +330,10 @@
         {
           "id": "female",
           "name": "Female"
+        },
+        {
+          "id": "prefer_not_to_say",
+          "name": "Prefer not to say"
         }
       ]
     }
@@ -355,7 +391,7 @@
     "modify_group": "Modify Group",
     "total": "Total",
     "checkout": "Checkout",
-    "total_pay": "Total Pay",
+    "total_pay": "Total",
     "bill_details": "Bill Details",
     "item_total": "Item Total",
     "delivery_fees": "Delivery Fees",
@@ -380,7 +416,8 @@
     "no_more_data_to_load": "No more data to load",
     "exit_access": "Exit Access",
     "my_profile": "My Profile",
-    "selected_dishes": "Selected Dishes"
+    "selected_dishes": "Selected Dishes",
+    "change_password": "Change Password"
   },
   "meal": {
     "ingredients": "Ingredients",
@@ -485,7 +522,7 @@
         "create_user": "Create User"
       },
       "update_user": {
-        "update_user": "Update User"
+        "update_user": "Update Edit Role & Permission"
       },
       "suspended_accounts": {
         "suspended_accounts": "Suspended Accounts",
@@ -588,11 +625,12 @@
       "vendor_list": "Vendor List"
     },
     "food_chart_creation": {
-      "vendor_near_by": "Vendor Near by"
+      "vendor_near_by": "Vendor Near by",
+      "vendor_nearby": "Vendors Nearby"
     },
     "issue_reporting": {
       "issue_report": "Issue Reporting",
-      "issue_counting": "Issues Counting"
+      "issue_counting": "Issues"
     },
     "meal_details": {
       "meal_monitoring": "Monitor Food Orders"
@@ -604,7 +642,7 @@
       "add_staff": "Add Staff",
       "edit_staff": "Edit Staff",
       "staff_card": {
-        "role": "Roleaaaa",
+        "role": "Staff Role",
         "name": "Staff Name",
         "email": "Email",
         "phone_number": "Phone Number",
@@ -754,6 +792,9 @@
     "all_review": {
       "table_title": "All Review"
     },
+    "overview": {
+      "table_title": "Overview"
+    },
     "common": {
       "footer_showing_entries": "Showing {{startIndex}} to {{endIndex}} of {{totalFiltered}} entries",
       "no_data_available": "No data available",
@@ -792,9 +833,9 @@
       "event_type": "Event Type",
       "order_details": "Order Details",
       "sr_no": "Sr No.",
-      "issue_topic": "Issue Topic",
-      "issue_description": "Issue Description",
-      "issue_status": "Issue Status",
+      "issue_topic": "Issue",
+      "issue_description": "Description",
+      "issue_status": "Status",
       "issue_raise": "Issue Raise",
       "issue_authority": "Issue Authority",
       "photo": "Photo",

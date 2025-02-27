@@ -56,9 +56,9 @@ const VendorOrderManagementComponent = ({ dictionary }) => {
   return (
     <>
       {/* <h1>vendor order listing table here</h1> */}
-      <Grid container spacing={2}>
+      <Grid container spacing={6}>
         {CARD_TITLE_DATA?.map((card, index) => (
-          <Grid item xs={6} sm={2} md={4} key={index}>
+          <Grid item xs={6} sm={4} md={4} key={index}>
             <Statistics title={card?.title} link={card?.link} count={card?.count} />
           </Grid>
         ))}

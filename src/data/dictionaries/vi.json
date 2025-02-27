@@ -11,19 +11,29 @@
     "vendor_management": "Quản lý Nhà cung cấp",
     "order_management": "Quản lý đơn hàng",
     "parents_profile": "Hồ sơ phụ huynh",
+    "schools_profile": "Hồ sơ trường học",
     "kids_profile_management": "Quản lý hồ sơ trẻ em",
     "food_chart_creation": "Tạo Biểu Đồ Thực Phẩm",
+    "catering_schedule": "Lịch trình phục vụ ăn uống",
     "add_staff": "Thêm Nhân Viên",
+    "staff_management": "Quản lý nhân viên",
+    "document_verify": "Xác minh Tài liệu",
     "meal_selection": "Lựa chọn bữa ăn",
     "menu_management": "Quản lý thực đơn",
     "reviews_for_meals": "Đánh giá bữa ăn",
-    "document_verify": "Xác minh Tài liệu",
+    "vendor_approval": "Phê duyệt Nhà cung cấp",
+    "document_approval": "Phê duyệt tài liệu",
     "issue_reporting": "Báo cáo Vấn đề",
     "dispute_resolution": "Giải quyết Tranh chấp",
     "feedback": "Nhận xét",
     "school_vendor_associates": "Cộng tác trường học và nhà cung cấp",
     "manage_Vendors_Requests": "Quản lý Yêu cầu Nhà cung cấp",
-    "order_traking": "Theo dõi đơn hàng"
+    "foodchart_creation_approval": "Tạo và Phê duyệt Biểu đồ Thực phẩm",
+    "schools_and_vendors_verify": "Trường học & Nhà cung cấp xác minh",
+    "vendor_selection_chart": "Biểu đồ Lựa chọn Nhà cung cấp",
+    "order_traking": "Theo dõi đơn hàng",
+    "review": "Xem xét",
+    "menu_nutrition_manage": "Quản lý Thực đơn & Dinh dưỡng"
   },
   "form": {
     "label": {
@@ -70,7 +80,7 @@
       "gender": "Giới tính",
       "weight": "Cân nặng",
       "height": "Chiều cao",
-      "allergies_dietary_description": "Allergies or Dietary: Description",
+      "allergies_dietary_description": "Dị ứng hoặc Chế độ ăn uống: Mô tả",
       "name": "Tên",
       "start_date": "Ngày Bắt Đầu",
       "end_date": "Ngày Kết Thúc",
@@ -118,7 +128,7 @@
       "select_child": "Chọn Trẻ em",
       "select_issue": "Chọn Vấn đề",
       "issue_date": "Chọn Ngày",
-      "delivery_issue": "Vấn đề Giao hàng ở đây",
+      "delivery_issue": "Mô tả vấn đề của bạn",
       "select_duration": "Chọn Thời gian",
       "vendor_names": "Tên Nhà cung cấp",
       "order_details": "Chi tiết Đơn hàng",
@@ -132,7 +142,21 @@
       "state": "Bang",
       "district": "Quận",
       "admin_name": "Tên Quản Trị Viên",
-      "language": "Ngôn ngữ"
+      "language": "Ngôn ngữ",
+      "old_password": "Mật khẩu cũ",
+      "school": "Chọn Trường",
+      "reviewedBy": "Được xem xét bởi",
+      "total_orders": "Tổng số đơn hàng",
+      "approved_orders": "Đơn hàng đã duyệt",
+      "rejected_orders": "Đơn hàng bị từ chối",
+      "total_amount": "Tổng số tiền",
+      "total_profiles": "Tổng số hồ sơ",
+      "total_sales": "Tổng doanh số",
+      "total_income": "Tổng thu nhập",
+      "parent_registration_requests": "Yêu cầu đăng ký từ phụ huynh",
+      "reject": "Từ chối",
+      "food_chart": "Biểu đồ thực phẩm",
+      "nutrition_suggestion": "Gợi ý dinh dưỡng"
     },
     "placeholder": {
       "name": "Nhập Tên",
@@ -193,7 +217,10 @@
       "district": "Chọn Quận/Huyện",
       "countries": "Chọn Quốc Gia",
       "search_school": "Tìm kiếm trường học",
-      "search_vendor": "Tìm kiếm nhà cung cấp"
+      "search_vendor": "Tìm kiếm nhà cung cấp",
+      "enter_old_password": "Nhập mật khẩu cũ",
+      "enter_new_password": "Nhập mật khẩu mới",
+      "enter_confirm_password": "Nhập xác nhận mật khẩu"
     },
     "validation": {
       "required": "Trường này là bắt buộc",
@@ -251,7 +278,15 @@
       "invalid_class": "Lớp phải là 'Nursery', 'KG1', 'KG2' hoặc một số từ 1 đến 12",
       "invalid_number": "Vui lòng nhập một số hợp lệ",
       "invalid_weight": "Cân nặng phải là một số",
-      "invalid_height": "Chiều cao phải là một số"
+      "invalid_height": "Chiều cao phải là một số",
+      "max_dish": "Bạn có thể chọn tối đa {{max_selection}} món ăn.",
+      "atleast_dish": "Bạn phải chọn ít nhất {{quantity}} món ăn.",
+      "exact_dish": "Bạn phải chọn chính xác {{quantity}} món ăn.",
+      "max_dish_qty": "Bạn có thể chọn tối đa {{quantity}} món ăn.",
+      "atleast_modifier": "Ít nhất một trình sửa đổi là bắt buộc.",
+      "selection_rule": "Quy tắc lựa chọn là bắt buộc.",
+      "modifier_name": "Tên trình sửa đổi là bắt buộc.",
+      "validation": "Xác thực không thành công dựa trên các điều kiện."
     },
     "button": {
       "create": "Tạo",
@@ -275,7 +310,9 @@
       "back": "ย้อนกลับ",
       "warning": "Cảnh báo",
       "send": "Gửi",
-      "ok": "Được"
+      "ok": "Được",
+      "accept": "Chấp nhận",
+      "view": "Xem Yêu Cầu"
     },
     "dropdown": {
       "genders": [
@@ -308,7 +345,7 @@
     "modify_group": "Sửa đổi nhóm",
     "total": "Tổng cộng",
     "checkout": "Thanh toán",
-    "total_pay": "Tổng Lương",
+    "total_pay": "Tổng",
     "bill_details": "Chi tiết hóa đơn",
     "item_total": "Tổng số mặt hàng",
     "delivery_fees": "Phí giao hàng",
@@ -332,7 +369,8 @@
     "weekly_order": "Đơn hàng hàng tuần",
     "no_more_data_to_load": "Không còn dữ liệu để tải",
     "exit_access": "Lối ra truy cập",
-    "my_profile": "Hồ sơ của tôi"
+    "my_profile": "Hồ sơ của tôi",
+    "change_password": "Đổi Mật Khẩu"
   },
   "dialog": {
     "delete_category_confirmation": "Bạn có chắc chắn muốn xóa danh mục này không?",
@@ -472,7 +510,7 @@
         "create_user": "Tạo người dùng"
       },
       "update_user": {
-        "update_user": "Cập nhật người dùng"
+        "update_user": "Cập nhật và Chỉnh sửa Vai trò & Quyền hạn"
       },
       "suspended_accounts": {
         "suspended_accounts": "Tài Khoản Bị Đình Chỉ",
@@ -513,10 +551,14 @@
       "vendor_address": "Địa chỉ nhà cung cấp"
     },
     "order_management": {
+      "last_moment_cancellation": "Hủy vào phút chót",
+      "vendor_minimum_thresholds_verfication_requests": "Yêu cầu xác minh ngưỡng tối thiểu của nhà cung cấp",
+      "monitor_deliverd_order": "Theo dõi đơn hàng đã giao",
       "event_orders_request": "Yêu cầu đơn hàng sự kiện",
-      "add_new_order": "Thêm Đơn Hàng Mới",
-      "select_vendor": "Chọn Nhà Cung Cấp",
-      "view_minimum_threshold_of_vendors": "Xem ngưỡng tối thiểu của nhà cung cấp"
+      "add_new_order": "Thêm đơn hàng mới",
+      "select_vendor": "Chọn nhà cung cấp",
+      "view_minimum_threshold_of_vendors": "Xem ngưỡng tối thiểu của nhà cung cấp",
+      "order_delivery_approval": "Phê duyệt giao hàng"
     },
     "school_management": {
       "school_document_verification_requests": "Yêu cầu xác minh tài liệu trường học",
@@ -568,11 +610,15 @@
       "vendor_list": "Danh sách nhà cung cấp"
     },
     "food_chart_creation": {
-      "vendor_near_by": "Nhà Cung Cấp Gần"
+      "vendor_near_by": "Nhà Cung Cấp Gần",
+      "vendor_nearby": "Nhà cung cấp gần đây"
     },
     "issue_reporting": {
       "issue_report": "Báo cáo vấn đề",
-      "issue_counting": "Số lượng vấn đề"
+      "issue_counting": "Vấn đề"
+    },
+    "meal_details": {
+      "meal_monitoring": "Giám sát Đơn hàng thực phẩm"
     },
     "dispute_management": {
       "dispute_resolution": "Giải quyết tranh chấp"
@@ -690,6 +736,9 @@
     "suspended_user_table": {
       "table_title": "Người dùng bị đình chỉ"
     },
+    "review_vendor_table": {
+      "table_title": "Xem xét menu của nhà cung cấp & thêm đề xuất"
+    },
     "menu_management_table": {
       "table_title": "Danh sách tất cả danh mục"
     },
@@ -711,6 +760,9 @@
     "event_orders_requests": {
       "table_title": "Yêu Cầu Đặt Hàng Sự Kiện"
     },
+    "overview": {
+      "table_title": "Tổng quan"
+    },
     "common": {
       "footer_showing_entries": "Hiển thị {{startIndex}} đến {{endIndex}} trong số {{totalFiltered}} mục",
       "no_data_available": "Không có dữ liệu",
@@ -722,6 +774,7 @@
       "delivery_date": "Ngày giao hàng",
       "min_threshold_qty": "Số lượng ngưỡng tối thiểu",
       "serial_number": "Số thứ tự",
+      "verification_status": "Trạng thái xác minh",
       "first_name": "Tên",
       "last_name": "Họ",
       "vendor_name": "Tên nhà cung cấp",
@@ -751,9 +804,9 @@
       "name": "ชื่อ",
       "applied_rule": "กฎที่ใช้",
       "meal_details": "Chi tiết Bữa ăn",
-      "issue_topic": "Chủ đề Vấn đề",
-      "issue_description": "Mô tả Vấn đề",
-      "issue_status": "Trạng thái Vấn đề",
+      "issue_topic": "Vấn đề",
+      "issue_description": "Mô tả",
+      "issue_status": "Trạng thái",
       "issue_raise": "Nâng Vấn đề",
       "issue_authority": "Thẩm quyền Vấn đề",
       "all": "Tất cả",

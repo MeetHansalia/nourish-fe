@@ -5,7 +5,18 @@ import { useState } from 'react'
 
 // MUI Imports
 import EditIcon from '@mui/icons-material/Edit'
-import { Avatar, Card, CardContent, CardHeader, Divider, List, ListItem, ListItemText, Typography } from '@mui/material'
+import {
+  Avatar,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  Divider,
+  List,
+  ListItem,
+  ListItemText,
+  Typography
+} from '@mui/material'
 
 // Core Component Imports
 import CustomAvatar from '@/@core/components/mui/Avatar'
@@ -14,6 +25,8 @@ import CustomAvatar from '@/@core/components/mui/Avatar'
 import { toastError } from '@/utils/globalFunctions'
 import { getInitials } from '@/utils/getInitials'
 import { titleize } from '@/utils/globalFilters'
+import OpenDialogOnElementClick from '@/components/layout/OpenDialogOnElementClick'
+import ChangePasswordDialog from '@/components/ChangePasswordDialog'
 
 /**
  * Page
@@ -136,6 +149,17 @@ const Details = ({ dictionary, userData, setProfileUploadedFile }) => {
                 <Typography className='disc-common-custom-small'>
                   {userData?.location?.address || <i>N/A</i>}
                 </Typography>
+              </div>
+              <div className='flex items-center flex-wrap gap-2 justify-center'>
+                <OpenDialogOnElementClick
+                  element={Button}
+                  elementProps={{
+                    children: `${dictionary?.common?.change_password}`,
+                    variant: 'contained'
+                  }}
+                  dialog={ChangePasswordDialog}
+                  dialogProps={{ dictionary }}
+                />
               </div>
             </div>
           </div>

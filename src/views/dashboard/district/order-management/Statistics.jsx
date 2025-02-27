@@ -25,7 +25,7 @@ import { getPanelName, toastError } from '@/utils/globalFunctions'
  */
 const Statistics = props => {
   // Props
-  const { dictionary = null, setShowDropDown } = props
+  const { dictionary = null, setShowDropDown, showDropDdown } = props
 
   // HOOKS
   const { lang: locale } = useParams()
@@ -56,7 +56,10 @@ const Statistics = props => {
   return (
     <div className='top-block-card'>
       <div className='card-block-inner two-block-card'>
-        <div className='card-block' onClick={() => handleClick('last_moment_cancellation')}>
+        <div
+          className={`card-block ${showDropDdown.last_moment_cancellation ? 'active' : ''}`}
+          onClick={() => handleClick('last_moment_cancellation')}
+        >
           <Card className='card-link-a cursor-pointer'>
             <CardContent className='flex flex-col gap-1'>
               <div className='flex items-center gap-4'>
@@ -76,7 +79,10 @@ const Statistics = props => {
           </Card>
         </div>
 
-        <div className='card-block' onClick={() => handleClick('meal_monitoring')}>
+        <div
+          className={`card-block ${showDropDdown.meal_monitoring ? 'active' : ''}`}
+          onClick={() => handleClick('meal_monitoring')}
+        >
           <Card className='card-link-a cursor-pointer'>
             <CardContent className='flex flex-col gap-1'>
               <div className='flex items-center gap-4'>

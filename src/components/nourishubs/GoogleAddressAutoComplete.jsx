@@ -124,10 +124,20 @@ const GoogleAddressAutoComplete = React.forwardRef((props, ref) => {
               detailsForAPI.city = component.long_name || ''
             }
 
-            if (types.includes('administrative_area_level_3')) {
+            if (types.includes('administrative_area_level_2')) {
               detailsForAPI.district = component.long_name || ''
             }
           })
+
+          // If state is missing, set it to country name
+          if (!detailsForAPI.state) {
+            detailsForAPI.state = detailsForAPI.country || ''
+          }
+
+          // If district is missing, set it to state name
+          if (!detailsForAPI.district) {
+            detailsForAPI.district = detailsForAPI.state || ''
+          }
 
           detailsForAPI.lat = details?.geometry.location.lat() || ''
           detailsForAPI.lng = details?.geometry.location.lng() || ''

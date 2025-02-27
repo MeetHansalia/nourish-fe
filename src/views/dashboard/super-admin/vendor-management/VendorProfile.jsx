@@ -85,13 +85,17 @@ const VendorProfile = props => {
   return (
     <Card>
       <CardHeader
-        title={dictionary?.page?.vendor_profile?.title}
-        action={
-          <Button variant='contained' onClick={() => setIsDialogOpen(true)} disabled={isLoading}>
-            {dictionary?.page?.vendor_profile?.button_title}
-          </Button>
-        }
-      />
+  title={dictionary?.page?.vendor_profile?.title}
+  action={
+    userData?.status === 'active' ? (
+      <Button variant='contained' onClick={() => setIsDialogOpen(true)} disabled={isLoading}>
+        {dictionary?.page?.vendor_profile?.button_title}
+      </Button>
+    ) : (
+      dictionary?.page?.vendor_profile?.button_title // Just return the text directly
+    )
+  }
+/>
       <Divider />
       {!isLoading ? (
         <CardContent className='flex justify-around gap-6'>
@@ -108,7 +112,7 @@ const VendorProfile = props => {
                   {getInitials(getFullName({ first_name: userData?.first_name, last_name: userData?.last_name }))}
                 </CustomAvatar>
               </div>
-              <Chip label={userData?.role} color='secondary' size='small' variant='tonal' />
+              <Chip label={userData?.role} color='primary' size='small' variant='tonal' />
             </div>
           </div>
           <div>
@@ -159,7 +163,7 @@ const VendorProfile = props => {
           <CircularProgress />
         </Box>
       )}
-      {/* 
+      {/*
       <Dialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)}>
         <DialogTitle>{dictionary?.page?.vendor_profile?.suspend_vendor}</DialogTitle>
         <DialogContent>

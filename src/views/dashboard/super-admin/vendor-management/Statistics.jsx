@@ -38,11 +38,8 @@ const Statistics = props => {
 
   return (
     <div className='top-block-card'>
-      <div className='card-block-inner two-block-card'>
+      <div className='card-block-inner three-block-card'>
         <div className='card-block'>
-          {/* <Link href={`/${locale}/user-management/suspended-users`}> */}
-          {/* <Card> */}
-          {/* <Link href={`/${locale}/super-admin/vendor-management/document-verification-requests`}> */}
           <Link href={getLocalizedUrl(`/${panelName}/vendor-management/document-verification-requests`, locale)}>
             <Card>
               <CardContent className='flex flex-col gap-1'>
@@ -68,8 +65,34 @@ const Statistics = props => {
               </CardContent>
             </Card>
           </Link>
-          {/* </Card> */}
-          {/* </Link> */}
+        </div>
+        <div className='card-block'>
+          <Link href={getLocalizedUrl(`/${panelName}/vendor-management/vendor-threshold`, locale)}>
+            <Card className='card-link-a'>
+              <CardContent className='flex flex-col gap-1'>
+                <div className='flex items-center gap-4'>
+                  <CustomAvatar className='custom-avatar' color={'primary'} skin='light' variant='rounded'>
+                    <i className='tabler-clipboard-check text-xl' />
+                  </CustomAvatar>
+                  <Typography variant='h4'>
+                    {dictionary?.page?.order_management?.vendor_minimum_thresholds_verfication_requests}
+                  </Typography>
+                </div>
+                <div className='number-text-block flex flex-col gap-1'>
+                  <div className='number-text-block-inner flex items-center gap-2'>
+                    <Typography variant='h4' color='text.primary'>
+                      {/* {numberFormat(statisticData?.vendorThresholdRequests)} */}
+                      {isCountLoading ? (
+                        <CircularProgress size={20} />
+                      ) : (
+                        numberFormat(statisticData?.vendorThresholdRequests)
+                      )}
+                    </Typography>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
         </div>
         <div className='card-block'>
           {/* <Link href={`/${locale}/user-management/suspended-users`}> */}

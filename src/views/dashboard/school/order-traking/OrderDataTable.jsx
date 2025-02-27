@@ -162,9 +162,6 @@ const OrderDataTable = props => {
       columnHelper.accessor('serialNumber', {
         header: `${dictionary?.datatable?.column?.sr_no}`
       }),
-      columnHelper.accessor('kidId.first_name', {
-        header: `${dictionary?.datatable?.column?.kid_name}`
-      }),
       columnHelper.accessor(row => `${row.vendorId.first_name} ${row.vendorId.last_name}`, {
         header: `${dictionary?.datatable?.column?.vendor_name}`
       }),
@@ -339,7 +336,7 @@ const OrderDataTable = props => {
                 dateFormat='MM/dd/yyyy'
                 selected={orderDate}
                 onChange={date => handelDateChange(date)}
-                maxDate={new Date()}
+                // maxDate={new Date()}
                 customInput={<CustomTextField fullWidth />}
                 placeholderText={t('form.placeholder.date')}
               />

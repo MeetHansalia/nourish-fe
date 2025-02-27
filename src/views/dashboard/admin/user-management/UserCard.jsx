@@ -95,7 +95,7 @@ const UserCard = ({
             </Link>
           )}
 
-          {userOperationPermissions?.suspend_user && (
+          {userOperationPermissions?.suspend_user && user?.role === 'Vendor' && (
             <Button className='alert-icon-block' onClick={() => handleSuspendUser(user?._id)}>
               <i className='tabler-alert-small text-textSecondary'></i>
             </Button>

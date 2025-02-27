@@ -16,7 +16,8 @@ import {
   List,
   ListItem,
   ListItemText,
-  Typography
+  Typography,
+  Button
 } from '@mui/material'
 
 // Third-party Imports
@@ -35,6 +36,8 @@ import { apiResponseErrorHandling, toastError, toastSuccess } from '@/utils/glob
 import { API_ROUTER } from '@/utils/apiRoutes'
 import { getInitials } from '@/utils/getInitials'
 import { titleize } from '@/utils/globalFilters'
+import OpenDialogOnElementClick from '@/components/layout/OpenDialogOnElementClick'
+import ChangePasswordDialog from '@/components/ChangePasswordDialog'
 
 /**
  * Page
@@ -197,6 +200,17 @@ const Details = ({ dictionary, userData }) => {
                 {dictionary?.form?.label?.expected_delivery_time}:
               </Typography>
               <Typography>{userData?.expectedDeliveryTime || <i>N/A</i>}</Typography>
+            </div>
+            <div className='flex items-center flex-wrap gap-2 justify-center'>
+              <OpenDialogOnElementClick
+                element={Button}
+                elementProps={{
+                  children: `${dictionary?.common?.change_password}`,
+                  variant: 'contained'
+                }}
+                dialog={ChangePasswordDialog}
+                dialogProps={{ dictionary }}
+              />
             </div>
           </div>
         </div>

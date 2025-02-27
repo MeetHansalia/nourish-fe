@@ -59,7 +59,7 @@ const UserManagement = props => {
   const getTotalSuspendedAccountNumber = async () => {
     setIsLoadingStatistic(true)
     await axiosApiCall
-      .get(API_ROUTER.SUPER_ADMIN_USER.STATISTIC)
+      .get(API_ROUTER.SUPER_ADMIN_USER.USER_MANAGEMENT_STATISTIC)
       .then(response => {
         setSuspendedAccountNumber(response?.data?.response?.suspended_accounts)
         setIsLoadingStatistic(false)

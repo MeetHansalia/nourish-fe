@@ -364,8 +364,9 @@ const DisputeHistory = props => {
 
   return (
     <div>
-      <Card>
+      <Card class='common-block-dashboard p-0'>
         <CardHeader
+          className='common-block-title mb-0'
           title={dictionary?.datatable?.dispute_history_table?.table_title}
           action={
             <Box display='flex' alignItems='center' gap={2}>
@@ -402,7 +403,7 @@ const DisputeHistory = props => {
           }
         />
 
-        <TableContainer component={Paper}>
+        <TableContainer className='table-common-block' component={Paper}>
           <Table>
             <TableHead>
               {table.getHeaderGroups().map(headerGroup => (
@@ -416,7 +417,7 @@ const DisputeHistory = props => {
               ))}
               {isDataTableServerLoading && (
                 <tr>
-                  <td colSpan={columns?.length}>
+                  <td className='no-pad-td' colSpan={columns?.length}>
                     <LinearProgress color='primary' sx={{ height: '2px' }} />
                   </td>
                 </tr>

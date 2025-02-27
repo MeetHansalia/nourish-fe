@@ -13,6 +13,7 @@ import axiosApiCall from '@/utils/axiosApiCall'
 import { getLocalizedUrl } from '@/utils/i18n'
 import { getPanelName } from '@/utils/globalFunctions'
 import { API_ROUTER } from '@/utils/apiRoutes'
+import FullPageLoader from '@/components/FullPageLoader'
 
 const MealSelection = ({ dictionary }) => {
   // Hooks
@@ -166,7 +167,7 @@ const MealSelection = ({ dictionary }) => {
           </CardContent>
         </Card>
       ) : (
-        <CircularProgress />
+        <FullPageLoader open={true} color='primary' spinnerSize={60} />
       )}
     </>
   )

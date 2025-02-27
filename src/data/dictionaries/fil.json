@@ -11,19 +11,29 @@
     "vendor_management": "Pamamahala ng Vendor",
     "order_management": "Pamamahala ng Order",
     "parents_profile": "Profile ng Magulang",
+    "schools_profile": "Profile ng mga Paaralan",
     "kids_profile_management": "Pamamahala ng Profile ng mga Bata",
     "food_chart_creation": "Paglikha ng Tsart ng Pagkain",
+    "catering_schedule": "Iskedyul ng Pagkain",
     "add_staff": "Magdagdag ng Kawani",
+    "staff_management": "Pamamahala ng Kawani",
     "meal_selection": "Pagpili ng Pagkain",
     "menu_management": "Pamamahala ng Menu",
-    "reviews_for_meals": "Mga Review para sa pagkain",
     "document_verify": "Pag-verify ng Dokumento",
+    "reviews_for_meals": "Mga Review para sa pagkain",
+    "schools_and_vendors_verify": "Pag-verify ng mga Paaralan at Vendor",
+    "vendor_selection_chart": "Tsart ng Pagpili ng Vendor",
+    "vendor_approval": "Pag-apruba ng Vendor",
+    "document_approval": "Pag-apruba ng Dokumento",
     "issue_reporting": "Pag-uulat ng Isyu",
     "dispute_resolution": "Paglutas ng Alitan",
     "feedback": "Feedback",
     "school_vendor_associates": "Mga Kaakibat ng Paaralan at Vendor",
     "manage_Vendors_Requests": "Pamahalaan ang mga Kahilingan ng Nagbebenta",
-    "order_traking": "Pagsubaybay sa Order"
+    "foodchart_creation_approval": "Paglikha at Pag-apruba ng Tsart ng Pagkain",
+    "order_traking": "Pagsubaybay sa Order",
+    "menu_nutrition_manage": "Pamamahala ng Menu at Nutrisyon",
+    "review": "Mga Review"
   },
   "form": {
     "label": {
@@ -70,7 +80,7 @@
       "gender": "Kasarian",
       "weight": "Timbang",
       "height": "taas",
-      "allergies_dietary_description": "Allergies or Dietary: Description",
+      "allergies_dietary_description": "Alerhiya o Diyeta: Paglalarawan",
       "name": "Pangalan",
       "start_date": "Petsa ng Simula",
       "end_date": "Petsa ng Pagtatapos",
@@ -118,7 +128,7 @@
       "select_child": "Piliin ang Bata",
       "select_issue": "Piliin ang Isyu",
       "issue_date": "Piliin ang Petsa",
-      "delivery_issue": "Mga Isyu sa Paghatid Dito",
+      "delivery_issue": "Ilarawan ang iyong isyu",
       "select_duration": "Piliin ang Tagal",
       "vendor_names": "Pangalan ng Nagbebenta",
       "order_details": "Mga Detalye ng Order",
@@ -132,7 +142,20 @@
       "state": "Estado",
       "district": "Distrito",
       "admin_name": "Pangalan ng Admin",
-      "language": "Wika"
+      "language": "Wika",
+      "old_password": "Lumang Password",
+      "school": "Piliin ang Paaralan",
+      "total_orders": "Kabuuang Mga Order",
+      "approved_orders": "Mga Order na Naaprubahan",
+      "rejected_orders": "Mga Order na Tinanggihan",
+      "total_amount": "Kabuuang Halaga",
+      "total_profiles": "Kabuuang Mga Profile",
+      "total_sales": "Kabuuang Benta",
+      "total_income": "Kabuuang Kita",
+      "parent_registration_requests": "Mga Kahilingan sa Pagpaparehistro ng Magulang",
+      "reject": "Tanggihan",
+      "food_chart": "Tsart ng Pagkain",
+      "nutrition_suggestion": "Mungkahi sa Nutrisyon"
     },
     "placeholder": {
       "name": "Ilagay ang Pangalan",
@@ -169,7 +192,7 @@
       "weight": "Ipasok ang Timbang",
       "height": "Ipasok ang Taas",
       "reason": "Dahilan",
-      "allergies_dietary_description": "Enter Allergies or Dietary: Description",
+      "allergies_dietary_description": "Alerhiya o Diyeta: Paglalarawan",
       "category_name": "Ilagay ang Pangalan ng Kategorya",
       "category_image": "Ilagay ang Larawan ng Kategorya",
       "enter_dish_name": "Ilagay ang Pangalan ng Ulam",
@@ -192,7 +215,12 @@
       "modifiers": "Mga Modifier",
       "state": "Pumili ng Estado",
       "district": "Pumili ng Distrito",
-      "countries": "Pumili ng Bansa"
+      "countries": "Pumili ng Bansa",
+      "search_school": "Maghanap ng Paaralan",
+      "search_vendor": "Maghanap ng Nagbebenta",
+      "enter_old_password": "Ipasok ang lumang password",
+      "enter_new_password": "Ipasok ang bagong password",
+      "enter_confirm_password": "Ipasok ang kumpirmasyon ng password"
     },
     "validation": {
       "required": "Kinakailangan ang patlang na ito",
@@ -246,7 +274,15 @@
       "order_details": "Kinakailangan ang Mga Detalye ng Order",
       "order_date": "Kinakailangan ang Petsa ng Order",
       "school_name_required": "Kinakailangan ang Pangalan ng Paaralan",
-      "description": "Kinakailangan ang Deskripsyon"
+      "description": "Kinakailangan ang Deskripsyon",
+      "max_dish": "Maaari kang pumili ng hanggang {{max_selection}} na putahe.",
+      "atleast_dish": "Kailangan mong pumili ng hindi bababa sa {{quantity}} na putahe.",
+      "exact_dish": "Kailangan mong pumili ng eksaktong {{quantity}} na putahe.",
+      "max_dish_qty": "Maaari kang pumili ng maximum na {{quantity}} na putahe.",
+      "atleast_modifier": "Kailangan ng hindi bababa sa isang modifier.",
+      "selection_rule": "Kailangan ang panuntunan sa pagpili.",
+      "modifier_name": "Kailangan ang pangalan ng modifier.",
+      "validation": "Nabigo ang pagpapatunay batay sa mga kondisyon."
     },
     "button": {
       "create": "Lumikha",
@@ -270,7 +306,9 @@
       "back": "Bumalik",
       "warning": "Babala",
       "send": "Ipadala",
-      "ok": "OK"
+      "ok": "OK",
+      "accept": "Tanggapin",
+      "view": "Tingnan ang Kahilingan"
     },
     "dropdown": {
       "genders": [
@@ -303,7 +341,7 @@
     "modify_group": "Baguhin ang Grupo",
     "total": "Kabuuan",
     "checkout": "Checkout",
-    "total_pay": "Kabuuang Bayad",
+    "total_pay": "Kabuuang",
     "bill_details": "Mga Detalye ng Bill",
     "item_total": "Kabuuan ng Item",
     "delivery_fees": "Mga Bayarin sa Paghahatid",
@@ -327,7 +365,8 @@
     "weekly_order": "Lingguhang Order",
     "no_more_data_to_load": "Wala nang karagdagang datos na maaaring i-load",
     "exit_access": "Paglabas ng Access",
-    "my_profile": "Aking Profile"
+    "my_profile": "Aking Profile",
+    "change_password": "Palitan ang Password"
   },
   "dialog": {
     "delete_category_confirmation": "Sigurado ka bang gusto mong tanggalin ang kategoryang ito?",
@@ -467,7 +506,7 @@
         "create_user": "Lumikha ng User"
       },
       "update_user": {
-        "update_user": "I-update ang User"
+        "update_user": "I-update at I-edit ang Papel at Pahintulot"
       },
       "suspended_accounts": {
         "suspended_accounts": "Mga Suspended na Account",
@@ -508,10 +547,14 @@
       "vendor_address": "Tirahan ng Nagbebenta"
     },
     "order_management": {
-      "event_orders_request": "Kahilingan para sa mga order ng kaganapan",
+      "last_moment_cancellation": "Kanselasyon sa Huling Sandali",
+      "vendor_minimum_thresholds_verfication_requests": "Mga kahilingan sa pag-verify ng minimum na threshold ng vendor",
+      "monitor_deliverd_order": "Subaybayan ang Naihatid na Order",
+      "event_orders_request": "Kahilingan para sa mga Order ng Kaganapan",
       "add_new_order": "Magdagdag ng Bagong Order",
       "select_vendor": "Piliin ang Vendor",
-      "view_minimum_threshold_of_vendors": "Tingnan ang minimum na threshold ng mga vendor"
+      "view_minimum_threshold_of_vendors": "Tingnan ang minimum na threshold ng mga vendor",
+      "order_delivery_approval": "Pag-apruba ng Paghahatid ng Order"
     },
     "school_management": {
       "school_document_verification_requests": "Mga Kahilingan sa Pag-verify ng Dokumento ng Paaralan",
@@ -562,11 +605,15 @@
       "School_registration_request": "Kahilingan sa Pag-verify ng Dokumento ng Paaralan"
     },
     "food_chart_creation": {
-      "vendor_near_by": "Malapit na Vendor"
+      "vendor_near_by": "Malapit na Vendor",
+      "vendor_nearby": "Mga Vendor na Malapit"
     },
     "issue_reporting": {
       "issue_report": "Pag-uulat ng Isyu",
-      "issue_counting": "Bilang ng Mga Isyu"
+      "issue_counting": "Mga isyu"
+    },
+    "meal_details": {
+      "meal_monitoring": "Subaybayan ang mga Order ng Pagkain"
     },
     "dispute_management": {
       "dispute_resolution": "Paglutas ng Alitan"
@@ -684,6 +731,9 @@
     "suspended_user_table": {
       "table_title": "Mga Nakabinbing Gumagamit"
     },
+    "review_vendor_table": {
+      "table_title": "Suriin ang menu ng vendor & magdagdag ng mga suhestiyon"
+    },
     "vendor_management_table": {
       "table_title": "Lahat ng Listahan ng Vendor"
     },
@@ -705,6 +755,9 @@
     "event_orders_requests": {
       "table_title": "Mga Kahilingan sa Pag-order ng Kaganapan"
     },
+    "overview": {
+      "table_title": "Pangkalahatang-ideya"
+    },
     "common": {
       "footer_showing_entries": "Ipinapakita ang {{startIndex}} hanggang {{endIndex}} sa {{totalFiltered}} na mga entry",
       "no_data_available": "Walang available na datos",
@@ -716,6 +769,7 @@
       "delivery_date": "Petsa ng Paghatid",
       "min_threshold_qty": "Minimum na Dami ng Threshold",
       "serial_number": "Serial No.",
+      "verification_status": "Katayuan ng Pag-verify",
       "first_name": "Pangalan",
       "last_name": "Apelyido",
       "order_date": "Petsa ng Order",
@@ -744,9 +798,9 @@
       "name": "Pangalan",
       "applied_rule": "Inilapat na Panuntunan",
       "meal_details": "Mga Detalye ng Pagkain",
-      "issue_topic": "Paksa ng Isyu",
-      "issue_description": "Paglalarawan ng Isyu",
-      "issue_status": "Katayuan ng Isyu",
+      "issue_topic": "Isyu",
+      "issue_description": "Paglalarawan",
+      "issue_status": "Katayuan",
       "issue_raise": "Pagtaas ng Isyu",
       "issue_authority": "Awtoridad ng Isyu",
       "all": "Lahat",

@@ -367,72 +367,82 @@ const EditDetails = ({ dictionary, userData, setUserData }) => {
   }
 
   return (
-    <Card>
-      <CardHeader title={dictionary?.page?.common?.edit_information} />
-      <CardContent>
+    <Card className='common-block-dashboard'>
+      <div className='common-block-title'>
+        <CardHeader className='p-0' title={dictionary?.page?.common?.add_your_details} />
+      </div>
+      <CardContent className='p-0 common-form-dashboard'>
         <form noValidate action={() => {}} onSubmit={handleSubmit(onSubmit)}>
           <Grid container spacing={6}>
             <Grid item xs={12} sm={6}>
-              <Controller
-                name='first_name'
-                control={control}
-                render={({ field }) => (
-                  <CustomTextField
-                    {...field}
-                    fullWidth
-                    label={dictionary?.form?.label?.first_name}
-                    placeholder={dictionary?.form?.placeholder?.first_name}
-                    {...(errors.first_name && { error: true, helperText: errors.first_name.message })}
-                  />
-                )}
-              />
+              <div className='form-group'>
+                <Controller
+                  name='first_name'
+                  control={control}
+                  render={({ field }) => (
+                    <CustomTextField
+                      {...field}
+                      fullWidth
+                      label={dictionary?.form?.label?.first_name}
+                      placeholder={dictionary?.form?.placeholder?.first_name}
+                      {...(errors.first_name && { error: true, helperText: errors.first_name.message })}
+                    />
+                  )}
+                />
+              </div>
             </Grid>
             <Grid item xs={12} sm={6}>
-              <Controller
-                name='last_name'
-                control={control}
-                render={({ field }) => (
-                  <CustomTextField
-                    {...field}
-                    fullWidth
-                    label={dictionary?.form?.label?.last_name}
-                    placeholder={dictionary?.form?.placeholder?.last_name}
-                    {...(errors.last_name && { error: true, helperText: errors.last_name.message })}
-                  />
-                )}
-              />
+              <div className='form-group'>
+                <Controller
+                  name='last_name'
+                  control={control}
+                  render={({ field }) => (
+                    <CustomTextField
+                      {...field}
+                      fullWidth
+                      label={dictionary?.form?.label?.last_name}
+                      placeholder={dictionary?.form?.placeholder?.last_name}
+                      {...(errors.last_name && { error: true, helperText: errors.last_name.message })}
+                    />
+                  )}
+                />
+              </div>
             </Grid>
             <Grid item xs={12}>
-              <Controller
-                name='companyName'
-                control={control}
-                render={({ field }) => (
-                  <CustomTextField
-                    {...field}
-                    fullWidth
-                    label={dictionary?.form?.label?.company_name}
-                    placeholder={dictionary?.form?.placeholder?.company_name}
-                    {...(errors.companyName && { error: true, helperText: errors.companyName.message })}
-                  />
-                )}
-              />
+              <div className='form-group'>
+                <Controller
+                  name='companyName'
+                  control={control}
+                  render={({ field }) => (
+                    <CustomTextField
+                      {...field}
+                      fullWidth
+                      label={dictionary?.form?.label?.company_name}
+                      placeholder={dictionary?.form?.placeholder?.company_name}
+                      {...(errors.companyName && { error: true, helperText: errors.companyName.message })}
+                    />
+                  )}
+                />
+              </div>
             </Grid>
             <Grid item xs={12} sm={6}>
-              <Controller
-                name='email'
-                control={control}
-                render={({ field }) => (
-                  <CustomTextField
-                    {...field}
-                    fullWidth
-                    type='email'
-                    label={dictionary?.form?.label?.email_address}
-                    placeholder={dictionary?.form?.placeholder?.email_address}
-                    disabled
-                    {...(errors.email && { error: true, helperText: errors.email.message })}
-                  />
-                )}
-              />
+              <div className='form-group'>
+                <Controller
+                  name='email'
+                  control={control}
+                  render={({ field }) => (
+                    <CustomTextField
+                      {...field}
+                      fullWidth
+                      type='email'
+                      label={dictionary?.form?.label?.email_address}
+                      placeholder={dictionary?.form?.placeholder?.email_address}
+                      disabled
+                      {...(errors.email && { error: true, helperText: errors.email.message })}
+                    />
+                  )}
+                />
+              </div>
             </Grid>
             {/* <Grid item xs={12} sm={6}>
               <Controller
@@ -450,103 +460,109 @@ const EditDetails = ({ dictionary, userData, setUserData }) => {
               />
             </Grid> */}
             <Grid item xs={12} sm={6} md={6} lg={6} xl={6} className='nh-phone-input-wrapper'>
-              <InputLabel
-                htmlFor='phoneNo'
-                className={`inline-flex ${!errors?.phoneNo ? 'text-textPrimary' : ''}  nh-phone-input-label`}
-                error={!!errors?.phoneNo}
-              >
-                {dictionary?.form?.label?.phone_number}
-              </InputLabel>
-              <Controller
-                in='phoneNo'
-                name='phoneNo'
-                control={control}
-                render={({ field }) => (
-                  <PhoneInput
-                    // {...field}
-                    value={field?.value}
-                    country={phoneInputCountry.current}
-                    onChange={(value, countryData) => {
-                      const dialCode = countryData?.dialCode || ''
-                      const countryCode = countryData?.countryCode || ''
-                      const formattedNumber = ('+' + value)?.replace(dialCode, dialCode + '-')
+              <div className='form-group'>
+                <InputLabel
+                  htmlFor='phoneNo'
+                  className={`inline-flex ${!errors?.phoneNo ? 'text-textPrimary' : ''}  nh-phone-input-label`}
+                  error={!!errors?.phoneNo}
+                >
+                  {dictionary?.form?.label?.phone_number}
+                </InputLabel>
+                <Controller
+                  in='phoneNo'
+                  name='phoneNo'
+                  control={control}
+                  render={({ field }) => (
+                    <PhoneInput
+                      // {...field}
+                      value={field?.value}
+                      country={phoneInputCountry.current}
+                      onChange={(value, countryData) => {
+                        const dialCode = countryData?.dialCode || ''
+                        const countryCode = countryData?.countryCode || ''
+                        const formattedNumber = ('+' + value)?.replace(dialCode, dialCode + '-')
 
-                      setValue('countryCode', countryCode)
-                      field.onChange(formattedNumber)
-                    }}
-                    enableSearch
-                    inputProps={{ autoComplete: 'off', ref: field?.ref }}
-                    specialLabel=''
-                    countryCodeEditable={false}
-                    disableCountryCode={false}
-                    // disableCountryGuess={true}
-                    containerClass='nh-phone-input-container'
-                    inputClass='w-full nh-phone-input-element'
-                    inputStyle={{
-                      borderColor: errors?.phoneNo ? theme?.palette?.error?.main : undefined
-                    }}
-                  />
-                )}
-              />
-              {errors.phoneNo && <FormHelperText error>{errors?.phoneNo?.message}</FormHelperText>}
-              {errors.countryCode && <FormHelperText error>{errors?.countryCode?.message}</FormHelperText>}
+                        setValue('countryCode', countryCode)
+                        field.onChange(formattedNumber)
+                      }}
+                      enableSearch
+                      inputProps={{ autoComplete: 'off', ref: field?.ref }}
+                      specialLabel=''
+                      countryCodeEditable={false}
+                      disableCountryCode={false}
+                      // disableCountryGuess={true}
+                      containerClass='nh-phone-input-container'
+                      inputClass='w-full nh-phone-input-element'
+                      inputStyle={{
+                        borderColor: errors?.phoneNo ? theme?.palette?.error?.main : undefined
+                      }}
+                    />
+                  )}
+                />
+                {errors.phoneNo && <FormHelperText error>{errors?.phoneNo?.message}</FormHelperText>}
+                {errors.countryCode && <FormHelperText error>{errors?.countryCode?.message}</FormHelperText>}
+              </div>
             </Grid>
             <Grid item xs={12}>
-              <Controller
-                name='google_address'
-                control={control}
-                render={({ field }) => (
-                  <GoogleAddressAutoComplete
-                    {...field}
-                    fullWidth
-                    onChange={(_, data) => {
-                      field.onChange(data?.details_for_api)
+              <div className='form-group'>
+                <Controller
+                  name='google_address'
+                  control={control}
+                  render={({ field }) => (
+                    <GoogleAddressAutoComplete
+                      {...field}
+                      fullWidth
+                      onChange={(_, data) => {
+                        field.onChange(data?.details_for_api)
 
-                      clearErrors('address')
-                      clearErrors('country')
-                      clearErrors('state')
-                      clearErrors('city')
-                      clearErrors('district')
-                      clearErrors('latitude')
-                      clearErrors('longitude')
-                    }}
-                    renderInput={params => (
-                      <CustomTextField
-                        label={dictionary?.form?.label?.address}
-                        placeholder={dictionary?.form?.placeholder?.address}
-                        className='autocompate-block-input-inner'
-                        {...params}
-                        {...(errors.google_address && {
-                          error: true,
-                          helperText: errors.google_address.message
-                        })}
-                      />
-                    )}
-                  />
-                )}
-              />
-              {errors.address && <FormHelperText error>{errors?.address?.message}</FormHelperText>}
-              {errors.country && <FormHelperText error>{errors?.country?.message}</FormHelperText>}
-              {errors.state && <FormHelperText error>{errors?.state?.message}</FormHelperText>}
-              {errors.city && <FormHelperText error>{errors?.city?.message}</FormHelperText>}
-              {errors.district && <FormHelperText error>{errors?.district?.message}</FormHelperText>}
-              {errors.latitude && <FormHelperText error>{errors?.latitude?.message}</FormHelperText>}
-              {errors.longitude && <FormHelperText error>{errors?.longitude?.message}</FormHelperText>}
+                        clearErrors('address')
+                        clearErrors('country')
+                        clearErrors('state')
+                        clearErrors('city')
+                        clearErrors('district')
+                        clearErrors('latitude')
+                        clearErrors('longitude')
+                      }}
+                      renderInput={params => (
+                        <CustomTextField
+                          label={dictionary?.form?.label?.address}
+                          placeholder={dictionary?.form?.placeholder?.address}
+                          className='autocompate-block-input-inner'
+                          {...params}
+                          {...(errors.google_address && {
+                            error: true,
+                            helperText: errors.google_address.message
+                          })}
+                        />
+                      )}
+                    />
+                  )}
+                />
+                {errors.address && <FormHelperText error>{errors?.address?.message}</FormHelperText>}
+                {errors.country && <FormHelperText error>{errors?.country?.message}</FormHelperText>}
+                {errors.state && <FormHelperText error>{errors?.state?.message}</FormHelperText>}
+                {errors.city && <FormHelperText error>{errors?.city?.message}</FormHelperText>}
+                {errors.district && <FormHelperText error>{errors?.district?.message}</FormHelperText>}
+                {errors.latitude && <FormHelperText error>{errors?.latitude?.message}</FormHelperText>}
+                {errors.longitude && <FormHelperText error>{errors?.longitude?.message}</FormHelperText>}
+              </div>
             </Grid>
             <Grid item xs={12}>
-              <Controller
-                name='description'
-                control={control}
-                render={({ field }) => (
-                  <CustomTextField
-                    {...field}
-                    fullWidth
-                    label={dictionary?.form?.label?.business_description}
-                    placeholder={dictionary?.form?.placeholder?.business_description}
-                    {...(errors.description && { error: true, helperText: errors.description.message })}
-                  />
-                )}
-              />
+              <div className='form-group'>
+                <Controller
+                  name='description'
+                  control={control}
+                  render={({ field }) => (
+                    <CustomTextField
+                      {...field}
+                      fullWidth
+                      label={dictionary?.form?.label?.business_description}
+                      placeholder={dictionary?.form?.placeholder?.business_description}
+                      {...(errors.description && { error: true, helperText: errors.description.message })}
+                    />
+                  )}
+                />
+              </div>
             </Grid>
           </Grid>
 
@@ -559,20 +575,22 @@ const EditDetails = ({ dictionary, userData, setUserData }) => {
             </Grid>
 
             <Grid item xs={12}>
-              <Controller
-                name='no_of_venue'
-                control={control}
-                render={({ field }) => (
-                  <CustomTextField
-                    {...field}
-                    fullWidth
-                    disabled
-                    label={dictionary?.form?.label?.no_of_venue}
-                    placeholder={dictionary?.form?.placeholder?.no_of_venue}
-                    {...(errors.no_of_venue && { error: true, helperText: errors.no_of_venue.message })}
-                  />
-                )}
-              />
+              <div className='form-group'>
+                <Controller
+                  name='no_of_venue'
+                  control={control}
+                  render={({ field }) => (
+                    <CustomTextField
+                      {...field}
+                      fullWidth
+                      disabled
+                      label={dictionary?.form?.label?.no_of_venue}
+                      placeholder={dictionary?.form?.placeholder?.no_of_venue}
+                      {...(errors.no_of_venue && { error: true, helperText: errors.no_of_venue.message })}
+                    />
+                  )}
+                />
+              </div>
             </Grid>
           </Grid>
 
@@ -581,7 +599,8 @@ const EditDetails = ({ dictionary, userData, setUserData }) => {
               <span key={fieldOfHookForm.id}>
                 <Grid container spacing={6} sx={{ pt: 6 }}>
                   <Grid item xs={12}>
-                    {/* <Controller
+                    <div className='form-group'>
+                      {/* <Controller
                       name={`venues.${index}.google_address`}
                       control={control}
                       render={({ field }) => (
@@ -611,53 +630,54 @@ const EditDetails = ({ dictionary, userData, setUserData }) => {
                       )}
                       defaultValue={null}
                     /> */}
-                    <Controller
-                      name={`venues.${index}.location`}
-                      control={control}
-                      render={({ field }) => (
-                        <GoogleAddressAutoComplete
-                          {...field}
-                          fullWidth
-                          onChange={(_, data) => {
-                            field.onChange(data?.details_for_api || null)
-                          }}
-                          renderInput={params => (
-                            <CustomTextField
-                              label={`${dictionary?.form?.label?.venue}-${index + 1} ${dictionary?.form?.label?.address}`}
-                              placeholder={dictionary?.form?.placeholder?.address}
-                              className='autocompate-block-input-inner'
-                              {...params}
-                              {...(errors.venues?.[index]?.location && {
-                                error: true,
-                                helperText: errors.venues?.[index]?.location.message
-                              })}
-                            />
-                          )}
-                        />
+                      <Controller
+                        name={`venues.${index}.location`}
+                        control={control}
+                        render={({ field }) => (
+                          <GoogleAddressAutoComplete
+                            {...field}
+                            fullWidth
+                            onChange={(_, data) => {
+                              field.onChange(data?.details_for_api || null)
+                            }}
+                            renderInput={params => (
+                              <CustomTextField
+                                label={`${dictionary?.form?.label?.venue}-${index + 1} ${dictionary?.form?.label?.address}`}
+                                placeholder={dictionary?.form?.placeholder?.address}
+                                className='autocompate-block-input-inner'
+                                {...params}
+                                {...(errors.venues?.[index]?.location && {
+                                  error: true,
+                                  helperText: errors.venues?.[index]?.location.message
+                                })}
+                              />
+                            )}
+                          />
+                        )}
+                        defaultValue={null}
+                      />
+                      {errors?.venues?.[index]?.location?.address && (
+                        <FormHelperText error>{errors?.venues?.[index]?.location?.address?.message}</FormHelperText>
                       )}
-                      defaultValue={null}
-                    />
-                    {errors?.venues?.[index]?.location?.address && (
-                      <FormHelperText error>{errors?.venues?.[index]?.location?.address?.message}</FormHelperText>
-                    )}
-                    {errors?.venues?.[index]?.location?.country && (
-                      <FormHelperText error>{errors?.venues?.[index]?.location?.country?.message}</FormHelperText>
-                    )}
-                    {errors?.venues?.[index]?.location?.state && (
-                      <FormHelperText error>{errors?.venues?.[index]?.location?.state?.message}</FormHelperText>
-                    )}
-                    {errors?.venues?.[index]?.location?.city && (
-                      <FormHelperText error>{errors?.venues?.[index]?.location?.city?.message}</FormHelperText>
-                    )}
-                    {errors?.venues?.[index]?.location?.district && (
-                      <FormHelperText error>{errors?.venues?.[index]?.location?.district?.message}</FormHelperText>
-                    )}
-                    {errors?.venues?.[index]?.location?.latitude && (
-                      <FormHelperText error>{errors?.venues?.[index]?.location?.latitude?.message}</FormHelperText>
-                    )}
-                    {errors?.venues?.[index]?.location?.longitude && (
-                      <FormHelperText error>{errors?.venues?.[index]?.location?.longitude?.message}</FormHelperText>
-                    )}
+                      {errors?.venues?.[index]?.location?.country && (
+                        <FormHelperText error>{errors?.venues?.[index]?.location?.country?.message}</FormHelperText>
+                      )}
+                      {errors?.venues?.[index]?.location?.state && (
+                        <FormHelperText error>{errors?.venues?.[index]?.location?.state?.message}</FormHelperText>
+                      )}
+                      {errors?.venues?.[index]?.location?.city && (
+                        <FormHelperText error>{errors?.venues?.[index]?.location?.city?.message}</FormHelperText>
+                      )}
+                      {errors?.venues?.[index]?.location?.district && (
+                        <FormHelperText error>{errors?.venues?.[index]?.location?.district?.message}</FormHelperText>
+                      )}
+                      {errors?.venues?.[index]?.location?.latitude && (
+                        <FormHelperText error>{errors?.venues?.[index]?.location?.latitude?.message}</FormHelperText>
+                      )}
+                      {errors?.venues?.[index]?.location?.longitude && (
+                        <FormHelperText error>{errors?.venues?.[index]?.location?.longitude?.message}</FormHelperText>
+                      )}
+                    </div>
                   </Grid>
                 </Grid>
                 <Grid container spacing={2} sx={{ pt: 2 }}>

@@ -170,11 +170,11 @@ const FrontLayoutFooter = props => {
               <div className='f-menu social-menu'>
                 <h3>{dictionary?.footer?.follow_us}</h3>
                 <ul>
-                  {/* <li>
-                    <Link href=''>
+                  <li>
+                    <Link href='https://www.facebook.com/profile.php?id=61572971040495' target='blank'>
                       <img className='social-logo' src='/images/logo/facebook.svg' alt='logo'></img>
                     </Link>
-                  </li> */}
+                  </li>
                   <li>
                     <Link href='https://www.instagram.com/nourishubs/' target='blank'>
                       <img className='social-logo' src='/images/logo/instagram.svg' alt='logo'></img>

@@ -36,39 +36,41 @@ const Reports = props => {
   const { lang: locale } = useParams()
 
   return (
-    <Grid container spacing={6}>
-      <Grid item xs={12} sm={6} md={4}>
-        <Link
-          href={
-            role === 'admin_role'
-              ? `/${locale}/${USER_PANELS?.admin}/dispute-management/history`
-              : `/${locale}/${role === 'parent_role' ? USER_PANELS?.parent : USER_PANELS?.staff}/issue-reporting/issues-list`
-          }
-        >
-          <Card>
-            <CardContent className='flex flex-col gap-1'>
-              <div className='flex items-center gap-4'>
-                <CustomAvatar className='custom-avatar' color={'primary'} skin='light' variant='rounded'>
-                  <i className='tabler-clipboard-check text-xl' />
-                </CustomAvatar>
-                <Typography variant='h4'>
-                  {isDispute
-                    ? dictionary?.datatable?.dispute_history_table?.table_title
-                    : dictionary?.page?.issue_reporting?.issue_counting}
-                </Typography>
-              </div>
-              <div className='flex flex-col gap-1 mt-6'>
-                <div className='flex items-center gap-2'>
-                  <Typography color='text.primary' className='font-bold text-2xl'>
-                    {numberFormat(issueCounts)}
+    <div className='top-block-card'>
+      <div className='card-block-inner'>
+        <div className='card-block'>
+          <Link
+            href={
+              role === 'admin_role'
+                ? `/${locale}/${USER_PANELS?.admin}/dispute-management/history`
+                : `/${locale}/${role === 'parent_role' ? USER_PANELS?.parent : USER_PANELS?.staff}/issue-reporting/issues-list`
+            }
+          >
+            <Card>
+              <CardContent className='flex flex-col gap-1'>
+                <div className='flex items-center gap-4'>
+                  <CustomAvatar className='custom-avatar' color={'primary'} skin='light' variant='rounded'>
+                    <i className='tabler-clipboard-check text-xl' />
+                  </CustomAvatar>
+                  <Typography variant='h4'>
+                    {isDispute
+                      ? dictionary?.datatable?.dispute_history_table?.table_title
+                      : dictionary?.page?.issue_reporting?.issue_counting}
                   </Typography>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        </Link>
-      </Grid>
-    </Grid>
+                <div className='number-text-block flex flex-col gap-1 mt-6'>
+                  <div className='number-text-block-inner flex items-center gap-2'>
+                    <Typography color='text.primary' className='font-bold text-2xl'>
+                      {numberFormat(issueCounts)}
+                    </Typography>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+        </div>
+      </div>
+    </div>
   )
 }
 

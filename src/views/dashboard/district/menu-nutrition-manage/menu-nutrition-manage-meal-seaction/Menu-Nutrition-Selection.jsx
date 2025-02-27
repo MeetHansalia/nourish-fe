@@ -22,12 +22,13 @@ import {
 import { API_ROUTER } from '@/utils/apiRoutes'
 import axiosApiCall from '@/utils/axiosApiCall'
 import { apiResponseErrorHandling, toastError, toastSuccess } from '@/utils/globalFunctions'
+import TruncatedTextWithModal from '@/components/TruncatedTextWithModal'
 
 const MenuNutritionSelection = ({ dictionary, vendorId }) => {
   const [selectedCategory, setSelectedCategory] = useState(null)
 
   const [searchQuery, setSearchQuery] = useState('')
-
+  const [activeId, setActiveId] = useState(null)
   const [categories, setCategories] = useState([])
   const [allDishes, setAllDishes] = useState([])
   const [filteredDishes, setFilteredDishes] = useState([])
@@ -82,7 +83,7 @@ const MenuNutritionSelection = ({ dictionary, vendorId }) => {
 
   useEffect(() => {
     axiosApiCall
-      .get(API_ROUTER.PARENT.GET_PARENT_ALL_CATEGORIES(vendorId))
+      .get(API_ROUTER.PARENT.GET_PARENT_ALL_CATEGORIES, { params: vendorId })
       .then(response => {
         const fetchedCategories = response?.data?.response?.data?.categories || []
         const allFetchedDishes = fetchedCategories.flatMap(cat => cat.dishes || [])
@@ -173,18 +174,14 @@ const MenuNutritionSelection = ({ dictionary, vendorId }) => {
                       />
                     </Tooltip>
                     <Typography className='font-medium'>{dish.name}</Typography>
-                    <Typography
-                      className='text-sm text-gray-600 truncate'
-                      style={{
-                        maxHeight: '4.5rem',
-                        overflow: 'hidden',
-                        display: '-webkit-box',
-                        WebkitBoxOrient: 'vertical',
-                        WebkitLineClamp: 3
-                      }}
-                    >
-                      {dish.description}
-                    </Typography>
+                    <TruncatedTextWithModal
+                      id={dish._id}
+                      title={dish.name}
+                      text={dish.description}
+                      wordLimit={20}
+                      activeId={activeId}
+                      setActiveId={setActiveId}
+                    />
                     <Typography className='font-bold text-green-600'>${dish.pricing}</Typography>
                   </div>
                 </Grid>

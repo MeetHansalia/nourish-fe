@@ -40,6 +40,9 @@ import {
   TablePagination
 } from '@mui/material'
 
+// Style Imports
+import tableStyles from '@core/styles/table.module.css'
+
 import ChevronRight from '@menu/svg/ChevronRight'
 
 // Util Imports
@@ -149,7 +152,6 @@ const OrderDataTable = props => {
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
     manualPagination: true,
     manualSorting: true
   })
@@ -185,22 +187,21 @@ const OrderDataTable = props => {
           />
         }
       />
-      <TableContainer className='table-common-block p-0' component={Paper}>
-        <Table>
-          <TableHead>
+      <div className='table-common-block p-0'>
+        <table className={tableStyles.table}>
+          <thead>
             {table.getHeaderGroups().map(headerGroup => (
-              <TableRow key={headerGroup.id}>
+              <tr key={headerGroup.id}>
                 {headerGroup.headers.map(header => (
-                  <TableCell key={header.id} onClick={header.column.getToggleSortingHandler()}>
+                  <th key={header.id} onClick={header.column.getToggleSortingHandler()}>
                     {flexRender(header.column.columnDef.header, header.getContext())}
-                    {header.column.getIsSorted() === 'asc' ? (
-                      <ChevronRight fontSize='1.25rem' className='-rotate-90' />
-                    ) : header.column.getIsSorted() === 'desc' ? (
-                      <ChevronRight fontSize='1.25rem' className='rotate-90' />
-                    ) : null}
-                  </TableCell>
+                    {{
+                      asc: <i className='tabler-chevron-up text-xl' />,
+                      desc: <i className='tabler-chevron-down text-xl' />
+                    }[header.column.getIsSorted()] ?? null}
+                  </th>
                 ))}
-              </TableRow>
+              </tr>
             ))}
             {isDataTableServerLoading && (
               <tr>
@@ -209,8 +210,8 @@ const OrderDataTable = props => {
                 </td>
               </tr>
             )}
-          </TableHead>
-          <TableBody>
+          </thead>
+          <tbody>
             {/* {table.getRowModel().rows.map(row => (
               <TableRow key={row.id}>
                 {row.getVisibleCells().map(cell => (
@@ -219,32 +220,32 @@ const OrderDataTable = props => {
               </TableRow>
             ))} */}
             {globalFilter.length > 0 && table.getFilteredRowModel().rows.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={table.getVisibleFlatColumns().length} align='center'>
+              <tr>
+                <td colSpan={table.getVisibleFlatColumns().length} align='center'>
                   {t('datatable.common.no_matching_data_found')}
-                </TableCell>
-              </TableRow>
+                </td>
+              </tr>
             ) : table.getFilteredRowModel().rows.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={table.getVisibleFlatColumns().length} align='center'>
+              <tr>
+                <td colSpan={table.getVisibleFlatColumns().length} align='center'>
                   {t('datatable.common.no_data_available')}
-                </TableCell>
-              </TableRow>
+                </td>
+              </tr>
             ) : (
               table
                 .getRowModel()
                 .rows.slice(0, table.getState().pagination.pageSize)
                 .map(row => (
-                  <TableRow key={row.id} className={classnames({ selected: row.getIsSelected() })}>
+                  <tr key={row.id} className={classnames({ selected: row.getIsSelected() })}>
                     {row.getVisibleCells().map(cell => (
-                      <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                      <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
                     ))}
-                  </TableRow>
+                  </tr>
                 ))
             )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+          </tbody>
+        </table>
+      </div>
       {/* <Stack direction='row' justifyContent='space-between' sx={{ padding: 2 }}> */}
       <TablePagination
         component={() => (

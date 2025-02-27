@@ -69,8 +69,8 @@ const VerticalNavContent = ({ children }) => {
           <Logo />
         </Link>
         <NavCollapseIcons
-          lockedIcon={<i className='tabler-circle-dot text-xl' />}
-          unlockedIcon={<i className='tabler-circle text-xl' />}
+          lockedIcon={<i className='tabler-circle-chevron-left text-xl' />}
+          unlockedIcon={<i className='tabler-circle-chevron-right text-xl' />}
           closeIcon={<i className='tabler-x text-xl' />}
         />
       </NavHeader>

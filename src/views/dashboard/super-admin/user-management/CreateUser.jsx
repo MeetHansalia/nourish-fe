@@ -627,17 +627,17 @@ const CreateUser = props => {
               </div>
             </Grid>
             <Grid item xs={12}>
-              <div className='form-group'>
+              <div className='form-group select-input-common'>
                 <Controller
                   name='role'
-                  className='select-input-common'
+                  // className='select-input-common'
                   control={control}
                   render={({ field }) => (
                     <CustomTextField
                       {...field}
                       select
                       fullWidth
-                      className='select-input-common'
+                      // className='select-input-common'
                       label={dictionary?.form?.label?.role}
                       error={Boolean(errors.role)}
                       helperText={errors?.role?.message || ''}
@@ -847,7 +847,7 @@ const CreateUser = props => {
                       fullWidth
                       onChange={(_, data) => {
                         // console.log('_', _)
-                        // console.log('GoogleAddressAutoComplete: data', data)
+                        // console.log('GoogleAddressAutoComplete: data', data?.details_for_api)
 
                         // field.onChange(data)
                         field.onChange(data?.details_for_api)

@@ -37,6 +37,8 @@ import {
   DialogContentText
 } from '@mui/material'
 
+import TruncatedTextWithModal from '@/components/TruncatedTextWithModal'
+
 import { API_ROUTER } from '@/utils/apiRoutes'
 
 import axiosApiCall from '@/utils/axiosApiCall'
@@ -49,82 +51,8 @@ import { getLocalizedUrl } from '@/utils/i18n'
 
 import { getPanelName } from '@/utils/globalFunctions'
 
-const validationSchema = selectedDish =>
-  yup.object().shape({
-    modifiers: yup
-      .array()
-      .of(
-        yup.object().shape({
-          name: yup.string().required('Modifier name is required'),
-          requireCustomerToSelectDish: yup.boolean(),
-          what_the_maximum_amount_of_item_customer_can_select: yup.boolean(),
-          max_selection: yup.number().nullable(),
-          required_rule: yup.string().oneOf(['atleast', 'exactly', 'maximum']).required(),
-          quantity: yup.number().required('Quantity is required'),
-          dishIds: yup
-            .array()
-            .of(
-              yup.object().shape({
-                selected: yup.boolean().required()
-              })
-            )
-            .test('dish-selection', 'Validation failed based on conditions', function (dishIds) {
-              const {
-                requireCustomerToSelectDish,
-                required_rule,
-                quantity,
-                max_selection,
-                what_the_maximum_amount_of_item_customer_can_select
-              } = this.parent
-
-              const selectedCount = dishIds.filter(dish => dish.selected).length
-
-              if (what_the_maximum_amount_of_item_customer_can_select && max_selection) {
-                if (selectedCount > max_selection) {
-                  return this.createError({
-                    message: `You can select a maximum of ${max_selection} dish(es).`
-                  })
-                }
-              }
-
-              if (requireCustomerToSelectDish) {
-                if (required_rule === 'atleast' && selectedCount < quantity) {
-                  return this.createError({
-                    message: `You must select at least ${quantity} dish(es).`
-                  })
-                }
-
-                if (required_rule === 'exactly' && selectedCount !== quantity) {
-                  return this.createError({
-                    message: `You must select exactly ${quantity} dish(es).`
-                  })
-                }
-
-                if (required_rule === 'maximum' && selectedCount > quantity) {
-                  return this.createError({
-                    message: `You can select a maximum of ${quantity} dish(es).`
-                  })
-                }
-              }
-
-              return true
-            })
-        })
-      )
-      .test('modifiers-required', 'At least one modifier is required', function (modifiers) {
-        // ✅ Skip validation if selectedDish?.modifierIds is empty
-        if (!selectedDish?.modifierIds || selectedDish?.modifierIds.length === 0) {
-          return true
-        }
-        // ✅ Enforce at least one modifier if modifiers array is empty
-
-        return modifiers && modifiers.length > 0
-      })
-  })
-
 const Menu = ({ dictionary, vendorId }) => {
   const router = useRouter()
-
   const { lang: locale } = useParams()
   const pathname = usePathname()
   const { t } = useTranslation(locale)
@@ -141,11 +69,84 @@ const Menu = ({ dictionary, vendorId }) => {
   const [totalPrice, setTotalPrice] = useState(0)
   const [selectedModifierIds, setSelectedModifierIds] = useState([])
   const cartDetail = useSelector(state => state.global.cart)
-
+  const [activeId, setActiveId] = useState(null)
   const [cartData, setCartData] = useState([])
   const [dishData, setDishData] = useState([])
 
   const userId = useSelector(state => state.profile.user?._id)
+
+  const validationSchema = selectedDish =>
+    yup.object().shape({
+      modifiers: yup
+        .array()
+        .of(
+          yup.object().shape({
+            name: yup.string().required(t('form.validation.modifier_name')),
+            requireCustomerToSelectDish: yup.boolean(),
+            what_the_maximum_amount_of_item_customer_can_select: yup.boolean(),
+            max_selection: yup.number().nullable(),
+            required_rule: yup.string().oneOf(['atleast', 'exactly', 'maximum']).required(),
+            quantity: yup.number().required(t('form.validation.quantity')),
+            dishIds: yup
+              .array()
+              .of(
+                yup.object().shape({
+                  selected: yup.boolean().required()
+                })
+              )
+              .test('dish-selection', t('form.validation.validation'), function (dishIds) {
+                const {
+                  requireCustomerToSelectDish,
+                  required_rule,
+                  quantity,
+                  max_selection,
+                  what_the_maximum_amount_of_item_customer_can_select
+                } = this.parent
+
+                const selectedCount = dishIds.filter(dish => dish.selected).length
+
+                if (what_the_maximum_amount_of_item_customer_can_select && max_selection) {
+                  if (selectedCount > max_selection) {
+                    return this.createError({
+                      message: t('form.validation.max_dish', { max_selection: max_selection })
+                    })
+                  }
+                }
+
+                if (requireCustomerToSelectDish) {
+                  if (required_rule === 'atleast' && selectedCount < quantity) {
+                    return this.createError({
+                      message: t('form.validation.atleast_dish', { quantity: quantity })
+                    })
+                  }
+
+                  if (required_rule === 'exactly' && selectedCount !== quantity) {
+                    return this.createError({
+                      message: t('form.validation.exact_dish', { quantity: quantity })
+                    })
+                  }
+
+                  if (required_rule === 'maximum' && selectedCount > quantity) {
+                    return this.createError({
+                      message: t('form.validation.max_dish_qty', { quantity: quantity })
+                    })
+                  }
+                }
+
+                return true
+              })
+          })
+        )
+        .test('modifiers-required', t('form.validation.atleast_modifier'), function (modifiers) {
+          // ✅ Skip validation if selectedDish?.modifierIds is empty
+          if (!selectedDish?.modifierIds || selectedDish?.modifierIds.length === 0) {
+            return true
+          }
+          // ✅ Enforce at least one modifier if modifiers array is empty
+
+          return modifiers && modifiers.length > 0
+        })
+    })
 
   const {
     control,
@@ -369,59 +370,77 @@ const Menu = ({ dictionary, vendorId }) => {
   }
 
   return (
-    <div className='p-4'>
-      <div className='flex justify-between items-center mb-4'>
-        <Typography variant='h5' className='font-bold'>
-          {dictionary?.common?.menu}
-        </Typography>
-        <div className='flex items-center gap-4'>
-          <TextField
-            size='small'
-            placeholder={dictionary?.common?.search}
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-          />
-          <Typography
-            onClick={() => handleOrderNow(vendorId)}
-            style={{
-              cursor: cartData?.length > 0 ? 'pointer' : 'not-allowed',
-              opacity: cartData?.length > 0 ? 1 : 0.5
-            }}
-          >
-            {dictionary?.common?.cart} ({cartData?.length || 0})
+    <div className='multi-order-custom'>
+      <div className='common-block-dashboard p-0'>
+        <div className='common-form-dashboard flex justify-between items-center'>
+          <Typography variant='h5' className='font-bold'>
+            {dictionary?.common?.menu}
           </Typography>
+          <div className='flex items-center gap-4'>
+            <div className='form-group'>
+              <TextField
+                size='small'
+                placeholder={dictionary?.common?.search}
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+              />
+            </div>
+            <div className='cart-icon-block'>
+              <Typography
+                onClick={() => handleOrderNow(vendorId)}
+                style={{
+                  cursor: cartData?.length > 0 ? 'pointer' : 'not-allowed',
+                  opacity: cartData?.length > 0 ? 1 : 0.5
+                }}
+              >
+                <svg width='25' height='26' viewBox='0 0 25 26' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                  <path
+                    d='M17.8143 6.2443C17.8143 3.26171 15.3965 0.843798 12.4139 0.843798C10.9776 0.83776 9.5981 1.40405 8.58036 2.41749C7.56263 3.43093 6.99052 4.80804 6.99052 6.2443M17.6427 24.8713H7.20791C3.37496 24.8713 0.434459 23.4869 1.2697 17.9148L2.24224 10.3633C2.75711 7.58298 4.53057 6.5189 6.08663 6.5189H18.8097C20.3887 6.5189 22.0592 7.66307 22.6541 10.3633L23.6267 17.9148C24.3361 22.8576 21.4756 24.8713 17.6427 24.8713Z'
+                    stroke='#006838'
+                    strokeWidth='1.5'
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                  />
+                </svg>
+                {/* {dictionary?.common?.cart}  */}
+                <span>({cartData.reduce((sum, item) => sum + (item.quantity || 0), 0)})</span>
+              </Typography>
+            </div>
+          </div>
+        </div>
+
+        <div className='card-category-img'>
+          <CardContent className='p-0 overflow-x-auto flex gap-4 overflow-x-auto'>
+            <div
+              className={`card-category-img-first cursor-pointer border p-4 rounded-lg flex flex-col items-center gap-2 ${
+                selectedCategory === null ? 'bg-green-100' : ''
+              }`}
+              onClick={() => handleSelectCategory(null)}
+            >
+              <Typography className='font-medium text-center'>{dictionary?.form?.label?.all}</Typography>
+            </div>
+
+            {categories.map(category => (
+              <div
+                key={category._id}
+                className={`card-category-img-common cursor-pointer border flex items-center gap-2 ${
+                  selectedCategory?._id === category._id ? 'bg-green-100' : ''
+                }`}
+                onClick={() => handleSelectCategory(category)}
+              >
+                <div className='category-img-block'>
+                  <img src={category.imageUrl} alt={category.name} className='w-12 h-12' />
+                </div>
+                <Typography className='font-medium'>{category.name}</Typography>
+              </div>
+            ))}
+          </CardContent>
         </div>
       </div>
 
-      <Card className='mb-4'>
-        <CardContent className='flex gap-4 overflow-x-auto'>
-          <div
-            className={`cursor-pointer border p-4 rounded-lg flex flex-col items-center gap-2 ${
-              selectedCategory === null ? 'bg-green-100' : ''
-            }`}
-            onClick={() => handleSelectCategory(null)}
-          >
-            <Typography className='font-medium text-center'>{dictionary?.form?.label?.all}</Typography>
-          </div>
-
-          {categories.map(category => (
-            <div
-              key={category._id}
-              className={`cursor-pointer border p-4 rounded-lg flex flex-col items-center gap-2 ${
-                selectedCategory?._id === category._id ? 'bg-green-100' : ''
-              }`}
-              onClick={() => handleSelectCategory(category)}
-            >
-              <img src={category.imageUrl} alt={category.name} className='w-12 h-12' />
-              <Typography className='font-medium text-center'>{category.name}</Typography>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardContent>
-          <Grid container spacing={3}>
+      <Card className='menu-selection-block'>
+        <CardContent className='p-0'>
+          <Grid container spacing={6}>
             {filteredDishes.length > 0 ? (
               filteredDishes.map(dish => {
                 // Find matching cart item from cartData
@@ -434,51 +453,54 @@ const Menu = ({ dictionary, vendorId }) => {
                 }, 0)
 
                 return (
-                  <Grid item xs={12} sm={6} md={4} key={`${dish._id}-${totalQty}`}>
-                    <div className='border rounded-lg p-4 flex flex-col gap-2 relative cursor-pointer'>
-                      {/* Dish image with tooltip */}
-                      <Tooltip title={`Ingredients: ${dish.ingredients.map(ing => ing.name).join(', ')}`} arrow>
-                        <img
-                          src={dish.image || 'https://via.placeholder.com/150'}
-                          alt={dish.name}
-                          className='w-full h-32 object-cover rounded-lg'
+                  <Grid item xs={12} sm={6} md={6} key={`${dish._id}-${totalQty}`}>
+                    <div className='menu-selection-block-inner p-4 flex gap-2 relative cursor-pointer'>
+                      <div className='menu-selection-block-inner-content'>
+                        {/* Dish name and description */}
+                        <Typography className='title-medium-custom'>{dish.name}</Typography>
+                        <TruncatedTextWithModal
+                          id={dish._id}
+                          title={dish.name}
+                          text={dish.description}
+                          wordLimit={20}
+                          activeId={activeId}
+                          setActiveId={setActiveId}
                         />
-                      </Tooltip>
+                        <Typography className='title-medium-custom theme-color'>${dish.pricing}</Typography>
+                      </div>
+                      <div className='menu-selection-block-inner-img'>
+                        {/* Dish image with tooltip */}
+                        <Tooltip title={`Ingredients: ${dish.ingredients.map(ing => ing.name).join(', ')}`} arrow>
+                          <img
+                            src={dish.image || 'https://via.placeholder.com/150'}
+                            alt={dish.name}
+                            className='object-cover rounded-lg'
+                          />
+                        </Tooltip>
 
-                      {/* Dish name and description */}
-                      <Typography className='font-medium'>{dish.name}</Typography>
-                      <Typography
-                        className='text-sm text-gray-600 truncate'
-                        style={{
-                          maxHeight: '4.5rem',
-                          overflow: 'hidden',
-                          display: '-webkit-box',
-                          WebkitBoxOrient: 'vertical',
-                          WebkitLineClamp: 3
-                        }}
-                      >
-                        {dish.description}
-                      </Typography>
-                      <Typography className='font-bold text-green-600'>${dish.pricing}</Typography>
+                        {/* Quantity buttons and field */}
+                        <div className='menu-selection-block-inner-p-l flex justify-between items-center'>
+                          <Button variant='outlined' onClick={() => handleDialogOpen(dish)}>
+                            <i className='tabler-plus' />
+                          </Button>
 
-                      {/* Quantity buttons and field */}
-                      <div className='flex justify-between items-center mt-2'>
-                        <Button variant='outlined' onClick={() => handleDialogOpen(dish)}>
-                          +
-                        </Button>
+                          {/* Qty field placed between + and - */}
+                          <TextField
+                            value={totalQty}
+                            InputProps={{ readOnly: true }} // Non-editable qty field
+                            className='text-center' // Center align qty
+                            variant='outlined'
+                            size='small'
+                          />
 
-                        {/* Qty field placed between + and - */}
-                        <TextField
-                          value={totalQty}
-                          InputProps={{ readOnly: true }} // Non-editable qty field
-                          className='w-24 text-center' // Center align qty
-                          variant='outlined'
-                          size='small'
-                        />
-
-                        <Button variant='outlined' onClick={() => handleDecreaseDialogOpen(dish)}>
-                          -
-                        </Button>
+                          <Button
+                            className='border-radius-block'
+                            variant='outlined'
+                            onClick={() => handleDecreaseDialogOpen(dish)}
+                          >
+                            <i className='tabler-minus' />
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </Grid>
@@ -495,6 +517,7 @@ const Menu = ({ dictionary, vendorId }) => {
 
       {selectedDish && (
         <Dialog
+          className='common-modal-theme'
           open={dialogOpen}
           onClose={(event, reason) => {
             if (reason !== 'backdropClick' && reason !== 'escapeKeyDown') {
@@ -503,20 +526,14 @@ const Menu = ({ dictionary, vendorId }) => {
           }}
           fullWidth
         >
-          <DialogTitle>
+          <DialogTitle className='title-medium-custom'>
             {selectedDish?.name ?? 'Dish'}
-            <IconButton
-              edge='end'
-              color='inherit'
-              onClick={handleDialogClose}
-              aria-label='close'
-              sx={{ position: 'absolute', right: 8, top: 8 }}
-            >
+            <IconButton edge='end' color='inherit' onClick={handleDialogClose} aria-label='close'>
               <CloseIcon />
             </IconButton>
           </DialogTitle>
 
-          <DialogContent>
+          <DialogContent className='modal-body-custom'>
             {selectedDish && (
               <form
                 onSubmit={handleSubmit(data => {
@@ -525,11 +542,11 @@ const Menu = ({ dictionary, vendorId }) => {
                 })}
               >
                 {selectedDish?.modifierIds?.map((modifier, index) => (
-                  <div key={modifier._id} className='mb-4'>
-                    <Typography variant='h6' className='mb-3'>
+                  <div key={modifier._id} className='modal-inner-block'>
+                    <Typography variant='h6' className='title-small-medium-custom mb-3'>
                       {modifier.name}
                     </Typography>
-                    <Typography variant='subtitle2' color='textSecondary'>
+                    <Typography className='title-small-custom' variant='subtitle2' color='textSecondary'>
                       {modifier.requireCustomerToSelectDish ? 'Required' : 'Optional'}
                     </Typography>
 
@@ -541,6 +558,7 @@ const Menu = ({ dictionary, vendorId }) => {
                         defaultValue={false}
                         render={({ field }) => (
                           <FormControlLabel
+                            className='label-block-modal-body'
                             control={
                               <Checkbox
                                 {...field}
@@ -579,18 +597,21 @@ const Menu = ({ dictionary, vendorId }) => {
                     )}
                   </div>
                 ))}
-                <div style={{ width: 200, height: 200 }}>
-                  <SpeedometerChart />
+                <div className='block-chart-common flex align-center justify-between'>
+                  <div className='block-chart-inner' style={{ width: 200, height: 200 }}>
+                    <SpeedometerChart />
+                  </div>
                 </div>
+                <div className='modal-footer'>
+                  <Typography variant='h6' color='textSecondary' className='title-small-medium-custom'>
+                    {dictionary?.meal?.total_price}: ${totalPrice.toFixed(2)}
+                  </Typography>
 
-                <Typography variant='h6' color='textSecondary' className='mb-3'>
-                  {dictionary?.meal?.total_price}: ${totalPrice.toFixed(2)}
-                </Typography>
-
-                <div className='mt-4 text-center'>
-                  <Button variant='contained' color='success' type='submit'>
-                    {dictionary?.form?.button?.add_to_cart}
-                  </Button>
+                  <div className='text-center'>
+                    <Button className='theme-common-btn' variant='contained' color='success' type='submit'>
+                      {dictionary?.form?.button?.add_to_cart}
+                    </Button>
+                  </div>
                 </div>
               </form>
             )}

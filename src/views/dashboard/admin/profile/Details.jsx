@@ -29,6 +29,8 @@ import CustomAvatar from '@/@core/components/mui/Avatar'
 import { getLocalizedUrl } from '@/utils/i18n'
 import { getFullName, getPanelName } from '@/utils/globalFunctions'
 import { getInitials } from '@/utils/getInitials'
+import OpenDialogOnElementClick from '@/components/layout/OpenDialogOnElementClick'
+import ChangePasswordDialog from '@/components/ChangePasswordDialog'
 
 /**
  * Page
@@ -173,6 +175,17 @@ const Details = ({ dictionary, userData, setSelectedFile }) => {
                   <i>N/A</i>
                 )}
               </Typography>
+            </div>
+            <div className='flex items-center flex-wrap gap-2 justify-center'>
+              <OpenDialogOnElementClick
+                element={Button}
+                elementProps={{
+                  children: `${dictionary?.common?.change_password}`,
+                  variant: 'contained'
+                }}
+                dialog={ChangePasswordDialog}
+                dialogProps={{ dictionary }}
+              />
             </div>
           </div>
         </div>

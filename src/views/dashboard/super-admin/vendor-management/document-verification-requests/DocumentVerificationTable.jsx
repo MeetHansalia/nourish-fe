@@ -238,19 +238,21 @@ const DocumentVerificationTable = ({ dictionary }) => {
  */
 
   return (
-    <Card>
+    <Card className='common-block-dashboard table-block-no-pad'>
       <CardHeader
         title={dictionary?.datatable?.verification_request_Table?.table_title}
         action={
-          <DebouncedInput
-            value={globalFilter ?? ''}
-            onChange={value => setGlobalFilter(String(value))}
-            placeholder={dictionary?.datatable?.common?.search_placeholder}
-          />
+          <div className='form-group'>
+            <DebouncedInput
+              value={globalFilter ?? ''}
+              onChange={value => setGlobalFilter(String(value))}
+              placeholder={dictionary?.datatable?.common?.search_placeholder}
+            />
+          </div>
         }
-        className='flex-wrap gap-4'
+        className='flex-wrap gap-4 common-block-title'
       />
-      <div className='overflow-x-auto'>
+      <div className='table-common-block overflow-x-auto'>
         <table className={tableStyles.table}>
           <thead>
             {table.getHeaderGroups().map(headerGroup => (

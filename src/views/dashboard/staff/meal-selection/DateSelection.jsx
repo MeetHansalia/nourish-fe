@@ -53,7 +53,7 @@ const DateSelection = ({ dictionary }) => {
 
   const { t } = useTranslation(locale)
 
-  const calendarRef = useRef(null)
+  // const calendarRef = useRef(null)
 
   const pathname = usePathname()
 
@@ -72,6 +72,10 @@ const DateSelection = ({ dictionary }) => {
   const [startDate, setStartDate] = useState(null)
 
   const [endDate, setEndDate] = useState(null)
+
+  const [calStartDate, setCalStartDate] = useState(null)
+
+  const [calEndDate, setCalEndDate] = useState(null)
 
   const [selectedDates, setSelectedDates] = useState([])
 
@@ -106,7 +110,12 @@ const DateSelection = ({ dictionary }) => {
       setStartDate(start)
       setEndDate(end)
 
-      const allDates = eachDayOfInterval({ start, end })
+      // Get all dates in the range and filter out weekends
+      const allDates = eachDayOfInterval({ start, end }).filter(date => {
+        const day = date.getDay()
+
+        return day !== 0 && day !== 6 // Exclude Sundays (0) and Saturdays (6)
+      })
 
       setSelectedDates(allDates)
     }
@@ -154,32 +163,33 @@ const DateSelection = ({ dictionary }) => {
       try {
         setIsDataLoaded(true)
 
-        if (calendarRef.current) {
-          const calendarApi = calendarRef.current.getApi()
-          const visibleStart = calendarApi.view.currentStart
-          const visibleEnd = calendarApi.view.currentEnd
+        if (calStartDate && calEndDate) {
+          // const calendarApi = calendarRef.current.getApi()
+          // const visibleStart = calendarApi.view.currentStart
+          // const visibleEnd = calendarApi.view.currentEnd
 
-          const formattedStartDate = visibleStart.toISOString().slice(0, 10)
+          // const formattedStartDate = visibleStart.toISOString().slice(0, 10)
 
-          const formattedEndDate = visibleEnd.toISOString().slice(0, 10)
+          // const formattedEndDate = visibleEnd.toISOString().slice(0, 10)
 
           const params = new URLSearchParams({
-            startDate: formattedStartDate,
-            endDate: formattedEndDate
+            startDate: calStartDate,
+            endDate: calEndDate
           }).toString()
 
           const response = await axiosApiCall.get(`${API_ROUTER.STAFF.GET_AVAILABLE_VENDORS}?${params}`)
 
           const vendors = response.data?.response || []
 
-          const mappedEvents = vendors.map(item => ({
-            title: item.vendorId?.first_name || 'Unknown Vendor',
-            start: item.date,
-            details: item.details,
-            id: item.vendorId?._id
-          }))
+          // const mappedEvents = vendors.map(item => ({
+          //   title: item.vendorId?.first_name || 'Unknown Vendor',
+          //   start: item.date,
+          //   details: item.details,
+          //   id: item.vendorId?._id
+          // }))
 
-          setEvents(mappedEvents)
+          // setEvents(mappedEvents)
+          setEvents(vendors)
 
           toastSuccess(response?.data?.message)
         }
@@ -193,7 +203,7 @@ const DateSelection = ({ dictionary }) => {
     }
 
     fetchData()
-  }, [userId])
+  }, [userId, calStartDate, calEndDate])
 
   const fetchLatestMultipleCartDetails = async () => {
     try {
@@ -257,50 +267,61 @@ const DateSelection = ({ dictionary }) => {
     <>
       <Grid container spacing={6}>
         <Grid item xs={12}>
-          <Card>
-            <CardContent>
+          <Card className='common-block-dashboard'>
+            <CardContent className='common-form-dashboard p-0'>
               <CardHeader
+                className='p-0'
                 title={isDataLoaded ? `${kidData?.first_name || ''} ${kidData?.last_name || ''}` : 'Loading...'}
               />
 
               <Grid container spacing={6}>
                 <Grid item xs={12}>
-                  <AppReactDatepicker
-                    selectsRange
-                    startDate={startDate}
-                    endDate={endDate}
-                    selected={startDate}
-                    id='date-range-picker'
-                    onChange={handleOnChange}
-                    shouldCloseOnSelect={false}
-                    minDate={addDays(new Date(), 7)}
-                    maxDate={endDate ? addDays(startDate, 14) : null}
-                    customInput={<CustomInput label='Date Range' start={startDate} end={endDate} />}
-                  />
-                  {error && <span style={{ color: 'red' }}>{error}</span>}
+                  <div className='form-group'>
+                    <AppReactDatepicker
+                      selectsRange
+                      startDate={startDate}
+                      endDate={endDate}
+                      selected={startDate}
+                      id='date-range-picker'
+                      onChange={handleOnChange}
+                      shouldCloseOnSelect={false}
+                      minDate={addDays(new Date(), 7)} // Start selection after 7 days
+                      maxDate={addDays(new Date(), 21)} // Allow up to 14 days from minDate
+                      filterDate={date => {
+                        const day = date.getDay()
+
+                        return day !== 0 && day !== 6 // Disable weekends (Sunday = 0, Saturday = 6)
+                      }}
+                      customInput={<CustomInput label='Date Range' start={startDate} end={endDate} />}
+                    />
+                    {error && <span style={{ color: 'red' }}>{error}</span>}
+                  </div>
                 </Grid>
               </Grid>
-
-              <Button
-                variant='contained'
-                color='primary'
-                sx={{ mt: 2 }}
-                onClick={handleRedirect}
-                disabled={!startDate || !endDate || isSubmitting}
-              >
-                {isSubmitting ? 'Loading...' : `${dictionary?.common?.weekly_order}`}
-              </Button>
+              <div className='flex justify-center' sx={{ alignItems: 'center' }}>
+                <Button
+                  variant='contained'
+                  color='primary'
+                  sx={{ mt: 2 }}
+                  className='theme-common-btn min-width-auto'
+                  onClick={handleRedirect}
+                  disabled={!startDate || !endDate || isSubmitting}
+                >
+                  {isSubmitting ? 'Loading...' : `${dictionary?.common?.weekly_order}`}
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </Grid>
 
-        <Grid item xs={12}>
-          <Card className='overflow-visible'>
+        <Grid item xs={12} className="pt-0">
+          <Card className='overflow-visible common-block-dashboard p-0'>
             <AppFullCalendar className='app-calendar'>
               <div className='p-6 pbe-0 flex-grow overflow-visible bg-backgroundPaper rounded'>
                 <Calendar
                   events={events}
-                  calendarRef={calendarRef}
+                  setCalStartDate={setCalStartDate}
+                  setCalEndDate={setCalEndDate}
                   // onOrderNow={handleOrderNow}
                   setSelectedVendor={setSelectedVendor}
                 />

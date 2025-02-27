@@ -81,13 +81,13 @@ const AddStaffFormComponent = ({ dictionary }) => {
       .email(dictionary?.form?.validation?.email_address)
       .required(dictionary?.form?.validation?.required),
     phoneNo: yup.string().required(dictionary?.form?.validation?.required),
-    google_address: yup.object().required(dictionary?.form?.validation?.required),
-    permissions: yup.array().of(
-      yup.object().shape({
-        permission: yup.string(),
-        subPermissions: yup.array().of(yup.string())
-      })
-    )
+    // google_address: yup.object().required(dictionary?.form?.validation?.required),
+    // permissions: yup.array().of(
+    //   yup.object().shape({
+    //     permission: yup.string(),
+    //     subPermissions: yup.array().of(yup.string())
+    //   })
+    // )
   })
 
   const formDefaultValues = {
