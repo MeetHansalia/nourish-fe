@@ -2,6 +2,8 @@
 // import { getPathnameWithoutPanel } from '@/app/server/actions'
 
 // HOC Imports
+import { Toaster } from 'react-hot-toast'
+
 import RoleAuthGuard from '@/hocs/RoleAuthGuard'
 import SocketHandler from '@/socket/SocketHandler'
 import CheckPagePermissionForAdminPanel from '@/views/dashboard/admin/CheckPagePermissionForAdminPanel'
@@ -31,6 +33,8 @@ const Layout = async ({ children, params }) => {
 
   return (
     <RoleAuthGuard locale={params.lang} allowedUserRoles={['admin_role']}>
+      <Toaster position='top-right' />
+
       <SocketHandler />
 
       {/* {children} */}

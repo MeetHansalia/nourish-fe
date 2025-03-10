@@ -46,14 +46,14 @@ const VerticalMenuSuperAdmin = ({ dictionary, userRole, userPanel, serverSession
       >
         {dictionary['navigation'].dashboard}
       </MenuItem>
-      <MenuItem
+      {/* <MenuItem
         href={schoolProfilePath}
         activeUrl={schoolProfilePath}
         exactMatch={false}
         icon={<i className='tabler-user-cog' />}
       >
-        {dictionary['navigation'].schools_profile}
-      </MenuItem>
+        {dictionary['navigation'].profile_management}
+      </MenuItem> */}
       <MenuItem
         href={foodChartCreationPath}
         icon={<i className='tabler-tools-kitchen-3' />}

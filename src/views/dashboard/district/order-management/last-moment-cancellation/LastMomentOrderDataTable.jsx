@@ -30,7 +30,9 @@ import {
   Grid,
   Link,
   CircularProgress,
-  CardHeader
+  CardHeader,
+  FormControl,
+  Select
 } from '@mui/material'
 
 // Third-party Imports
@@ -70,6 +72,7 @@ import NearByVendorDialog from './NearByVendorDialog'
 import { numberFormat } from '@/utils/globalFilters'
 import DebouncedInput from '@/components/nourishubs/DebouncedInput'
 import { setOrderId } from '@/redux-store/slices/global'
+import StatusLabel from '@/components/theme/getStatusColours'
 
 const LastMomentOrderDataTable = ({ dictionary }) => {
   const { lang: locale } = useParams()
@@ -80,7 +83,7 @@ const LastMomentOrderDataTable = ({ dictionary }) => {
   // States
   const [data, setData] = useState([])
   const [globalFilter, setGlobalFilter] = useState('')
-  const [itemsPerPage, setItemsPerPage] = useState(10)
+  const [itemsPerPage, setItemsPerPage] = useState(5)
   const [recordMetaData, setRecordMetaData] = useState(null)
   const [page, setPage] = useState(1)
   const [isDataTableServerLoading, setIsDataTableServerLoading] = useState(true)
@@ -214,54 +217,67 @@ const LastMomentOrderDataTable = ({ dictionary }) => {
         header: `${dictionary?.page?.vendor_management?.vendor_address}`,
         cell: info => info.getValue() || <span className='italic text-gray-500'>N/A</span>
       }),
+      columnHelper.accessor('Status', {
+        header: `${dictionary?.datatable?.column?.status}`,
+        enableSorting: false,
+        cell: ({ row }) => {
+          const cancelOrderRequestStatus = row?.original?.cancelorderRequestStatus // Get status
+
+          return (
+            <>
+              <div className='flex gap-2' onClick={e => e.stopPropagation()}>
+                <StatusLabel status={cancelOrderRequestStatus} />
+              </div>
+            </>
+          )
+        }
+      }),
       columnHelper.display({
         id: 'actions',
-        header: `${dictionary?.datatable?.column?.status}`,
+        header: `${dictionary?.datatable?.column?.actions}`,
         cell: ({ row }) => {
           const cancelOrderRequestStatus = row?.original?.cancelorderRequestStatus // Get status
 
           return (
             <div className='flex gap-2' onClick={e => e.stopPropagation()}>
-              <Button
-                variant='contained'
-                onClick={e => {
-                  if (cancelOrderRequestStatus == 'initiate') {
-                    e.stopPropagation()
-                    // setOpenKidsDetailDialog(true)
-                    setSelectedRow(row?.original)
-                    handleApprove(row?.original)
-                  } else if (cancelOrderRequestStatus == 'accepted') {
-                    setIsNearVendorDialogShow(true)
-                    setSelectedRow(row?.original)
-                    dispatch(setOrderId(row?.original._id))
-                  }
-                }}
-              >
-                {cancelOrderRequestStatus === 'initiate'
-                  ? dictionary?.common?.approve
-                  : cancelOrderRequestStatus === 'accepted'
-                    ? 'Reorder'
-                    : 'Rejected'}
-              </Button>
-              {cancelOrderRequestStatus == 'initiate' && (
-                <OpenDialogOnElementClick
-                  element={Button}
-                  elementProps={{
-                    variant: 'outlined',
-                    children: `${dictionary?.common?.reject}`,
-                    onClick: e => {
+              {cancelOrderRequestStatus !== 'reject' && (
+                <>
+                  <Button
+                    variant='contained'
+                    onClick={e => {
                       e.stopPropagation()
-                    }
-                  }}
-                  dialog={RejectConfirmationDialogBox}
-                  dialogProps={{
-                    getAllRequests,
-                    dictionary,
-                    page,
-                    itemsPerPage,
-                    vendorData: row?.original
-                  }}
-                />
+                      setSelectedRow(row?.original)
+
+                      if (cancelOrderRequestStatus === 'initiate') {
+                        handleApprove(row?.original)
+                      } else if (cancelOrderRequestStatus === 'accepted') {
+                        setIsNearVendorDialogShow(true)
+                        dispatch(setOrderId(row?.original._id))
+                      }
+                    }}
+                  >
+                    {cancelOrderRequestStatus === 'initiate' ? dictionary?.common?.approve : 'Reorder'}
+                  </Button>
+
+                  {cancelOrderRequestStatus === 'initiate' && (
+                    <OpenDialogOnElementClick
+                      element={Button}
+                      elementProps={{
+                        variant: 'outlined',
+                        children: dictionary?.common?.reject,
+                        onClick: e => e.stopPropagation()
+                      }}
+                      dialog={RejectConfirmationDialogBox}
+                      dialogProps={{
+                        getAllRequests,
+                        dictionary,
+                        page,
+                        itemsPerPage,
+                        vendorData: row?.original
+                      }}
+                    />
+                  )}
+                </>
               )}
             </div>
           )
@@ -460,6 +476,17 @@ const LastMomentOrderDataTable = ({ dictionary }) => {
                   totalFiltered: recordMetaData?.totalFiltered || 0
                 })}
               </Typography>
+              <FormControl variant='outlined' size='small'>
+                <div className='flex items-center gap-2 is-full sm:is-auto'>
+                  <Typography className='hidden sm:block'>{dictionary?.datatable?.common?.show}</Typography>
+                  <Select value={itemsPerPage} onChange={e => setItemsPerPage(e.target.value)}>
+                    <MenuItem value={5}>05</MenuItem>
+                    <MenuItem value={10}>10</MenuItem>
+                    <MenuItem value={15}>15</MenuItem>
+                    <MenuItem value={20}>20</MenuItem>
+                  </Select>
+                </div>
+              </FormControl>
 
               <Pagination
                 shape='rounded'

@@ -1,24 +1,10 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-
 // Mui Imports
-import {
-  Avatar,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  Typography,
-  Chip,
-  CircularProgress,
-  Box,
-  Button
-} from '@mui/material'
+import { Dialog, DialogContent, DialogTitle, Typography, CircularProgress, Box, Button } from '@mui/material'
 
 // Component Imports
 import DialogCloseButton from '@/components/dialogs/DialogCloseButton'
-import axiosApiCall from '@/utils/axiosApiCall'
-import { API_ROUTER } from '@/utils/apiRoutes'
 import primaryColorConfig from '@/configs/primaryColorConfig'
 
 const ConfirmationDialog = ({
@@ -32,12 +18,6 @@ const ConfirmationDialog = ({
   onSubmitConfirm,
   isConfirmSubmiting
 }) => {
-  const [alertDetails, setAlertDetails] = useState([])
-
-  const handleCancel = async id => {
-    // console.log('idIS', id)
-  }
-
   return (
     <Dialog
       fullWidth

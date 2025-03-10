@@ -28,7 +28,8 @@ import {
   DialogContent,
   DialogActions,
   FormControlLabel,
-  Checkbox
+  Checkbox,
+  TextField
 } from '@mui/material'
 
 import { useForm, Controller } from 'react-hook-form'
@@ -45,6 +46,7 @@ import { getLocalizedUrl } from '@/utils/i18n'
 import SpeedometerChart from '@/components/nourishubs/GaugeChart'
 import { useTranslation } from '@/utils/getDictionaryClient'
 import FullPageLoader from '@/components/FullPageLoader'
+import IngredientsTable from '../../common/IngredientsTable'
 
 export default function CheckoutPage({ dictionary, kidId, vendorId }) {
   const router = useRouter()
@@ -68,7 +70,16 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
 
   const [itemTotal, setItemTotal] = useState(0)
 
+  const [nutrition, setNutrition] = useState({})
+  const [kidNutrition, setKidNutrition] = useState({})
+
   const selectedDates = useSelector(state => state.date.singleDate)
+
+  const [notes, setNote] = useState('') // State to store the notes
+
+  const handleNoteChange = event => {
+    setNote(event.target.value) // Update state when the user types
+  }
 
   const validationSchema = selectedDish =>
     yup.object().shape({
@@ -229,7 +240,8 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
   const handlePayNow = async () => {
     try {
       const response = await axiosApiCall.post(API_ROUTER.PARENT.PAY_NOW, {
-        kidId
+        kidId,
+        notes
       })
 
       const { status, message } = response?.data || {}
@@ -257,6 +269,18 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
       if (!response?.data || (typeof response.data === 'string' && response.data.trim() === '')) {
         emptyCart()
       }
+
+      setKidNutrition(
+        response?.data?.kidId?.nutrition
+          ? response?.data.kidId.nutrition
+          : {
+              fat: 0,
+              sugar: 0,
+              protein: 0,
+              sodium: 0,
+              carbohydrate: 0
+            }
+      )
 
       setCartData(response?.data)
 
@@ -402,6 +426,9 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
               <Grid item xs={12} md={6} lg={6}>
                 <Card className='common-block-dashboard'>
                   <CardContent className='p-0'>
+                    <Button variant='contained' onClick={() => router.back()}>
+                      {dictionary?.form?.button?.back}
+                    </Button>
                     <Typography variant='h6' className='title-small-medium-custom'>
                       {cartData?.kidId?.first_name} {cartData?.kidId?.last_name}
                     </Typography>
@@ -410,6 +437,22 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
                     </Typography>
                   </CardContent>
                 </Card>
+                <Card className='common-block-dashboard'>
+                  <CardContent className='p-0'>
+                    <TextField
+                      className='mt-2'
+                      label={dictionary?.form?.label?.notes || 'Notes'}
+                      variant='outlined'
+                      multiline
+                      fullWidth
+                      rows={4}
+                      placeholder={dictionary?.form?.placeholder?.notes || 'Enter your notes here...'}
+                      value={notes} // Controlled input
+                      onChange={handleNoteChange} // Update state on change
+                    />
+                  </CardContent>
+                </Card>
+
                 <Card className='common-block-dashboard'>
                   <CardContent
                     className='p-0'
@@ -427,7 +470,7 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
                           justifyContent: 'center'
                         }}
                       >
-                        <SpeedometerChart />
+                        <SpeedometerChart totalNutrition={nutrition} kidNutrition={kidNutrition} />
                       </Box>
                     </div>
                     <div className='block-chart-table-in'>
@@ -436,6 +479,7 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
                           key={JSON.stringify(cartData)}
                           dictionary={dictionary}
                           cartData={cartData}
+                          setNutrition={setNutrition}
                         />
                       )}
                     </div>
@@ -490,24 +534,6 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
               </Grid>
 
               <Grid item xs={12} md={6} lg={6}>
-                <Card className='common-block-dashboard'>
-                  <CardContent className='p-0'>
-                    <Box display='flex' alignItems='center' justifyContent='space-between' mb={1}>
-                      <Typography className='title-small-medium-custom' variant='h6'>
-                        {dictionary?.common?.checkout}
-                      </Typography>
-                      <Button
-                        className='theme-common-btn theme-btn-color'
-                        variant='contained'
-                        color='success'
-                        onClick={handlePayNow}
-                      >
-                        {dictionary?.form?.button?.pay_now}
-                      </Button>
-                    </Box>
-                  </CardContent>
-                </Card>
-
                 <Box className=''>
                   {cartData?.cartItems?.map((dish, index) => {
                     const modifiersTotal =
@@ -562,7 +588,7 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
                                 variant='subtitle1'
                                 sx={{ mt: 1 }}
                               >
-                                ${dishTotal.toFixed(2)}
+                                ${dishTotal.toFixed(0)}
                               </Typography>
                             </Box>
                             <div className='menu-pl-block'>
@@ -617,7 +643,7 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
                       {/* Item Total Calculation */}
                       <Box display='flex' justifyContent='space-between' mt={2}>
                         <Typography className='disc-common-custom-small'>{dictionary?.common?.item_total}</Typography>
-                        <Typography className='disc-common-custom-small'>${itemTotal?.toFixed(2)}</Typography>
+                        <Typography className='disc-common-custom-small'>${itemTotal?.toFixed(0)}</Typography>
                       </Box>
 
                       {/* Delivery Fees */}
@@ -625,7 +651,7 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
                         <Typography className='disc-common-custom-small'>
                           {dictionary?.common?.delivery_fees}
                         </Typography>
-                        <Typography className='disc-common-custom-small'>${deliveryPrice?.toFixed(2)}</Typography>
+                        <Typography className='disc-common-custom-small'>${deliveryPrice?.toFixed(0)}</Typography>
                       </Box>
                     </CardContent>
                   )}
@@ -650,11 +676,28 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
                           variant='subtitle1'
                           fontWeight='bold'
                         >
-                          ${(itemTotal + deliveryPrice).toFixed(2)}
+                          ${(itemTotal + deliveryPrice).toFixed(0)}
                         </Typography>
                       </Box>
                     </CardContent>
                   )}
+                </Card>
+                <Card className='common-block-dashboard'>
+                  <CardContent className='p-0'>
+                    <Box display='flex' alignItems='center' justifyContent='space-between' mb={1}>
+                      <Typography className='title-small-medium-custom' variant='h6'>
+                        {dictionary?.common?.checkout}
+                      </Typography>
+                      <Button
+                        className='theme-common-btn theme-btn-color'
+                        variant='contained'
+                        color='success'
+                        onClick={handlePayNow}
+                      >
+                        {dictionary?.form?.button?.pay_now}
+                      </Button>
+                    </Box>
+                  </CardContent>
                 </Card>
               </Grid>
             </Grid>
@@ -739,13 +782,22 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
                       ))}
                       <div className='block-chart-common flex align-center justify-between'>
                         <div className='block-chart-inner' style={{ width: 200, height: 200 }}>
-                          <SpeedometerChart />
+                          <SpeedometerChart
+                            totalNutrition={selectedDish?.dishId?.calculatedNutrition}
+                            kidNutrition={kidNutrition}
+                          />
                         </div>
                       </div>
-
+                      <div className='block-chart-table-in'>
+                        <IngredientsTable
+                          ingredientsData={selectedDish?.dishId?.ingredients}
+                          selectedDish={selectedDish?.dishId}
+                          dictionary={dictionary}
+                        />
+                      </div>
                       <div className='modal-footer'>
                         <Typography className='title-small-medium-custom'>
-                          {dictionary?.meal?.total_price}: ${totalPrice?.toFixed(2)}
+                          {dictionary?.meal?.total_price}: ${totalPrice?.toFixed(0)}
                         </Typography>
 
                         <div className=''>

@@ -175,7 +175,7 @@ export default function SchoolVendor({ dictionary }) {
             }}
           />
           <Box sx={{ overflowY: 'auto', flex: 1, pr: 1 }}>
-            {vendorData.map((item, index) => (
+            {vendorData?.map((item, index) => (
               <Card
                 key={index}
                 sx={{

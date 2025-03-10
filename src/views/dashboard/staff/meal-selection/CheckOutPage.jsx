@@ -28,7 +28,8 @@ import {
   DialogContent,
   DialogActions,
   FormControlLabel,
-  Checkbox
+  Checkbox,
+  TextField
 } from '@mui/material'
 
 import { useForm, Controller } from 'react-hook-form'
@@ -68,7 +69,16 @@ export default function CheckoutPage({ dictionary, vendorId }) {
 
   const [itemTotal, setItemTotal] = useState(0)
 
+    const [nutrition, setNutrition] = useState({})
+    const [kidNutrition, setKidNutrition] = useState({})
+
   const userId = useSelector(state => state.profile.user?._id)
+
+  const [notes, setNote] = useState('') // State to store the notes
+
+  const handleNoteChange = event => {
+    setNote(event.target.value) // Update state when the user types
+  }
 
   const validationSchema = selectedDish =>
     yup.object().shape({
@@ -229,7 +239,8 @@ export default function CheckoutPage({ dictionary, vendorId }) {
   const handlePayNow = async () => {
     try {
       const response = await axiosApiCall.post(API_ROUTER.STAFF.PAY_NOW, {
-        userId
+        userId,
+        notes
       })
 
       const { status, message } = response?.data || {}
@@ -255,6 +266,18 @@ export default function CheckoutPage({ dictionary, vendorId }) {
       if (!response?.data || (typeof response.data === 'string' && response.data.trim() === '')) {
         emptyCart()
       }
+
+      setKidNutrition(
+        response?.data?.kidId?.nutrition
+          ? response?.data.kidId.nutrition
+          : {
+              fat: 0,
+              sugar: 0,
+              protein: 0,
+              sodium: 0,
+              carbohydrate: 0
+            }
+      )
 
       setCartData(response?.data)
 
@@ -391,6 +414,9 @@ export default function CheckoutPage({ dictionary, vendorId }) {
         <Grid item xs={12} md={6} lg={6}>
           <Card className='common-block-dashboard'>
             <CardContent className='p-0'>
+              <Button variant='contained' onClick={() => router.back()}>
+                {dictionary?.form?.button?.back}
+              </Button>
               <Typography variant='h6' className='title-small-medium-custom'>
                 {cartData?.schoolId?.first_name} {cartData?.schoolId?.last_name}
               </Typography>
@@ -399,6 +425,22 @@ export default function CheckoutPage({ dictionary, vendorId }) {
               </Typography>
             </CardContent>
           </Card>
+          <Card className='common-block-dashboard'>
+            <CardContent className='p-0'>
+              <TextField
+                className='mt-2'
+                label={dictionary?.form?.label?.notes || 'Notes'}
+                variant='outlined'
+                multiline
+                fullWidth
+                rows={4}
+                placeholder={dictionary?.form?.placeholder?.notes || 'Enter your notes here...'}
+                value={notes} // Controlled input
+                onChange={handleNoteChange} // Update state on change
+              />
+            </CardContent>
+          </Card>
+
           <Card className='common-block-dashboard'>
             <CardContent
               className='p-0'
@@ -416,12 +458,12 @@ export default function CheckoutPage({ dictionary, vendorId }) {
                     justifyContent: 'center'
                   }}
                 >
-                  <SpeedometerChart />
+                  <SpeedometerChart totalNutrition={nutrition} kidNutrition={kidNutrition} />
                 </Box>
               </div>
               <div className='block-chart-table-in'>
                 {Object.keys(cartData).length > 0 && (
-                  <MealNutritionTable key={JSON.stringify(cartData)} dictionary={dictionary} cartData={cartData} />
+                  <MealNutritionTable key={JSON.stringify(cartData)} dictionary={dictionary} cartData={cartData} setNutrition={setNutrition}/>
                 )}
               </div>
             </CardContent>

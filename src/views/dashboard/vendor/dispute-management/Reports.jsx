@@ -7,7 +7,7 @@ import Link from 'next/link'
 import { useParams } from 'next/navigation'
 
 // MUI Imports
-import { Card, CardContent, Grid, Typography } from '@mui/material'
+import { Card, CardContent, CircularProgress, Grid, Typography } from '@mui/material'
 
 // Core Component Imports
 import CustomAvatar from '@/@core/components/mui/Avatar'
@@ -28,7 +28,14 @@ const Reports = props => {
   // Props
   console.log('props: ', props)
 
-  const { dictionary = null, issueCounts = 0, role = '', isDispute = false, disabled = false } = props
+  const {
+    dictionary = null,
+    issueCounts = 0,
+    role = '',
+    isDispute = false,
+    disabled = false,
+    isLoadingStatistic
+  } = props
 
   console.log('dictionary: ', dictionary, issueCounts)
 
@@ -57,7 +64,7 @@ const Reports = props => {
                 <div className='flex flex-col gap-1 number-text-block'>
                   <div className='flex items-center gap-2 number-text-block-inner'>
                     <Typography color='text.primary' className='font-bold text-2xl'>
-                      {numberFormat(issueCounts)}
+                      {isLoadingStatistic ? <CircularProgress size={20} /> : numberFormat(issueCounts)}
                     </Typography>
                   </div>
                 </div>

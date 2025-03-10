@@ -54,6 +54,7 @@ import { useTranslation } from '@/utils/getDictionaryClient'
 import { toastError, actionConfirmWithLoaderAlert, successAlert } from '@/utils/globalFunctions'
 import axiosApiCall from '@utils/axiosApiCall'
 import DebouncedInput from '@/components/nourishubs/DebouncedInput'
+import StatusLabel from '@/components/theme/getStatusColours'
 
 const VendorManagement = props => {
   const { dictionary = null } = props
@@ -167,8 +168,17 @@ const VendorManagement = props => {
         header: `${dictionary?.datatable?.column?.contact}`
       }),
       columnHelper.accessor('status', {
-        header: `${dictionary?.datatable?.column?.vendor_status}`,
-        enableSorting: false
+        header: `${dictionary?.datatable?.column?.status}`,
+        enableSorting: false,
+        cell: ({ row }) => {
+          const vendorStatus = row.original?.status
+
+          return (
+            <>
+              <StatusLabel status={vendorStatus} />
+            </>
+          )
+        }
       }),
       columnHelper.accessor('view', {
         header: `View Menu`,
@@ -210,7 +220,6 @@ const VendorManagement = props => {
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    // getFilteredRowModel: getFilteredRowModel(),
     manualPagination: true,
     manualSorting: true
   })
@@ -259,12 +268,12 @@ const VendorManagement = props => {
             className='common-block-title'
             title={dictionary?.datatable?.vendor_management_table?.table_title}
             action={
-              <div className="form-group">
-              <DebouncedInput
-                value={globalFilter ?? ''}
-                onChange={value => setGlobalFilter(String(value))}
-                placeholder={dictionary?.datatable?.common?.search_placeholder}
-              />
+              <div className='form-group'>
+                <DebouncedInput
+                  value={globalFilter ?? ''}
+                  onChange={value => setGlobalFilter(String(value))}
+                  placeholder={dictionary?.datatable?.common?.search_placeholder}
+                />
               </div>
             }
           />
@@ -287,7 +296,7 @@ const VendorManagement = props => {
                   ))}
                   {isDataTableServerLoading && (
                     <tr>
-                      <td colSpan={columns?.length}>
+                      <td className='p-0' colSpan={columns?.length}>
                         <LinearProgress color='primary' sx={{ height: '2px' }} />
                       </td>
                     </tr>

@@ -156,6 +156,7 @@ const AddEventOrderForSchoolView = props => {
                         selected={field.value}
                         onChange={date => field.onChange(date)}
                         minDate={new Date(new Date().setDate(new Date().getDate() + 7))}
+                        dayClassName={date => (date.toDateString() === new Date().toDateString() ? 'bold-date' : '')}
                         customInput={
                           <CustomTextField
                             fullWidth

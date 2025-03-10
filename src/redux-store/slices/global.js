@@ -9,7 +9,8 @@ const initialState = {
   cart: null,
   kidsData: null,
   error: null,
-  orderId: ''
+  orderId: '',
+  notificationCount: 0
 }
 
 export const globalSlice = createSlice({
@@ -23,8 +24,10 @@ export const globalSlice = createSlice({
       state.cart = null
     },
     setOrderId: (state, action) => {
-      console.log('action.payload', action.payload)
       state.orderId = action.payload
+    },
+    setNotificationCount: (state, action) => {
+      state.notificationCount = action.payload
     },
   },
   extraReducers: builder => {
@@ -43,6 +46,6 @@ export const globalSlice = createSlice({
   }
 })
 
-export const { setCart, resetCart, setOrderId } = globalSlice.actions
+export const { setCart, resetCart, setOrderId, setNotificationCount } = globalSlice.actions
 export default globalSlice.reducer
 export const globalState = state => state.global

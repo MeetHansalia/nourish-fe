@@ -36,6 +36,7 @@ import { useTranslation } from '@/utils/getDictionaryClient'
 // Redux Imports
 import { profileState, resetProfile } from '@/redux-store/slices/profile'
 import { resetDialogData } from '@/redux-store/slices/reviewDialog'
+import { AVATARS } from '@/utils/constants'
 
 // Styled component for badge content
 const BadgeContentSpan = styled('span')({
@@ -114,7 +115,7 @@ const UserDropdown = () => {
         <Avatar
           ref={anchorRef}
           alt={user?.name || ''}
-          src={user?.image || ''}
+          src={AVATARS[user?.avtar] || user?.profileImage || ''}
           onClick={handleDropdownOpen}
           className='cursor-pointer bs-[38px] is-[38px]'
         />
@@ -138,7 +139,7 @@ const UserDropdown = () => {
               <ClickAwayListener onClickAway={e => handleDropdownClose(e)}>
                 <MenuList>
                   <div className='flex items-center plb-2 pli-6 gap-2' tabIndex={-1}>
-                    <Avatar alt={user?.name || ''} src={user?.image || ''} />
+                    <Avatar alt={user?.name || ''} src={AVATARS[user?.avtar] || user?.profileImage || ''} />
                     <div className='flex items-start flex-col'>
                       <Typography className='font-medium' color='text.primary'>
                         {user?.name || ''}

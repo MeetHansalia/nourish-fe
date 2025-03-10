@@ -37,6 +37,8 @@ const VerticalMenuSuperAdmin = ({ dictionary, userRole, userPanel }) => {
       </MenuItem>
       <MenuItem
         href={`/${locale}/${userPanel}/order-management`}
+        exactMatch={false}
+        activeUrl={`/${locale}/${userPanel}/order-management`}
         icon={<i className='tabler-device-desktop-analytics' />}
       >
         {dictionary['navigation'].order_management}

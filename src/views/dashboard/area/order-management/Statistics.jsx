@@ -7,7 +7,7 @@ import Link from 'next/link'
 import { useParams, usePathname } from 'next/navigation'
 
 // MUI Imports
-import { Card, CardContent, Grid, Typography } from '@mui/material'
+import { Card, CardContent, CircularProgress, Grid, Typography } from '@mui/material'
 
 // Core Component Imports
 import CustomAvatar from '@/@core/components/mui/Avatar'
@@ -31,6 +31,28 @@ const Statistics = props => {
   const { lang: locale } = useParams()
   const pathname = usePathname()
   const panelName = getPanelName(pathname)
+
+  const [statisticsCount, setStatisticsCount] = useState(0)
+  const [isLoadingStatistic, setIsLoadingStatistic] = useState(false)
+
+  const getStatistics = async () => {
+    try {
+      setIsLoadingStatistic(true)
+
+      const response = await axiosApiCall.get(API_ROUTER.AREA_EXECUTIVE.GET_STATISTICS)
+
+      setStatisticsCount(response?.data?.response || 0)
+      setIsLoadingStatistic(false)
+    } catch (error) {
+      setIsLoadingStatistic(false)
+
+      toastError(error?.response?.message || 'An error occurred while fetching data.')
+    }
+  }
+
+  useEffect(() => {
+    getStatistics()
+  }, [])
 
   const handleClick = name => {
     setShowDropDown(prevState => {
@@ -70,7 +92,14 @@ const Statistics = props => {
               <div className='number-text-block flex flex-col gap-1'>
                 <div className='number-text-block-inner flex items-center gap-4'>
                   <Typography variant='h4' color='text.primary'>
-                    {numberFormat(0)}
+                    {isLoadingStatistic ? (
+                      <CircularProgress
+                        size={20}
+                        className={`${showDropDdown.last_moment_cancellation ? 'text-white' : ''}`}
+                      />
+                    ) : (
+                      numberFormat(statisticsCount?.lastMomentCancelOrders || 0)
+                    )}
                   </Typography>
                 </div>
               </div>
@@ -93,7 +122,11 @@ const Statistics = props => {
               <div className='number-text-block flex flex-col gap-1'>
                 <div className='number-text-block-inner flex items-center gap-2'>
                   <Typography variant='h4' color='text.primary'>
-                    {numberFormat(0)}
+                    {isLoadingStatistic ? (
+                      <CircularProgress size={20} className={`${showDropDdown.meal_monitoring ? 'text-white' : ''}`} />
+                    ) : (
+                      numberFormat(statisticsCount?.completeOrders || 0)
+                    )}
                   </Typography>
                 </div>
               </div>

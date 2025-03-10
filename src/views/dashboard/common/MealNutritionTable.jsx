@@ -1,130 +1,100 @@
 'use client'
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react'
 
-import { Table, TableBody, TableRow, TableCell,TableHead } from '@mui/material';
+import { Table, TableBody, TableRow, TableCell, TableHead } from '@mui/material'
 
-const MealNutritionTable = ({ dictionary, cartData }) => {
-  const [nutrition, setNutrition] = useState({})
-
+const MealNutritionTable = ({ dictionary, cartData, setNutrition }) => {
   const calculateTotalNutrients = () => {
-    console.log(cartData);
-
     const totalNutrients = {
-      calories: 0,
+      carbohydrate: 0,
+      fat: 0,
       protein: 0,
-      total_sugar: 0,
-      total_fat: 0,
       sodium: 0,
-      cholesterol: 0,
-    };
+      sugar: 0
+    }
 
-    if (!cartData) return totalNutrients;
+    if (!cartData) return totalNutrients
 
-    // Normalize cartData to always be an array
-    const cartArray = Array.isArray(cartData) ? cartData : [cartData];
+    const cartArray = Array.isArray(cartData) ? cartData : [cartData]
 
-    cartArray.forEach((cart) => {
-      if (!cart.cartItems) return;
+    cartArray.forEach(cart => {
+      if (!cart.cartItems) return
 
-      cart.cartItems.forEach((cartItem) => {
-        const quantity = cartItem.quantity || 1; // Default to 1 if quantity is missing
+      cart.cartItems.forEach(cartItem => {
+        const quantity = cartItem.quantity || 1
 
-        console.log("quantity", quantity)
-        // Loop through the dish ingredients
-        cartItem.dishId.ingredients.forEach((ingredient) => {
-          totalNutrients.calories += (ingredient.nf_calories || 0) * quantity;
-          totalNutrients.protein += (ingredient.nf_protein || 0) * quantity;
-          totalNutrients.total_sugar += (ingredient.nf_sugars || 0) * quantity;
-          totalNutrients.total_fat += (ingredient.nf_total_fat || 0) * quantity;
-          totalNutrients.sodium += (ingredient.nf_sodium || 0) * quantity;
-          totalNutrients.cholesterol += (ingredient.nf_cholesterol || 0) * quantity;
-        });
+        if (cartItem.dishId?.calculatedNutrition) {
+          Object.keys(totalNutrients).forEach(nutrient => {
+            totalNutrients[nutrient] += (cartItem.dishId.calculatedNutrition[nutrient] || 0) * quantity
+          })
+        }
 
-        // Loop through modifiers
-        cartItem.modifiers.forEach((modifier) => {
-          modifier.dishId.ingredients.forEach((ingredient) => {
-            totalNutrients.calories += (ingredient.nf_calories || 0) * quantity;
-            totalNutrients.protein += (ingredient.nf_protein || 0) * quantity;
-            totalNutrients.total_sugar += (ingredient.nf_sugars || 0) * quantity;
-            totalNutrients.total_fat += (ingredient.nf_total_fat || 0) * quantity;
-            totalNutrients.sodium += (ingredient.nf_sodium || 0) * quantity;
-            totalNutrients.cholesterol += (ingredient.nf_cholesterol || 0) * quantity;
-          });
-        });
-      });
-    });
+        cartItem.modifiers.forEach(modifier => {
+          if (modifier.dishId?.calculatedNutrition) {
+            Object.keys(totalNutrients).forEach(nutrient => {
+              totalNutrients[nutrient] += (modifier.dishId.calculatedNutrition[nutrient] || 0) * quantity
+            })
+          }
+        })
+      })
+    })
 
-    // Convert values to two decimal places
-    Object.keys(totalNutrients).forEach((key) => {
-      totalNutrients[key] = parseFloat(totalNutrients[key].toFixed(2));
-    });
+    Object.keys(totalNutrients).forEach(key => {
+      totalNutrients[key] = parseFloat(totalNutrients[key].toFixed(2))
+    })
 
-    return totalNutrients;
-  };
+    return totalNutrients
+  }
 
   useEffect(() => {
-        const totalNutrients = calculateTotalNutrients();
+    const totalNutrients = calculateTotalNutrients()
 
-        console.log(totalNutrients)
-        setNutrition(totalNutrients)
-    }, [])
-
+    // setNutrition(totalNutrients) // Update parent state
+  }, [cartData]) // Recalculate when cartData changes
 
   return (
     <Table size='small' sx={{ maxWidth: 280 }}>
       <TableHead>
         <TableRow>
-          <TableCell>Ingredients</TableCell>
-          <TableCell>Per 100g</TableCell>
+          <TableCell>{dictionary?.meal?.ingredients}</TableCell>
+          <TableCell>{dictionary?.meal?.per_100g}</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
         <TableRow>
-          <TableCell>{dictionary?.meal?.calories}</TableCell>
+          <TableCell>{dictionary?.meal?.carbohydrate}</TableCell>
           <TableCell>
-            {nutrition.calories} {dictionary?.meal?.cal}
-          </TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell>{dictionary?.meal?.protein}</TableCell>
-          <TableCell>
-            {nutrition.protein}
-            {dictionary?.meal?.g}
-          </TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell>{dictionary?.meal?.total_sugar}</TableCell>
-          <TableCell>
-            {nutrition.total_sugar}
-            {dictionary?.meal?.g}
+            {calculateTotalNutrients().carbohydrate} {dictionary?.meal?.g}
           </TableCell>
         </TableRow>
         <TableRow>
           <TableCell>{dictionary?.meal?.total_fat}</TableCell>
           <TableCell>
-            {nutrition.total_fat}
-            {dictionary?.meal?.g}
+            {calculateTotalNutrients().fat} {dictionary?.meal?.g}
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>{dictionary?.meal?.protein}</TableCell>
+          <TableCell>
+            {calculateTotalNutrients().protein} {dictionary?.meal?.g}
           </TableCell>
         </TableRow>
         <TableRow>
           <TableCell>{dictionary?.meal?.sodium}</TableCell>
           <TableCell>
-            {nutrition.sodium}
-            {dictionary?.meal?.mg}
+            {calculateTotalNutrients().sodium} {dictionary?.meal?.mg}
           </TableCell>
         </TableRow>
         <TableRow>
-          <TableCell>{dictionary?.meal?.cholesterol}</TableCell>
+          <TableCell>{dictionary?.meal?.total_sugar}</TableCell>
           <TableCell>
-            {'<'}
-            {nutrition.cholesterol}
-            {dictionary?.meal?.mg}
+            {calculateTotalNutrients().sugar} {dictionary?.meal?.g}
           </TableCell>
         </TableRow>
       </TableBody>
     </Table>
   )
-};
+}
 
-export default MealNutritionTable;
+export default MealNutritionTable

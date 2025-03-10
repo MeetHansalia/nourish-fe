@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 
 import { useParams } from 'next/navigation'
 
@@ -26,10 +26,13 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
-  FormHelperText
+  FormHelperText,
+  FormControlLabel,
+  Checkbox
 } from '@mui/material'
 
 import AddCircleIcon from '@mui/icons-material/AddCircle'
+
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle'
 
 import { isCancel } from 'axios'
@@ -50,63 +53,84 @@ function AddDishForm({ onSave, onDelete, handleBackToTabs, tabValue, editId }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [categoriesList, setCategoriesList] = useState([])
   const [selectedCategories, setSelectedCategories] = useState([])
-
+  const [comboMeal, setComboMeal] = useState(false)
   const [modifierList, setModifierList] = useState([])
   const [selectedModifierList, setSelectedModifierList] = useState([])
 
-  // Validation schema
-  const schema = yup.object({
-    dishName: yup.string().required(t('form.validation.dish_name')),
+  const validationSchema = useMemo(
+    () =>
+      yup.object({
+        dishName: yup.string().required(t('form.validation.dish_name')),
+        dishDescription: yup.string().required(t('form.validation.dish_description')),
+        category: yup
+          .array()
+          .of(yup.string().required(t('form.validation.each_category_must_string')))
+          .min(1, t('form.validation.you_must_select_at_least_one_category'))
+          .required(t('form.validation.category_field_is_required')),
+        price: yup.number().typeError(t('form.validation.price_must_be')).required(t('form.validation.price')),
+        tax_pricing: yup
+          .number()
+          .typeError(t('form.validation.tax_pricing_be_a_number'))
+          .required(t('form.validation.tax_pricing')),
+        file: yup
+          .mixed()
+          .nullable()
 
-    dishDescription: yup.string().required(t('form.validation.dish_description')),
+          .test('fileRequired', t('form.validation.image_required'), value => {
+            if (!editId) return value instanceof File
 
-    // modifier: yup
-    //   .array()
-    //   .of(yup.string().required(t('form.validation.each_modifier_must_string')))
-    //   .min(1, t('form.validation.you_must_select_at_least_one_modifier'))
-    //   .required(t('form.validation.modifier_field_is_required')),
+            return true
+          })
 
-    category: yup
-      .array()
-      .of(yup.string().required(t('form.validation.each_category_must_string')))
-      .min(1, t('form.validation.you_must_select_at_least_one_category'))
-      .required(t('form.validation.category_field_is_required')),
+          .test('fileType', t('form.validation.invalid_file_type'), value => {
+            return !value || (value instanceof File && value.type.startsWith('image/'))
+          })
 
-    price: yup.number().typeError(t('form.validation.price_must_be')).required(t('form.validation.price')),
+          .test('fileSize', t('form.validation.category.file_size_exceeded'), value => {
+            return !value || (value instanceof File && value.size <= 2 * 1024 * 1024)
+          }),
 
-    tax_pricing: yup
-      .number()
-      .typeError(t('form.validation.tax_pricing_be_a_number'))
-      .required(t('form.validation.tax_pricing')),
+        comboMeal: yup.boolean(),
 
-    file: yup
-      .mixed()
-      .nullable()
-      .test('fileRequired', t('form.validation.image_required'), value => {
-        if (!editId) {
-          return value instanceof File
-        }
+        ingredients: yup
+          .array()
 
-        return true
-      })
-      .test('fileType', t('form.validation.invalid_file_type'), value => {
-        return !value || (value instanceof File && value.type.startsWith('image/'))
-      })
-      .test('fileSize', t('form.validation.category.file_size_exceeded'), value => {
-        return !value || (value instanceof File && value.size <= 2 * 1024 * 1024)
+          .test('ingredients-required', t('form.validation.min'), function (value) {
+            if (!comboMeal && (!value || value.length === 0)) {
+              return this.createError({ message: t('form.validation.min') })
+            }
+
+            return true
+          })
+
+          .of(
+            yup.object().shape({
+              name: yup.string().test('name-required', t('form.validation.name'), function (value) {
+                if (!comboMeal && !value) {
+                  return this.createError({ message: t('form.validation.name') })
+                }
+
+                return true
+              }),
+              quantity: yup.string().test('quantity-required', t('form.validation.quantity'), function (value) {
+                if (!comboMeal && !value) {
+                  return this.createError({ message: t('form.validation.quantity') })
+                }
+
+                return true
+              }),
+              unit: yup.string().test('unit-required', t('form.validation.unit'), function (value) {
+                if (!comboMeal && !value) {
+                  return this.createError({ message: t('form.validation.unit') })
+                }
+
+                return true
+              })
+            })
+          )
       }),
-
-    ingredients: yup
-      .array()
-      .of(
-        yup.object().shape({
-          name: yup.string().required(t('form.validation.name')),
-          quantity: yup.string().required(t('form.validation.quantity')),
-          unit: yup.string().required(t('form.validation.unit'))
-        })
-      )
-      .min(1, t('form.validation.min'))
-  })
+    [comboMeal]
+  )
 
   const {
     control,
@@ -126,12 +150,33 @@ function AddDishForm({ onSave, onDelete, handleBackToTabs, tabValue, editId }) {
       price: '',
       tax_pricing: '',
       ingredients: [{ name: '', quantity: '', unit: '' }],
-      file: null
+      file: null,
+      comboMeal: comboMeal
     },
-    resolver: yupResolver(schema)
+    resolver: yupResolver(validationSchema)
   })
 
-  //Delete Dialog Open State
+  const handleComboMealChange = event => {
+    const newComboMealValue = event.target.checked
+
+    setComboMeal(newComboMealValue)
+
+    // Update ingredients correctly based on the new comboMeal state
+    const updatedIngredients = newComboMealValue
+      ? [{ name: '', quantity: '', unit: '' }] // Reset ingredients if comboMeal is enabled
+      : getValues('ingredients')?.length > 0
+        ? getValues('ingredients') // Restore previous ingredients if available
+        : [{ name: '', quantity: '', unit: '' }]
+
+    setValue('ingredients', updatedIngredients)
+    setIngredients(updatedIngredients) // Ensure local state stays in sync
+
+    // Ensure validation runs after state updates
+    setTimeout(() => {
+      trigger('ingredients')
+    }, 100)
+  }
+
   const [open, setOpen] = useState(false)
 
   const handleClickOpen = () => {
@@ -148,48 +193,51 @@ function AddDishForm({ onSave, onDelete, handleBackToTabs, tabValue, editId }) {
       const fetchDishDetails = async () => {
         try {
           const response = await axiosApiCall.get(`${API_ROUTER.GET_FOOD_DISH}/${editId}`)
+
           const dishData = response?.data?.response
 
           if (dishData) {
+            const isComboMeal = dishData?.is_combo_meal === true
+
             reset({
               dishName: dishData.name || '',
               dishDescription: dishData.description || '',
-
               price: dishData.pricing || '',
-              tax_pricing: dishData.tax_pricing || ''
+              tax_pricing: dishData.tax_pricing || '',
+              category: dishData?.categoryIds || [],
+              ingredients: isComboMeal
+                ? [{ name: '', quantity: '', unit: '' }] // ✅ Reset ingredients when `comboMeal` is true
+                : dishData?.ingredients || [{ name: '', quantity: '', unit: '' }]
             })
 
-            setIngredients(dishData?.ingredients)
+            setComboMeal(isComboMeal) // ✅ Update state
+
+            // ✅ Ensure ingredients are set correctly
+            setIngredients(
+              isComboMeal
+                ? [{ name: '', quantity: '', unit: '' }]
+                : dishData?.ingredients || [{ name: '', quantity: '', unit: '' }]
+            )
 
             setSelectedCategories(dishData?.categoryIds)
             setValue('category', dishData?.categoryIds)
             trigger('category')
+
             setSelectedModifierList(dishData?.modifierIds)
-            // setValue('modifier', dishData?.modifierIds)
-            // trigger('modifier')
 
             if (dishData.image) {
               setImageURL(dishData.image)
             }
           }
         } catch (error) {
-          // toastError('Failed to fetch dish details.')
+          console.error('Failed to fetch dish details', error)
+          // toastError('Failed to fetch dish details.');
         }
       }
 
       fetchDishDetails()
-    } else {
-      reset({
-        dishName: '',
-        dishDescription: '',
-        category: [],
-        modifier: [],
-        price: '',
-        tax_pricing: '',
-        ingredients: [{ name: '', quantity: '', unit: '' }]
-      })
     }
-  }, [editId, reset])
+  }, [editId, reset, setValue, trigger])
 
   // Fetch categories
   useEffect(() => {
@@ -336,11 +384,14 @@ function AddDishForm({ onSave, onDelete, handleBackToTabs, tabValue, editId }) {
   }
 
   const onSubmit = async data => {
+    console.log('data', data)
     const formData = new FormData()
 
     formData.append('name', data.dishName)
 
     formData.append('description', data.dishDescription)
+
+    formData.append('is_combo_meal', comboMeal)
 
     if (data.file) {
       formData.append('file', data.file)
@@ -357,11 +408,15 @@ function AddDishForm({ onSave, onDelete, handleBackToTabs, tabValue, editId }) {
     formData.append('pricing', parseFloat(data.price))
     formData.append('tax_pricing', parseFloat(data.tax_pricing))
 
-    data.ingredients?.forEach((ingredient, index) => {
-      Object.keys(ingredient).forEach(key => {
-        formData.append(`ingredients[${index}][${key}]`, ingredient[key])
+    if (data.ingredients && data.ingredients.length > 0) {
+      data.ingredients.forEach((ingredient, index) => {
+        Object.keys(ingredient).forEach(key => {
+          if (ingredient[key] !== undefined && ingredient[key] !== null && ingredient[key] !== '') {
+            formData.append(`ingredients[${index}][${key}]`, ingredient[key])
+          }
+        })
       })
-    })
+    }
 
     try {
       setIsSubmitting(true)
@@ -543,6 +598,16 @@ function AddDishForm({ onSave, onDelete, handleBackToTabs, tabValue, editId }) {
                 {errors.file.message}
               </Typography>
             )}
+          </Grid>
+          <Grid item xs={12}>
+            <Box display='flex' gap={2} alignItems='center'>
+              <FormControlLabel
+                control={
+                  <Checkbox checked={comboMeal} onChange={handleComboMealChange} name='comboMeal' color='primary' />
+                }
+                label={t('form.label.combo_meal')}
+              />
+            </Box>
           </Grid>
           <Grid container spacing={2} xs={12}>
             <Typography mb={2}>{t('form.label.add_ingredient')}</Typography>

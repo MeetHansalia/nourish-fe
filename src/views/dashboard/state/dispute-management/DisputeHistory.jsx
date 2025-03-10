@@ -9,6 +9,8 @@ import { useParams, useRouter } from 'next/navigation'
 // Thirdparty Import
 import classnames from 'classnames'
 
+import { useSelector } from 'react-redux'
+
 // Table Imports
 import {
   useReactTable,
@@ -63,7 +65,8 @@ import {
   actionConfirmWithLoaderAlert,
   successAlert,
   apiResponseErrorHandling,
-  toastSuccess
+  toastSuccess,
+  isUserHasPermission
 } from '@/utils/globalFunctions'
 import axiosApiCall from '@utils/axiosApiCall'
 import OpenDialogOnElementClick from '@/components/layout/OpenDialogOnElementClick'
@@ -75,12 +78,14 @@ import ConfirmationDialog from './ConfirmationDialog'
 import AppReactDatepicker from '@/libs/styles/AppReactDatepicker'
 import CustomTextField from '@/@core/components/mui/TextField'
 
+import { profileState } from '@/redux-store/slices/profile'
+
 const DisputeHistory = props => {
   const { dictionary = null } = props
   const { lang: locale } = useParams()
   const { t } = useTranslation(locale)
   const router = useRouter()
-
+  const { user = null } = useSelector(profileState)
   const [page, setPage] = useState(1)
   const [data, setData] = useState([])
   const [columnFilters, setColumnFilters] = useState([])
@@ -97,17 +102,40 @@ const DisputeHistory = props => {
   const [openDisputeDialog, setOpenDisputeDialog] = useState(false) // Control dispute dialog visibility
   const [openAlert, setOpenAlert] = useState(false) // Control dialog visibility
   const [isConfirming, setIsConfirming] = useState(false) // Control dialog visibility
-  const [selectedFilter, setSelectedFilter] = useState(dictionary?.datatable?.column?.all)
   const [selectedDate, setSelectedDate] = useState(null)
 
   // doc verification count store
   const [verificationRequestCount, setVerificationRequestCount] = useState()
 
+  // Vars
+  const isUserHasPermissionSections = useMemo(
+    () => ({
+      get_dispute_details: isUserHasPermission({
+        permissions: user?.permissions,
+        permissionToCheck: 'dispute_management',
+        subPermissionsToCheck: ['get_dispute_details']
+      }),
+      dispute_response: isUserHasPermission({
+        permissions: user?.permissions,
+        permissionToCheck: 'dispute_management',
+        subPermissionsToCheck: ['dispute_response']
+      }),
+      dispute_authority_response: isUserHasPermission({
+        permissions: user?.permissions,
+        permissionToCheck: 'dispute_management',
+        subPermissionsToCheck: ['dispute_authority_response']
+      })
+    }),
+    [user?.permissions]
+  )
+
   const filterData = [
-    { id: 1, name: dictionary?.common?.all },
-    { id: 2, name: dictionary?.common?.completed },
-    { id: 3, name: dictionary?.common?.ongoing }
+    { id: 1, name: dictionary?.common?.all, value: 'All' },
+    { id: 2, name: dictionary?.common?.completed, value: true },
+    { id: 3, name: dictionary?.common?.ongoing, value: false }
   ]
+
+  const [selectedFilter, setSelectedFilter] = useState(filterData[0]?.value)
 
   const CheckboxInput = styled(Checkbox, {
     name: 'MuiCustomInputHorizontal',
@@ -133,8 +161,6 @@ const DisputeHistory = props => {
   const getRole = async () => {
     const session = await getSession()
     const userRole = session?.user?.role || ''
-
-    console.log('roel', userRole, `${dictionary?.datatable?.column?.serial_number}`)
 
     setRole(userRole)
   }
@@ -260,10 +286,8 @@ const DisputeHistory = props => {
     setIsDataTableServerLoading(false)
   }
 
-  // console.log('kokok', recordMetaData)
-
-  const columns = useMemo(
-    () => [
+  const columns = useMemo(() => {
+    const cols = [
       columnHelper.accessor('serialNumber', {
         header: `${dictionary?.datatable?.column?.serial_number}`
       }),
@@ -302,7 +326,6 @@ const DisputeHistory = props => {
           )
         }
       }),
-
       columnHelper.accessor('view', {
         header: () => (
           <Box textAlign='center' style={{ width: '100%' }}>
@@ -311,7 +334,7 @@ const DisputeHistory = props => {
         ),
         cell: ({ row }) => (
           <Box display='flex' alignItems='center' justifyContent='center' style={{ width: '100%', height: '40px' }}>
-            {row?.original?.replies?.length > 0 ? (
+            {row?.original?.replies?.length > 0 && (
               <>
                 <CheckboxInput
                   color={'primary'}
@@ -319,45 +342,51 @@ const DisputeHistory = props => {
                   onChange={() => handleOpenAlert(row.original)}
                   disabled={row?.original?.isCompleted}
                 />
-                <Button
-                  variant='contained'
-                  color='primary'
-                  sx={{ px: 2, mx: 1 }}
-                  onClick={() => handleViewOpenDialog(row.original)} // Pass the row data to open the dialog
-                >
-                  {dictionary?.datatable?.button?.details}
-                </Button>
-                <Button
-                  variant='contained'
-                  color='primary'
-                  sx={{ px: 2, mx: 1 }}
-                  onClick={() => handleOpenDialog(row.original)} // Pass the row data to open the dialog
-                >
-                  {dictionary?.datatable?.button?.response}
-                </Button>
+                {isUserHasPermissionSections?.get_dispute_details && (
+                  <Button
+                    variant='contained'
+                    color='primary'
+                    sx={{ px: 2, mx: 1 }}
+                    onClick={() => handleViewOpenDialog(row.original)}
+                  >
+                    {dictionary?.datatable?.button?.details}
+                  </Button>
+                )}
+                {isUserHasPermissionSections?.dispute_response && (
+                  <Button
+                    variant='contained'
+                    color='primary'
+                    sx={{ px: 2, mx: 1 }}
+                    onClick={() => handleOpenDialog(row.original)}
+                  >
+                    {dictionary?.datatable?.button?.response}
+                  </Button>
+                )}
               </>
-            ) : null}
+            )}
+            {isUserHasPermissionSections?.dispute_authority_response && (
+              <Button
+                disabled={row?.original?.vendorId?.status === 'suspended'}
+                variant='contained'
+                color='primary'
+                sx={{ px: 2, mx: 1 }}
+                onClick={() => {
+                  const param = JSON.stringify(row?.original?.vendorId)
 
-            <Button
-              disabled={row?.original?.vendorId?.status === 'suspended'}
-              variant='contained'
-              color='primary'
-              sx={{ px: 2, mx: 1 }}
-              onClick={() => {
-                const param = JSON.stringify(row?.original?.vendorId)
-
-                localStorage.setItem('disputeParam', param)
-                router.push(`/${locale}/${USER_PANELS?.admin}/dispute-management/suspend`)
-              }}
-            >
-              {row?.original?.vendorId?.status === 'suspended' ? 'Suspended' : dictionary?.datatable?.button?.suspend}
-            </Button>
+                  localStorage.setItem('disputeParam', param)
+                  router.push(`/${locale}/${USER_PANELS?.admin}/dispute-management/suspend`)
+                }}
+              >
+                {row?.original?.vendorId?.status === 'suspended' ? 'Suspended' : dictionary?.datatable?.button?.suspend}
+              </Button>
+            )}
           </Box>
         )
       })
-    ],
-    []
-  )
+    ]
+
+    return cols
+  }, [dictionary, isUserHasPermissionSections, locale, router])
 
   const dataWithSerialNumber = useMemo(
     () =>
@@ -406,10 +435,6 @@ const DisputeHistory = props => {
     }
   }, [page, itemsPerPage, globalFilter, sorting, selectedFilter, selectedDate])
 
-  useEffect(() => {
-    console.log('openDisputeDialog: ', openDisputeDialog)
-  }, [openDisputeDialog])
-
   const refreshData = () => {
     setPage(1)
     setData([])
@@ -434,16 +459,14 @@ const DisputeHistory = props => {
                 label={dictionary?.datatable?.common?.dropdown_label}
                 value={selectedFilter}
                 onChange={event => {
-                  console.log('event.target.value', event.target.value)
-
                   setSelectedFilter(event.target.value)
                   // Trigger API call
                 }}
                 sx={{ minWidth: 150, height: 40 }}
               >
                 {filterData?.map(item => (
-                  <MenuItem value={item?.name} key={item?.id}>
-                    {`${item?.name}`}
+                  <MenuItem value={item?.value} key={item?.id}>
+                    {dictionary?.common?.[item?.name] || item?.name} {/* Language-specific name */}
                   </MenuItem>
                 ))}
               </CustomTextField>
@@ -453,7 +476,6 @@ const DisputeHistory = props => {
               <AppReactDatepicker
                 selected={selectedDate}
                 onChange={date => {
-                  console.log('date', date)
                   setSelectedDate(date)
                 }}
                 customInput={

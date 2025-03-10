@@ -32,7 +32,7 @@ const SchoolDashboard = () => {
       key: 'approveOrders'
     },
     {
-      title: t('form.label.reject'),
+      title: t('form.label.rejected_orders'),
       // link: 'reject-orders',
       key: 'rejectOrders'
     },
@@ -42,7 +42,7 @@ const SchoolDashboard = () => {
       key: 'totalAmount'
     },
     {
-      title: t('form.label.food_chart')
+      title: t('form.label.vendor_schedule_requests')
       // link: 'menu-suggestions'
     },
     {

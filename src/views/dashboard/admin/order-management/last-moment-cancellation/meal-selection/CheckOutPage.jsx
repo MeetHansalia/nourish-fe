@@ -28,7 +28,8 @@ import {
   DialogContent,
   DialogActions,
   FormControlLabel,
-  Checkbox
+  Checkbox,
+  TextField
 } from '@mui/material'
 
 import { useForm, Controller } from 'react-hook-form'
@@ -141,6 +142,12 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
   const selectedDates = useSelector(state => state.date.singleDate)
   const { orderId } = useSelector(globalState)
 
+  const [notes, setnotes] = useState('') // State to store the notess
+
+  const handleNoteChange = event => {
+    setnotes(event.target.value) // Update state when the user types
+  }
+
   const {
     control,
     handleSubmit,
@@ -214,7 +221,9 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
 
   const handlePayNow = async () => {
     try {
-      const response = await axiosApiCall.post(API_ROUTER.ADMIN.PLACE_ORDER(cartData._id))
+      const response = await axiosApiCall.post(API_ROUTER.ADMIN.PLACE_ORDER(cartData._id), {
+        notes
+      })
 
       const { status, message } = response?.data || {}
 
@@ -303,7 +312,7 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
 
     const updatedQuantity = Math.max(currentQuantity - 1, 0)
 
-    updateQuantityApiCall(dishId, updatedQuantity, kidId, dish.modifiers, dish.notes)
+    updateQuantityApiCall(dishId, updatedQuantity, kidId, dish.modifiers, dish.notess)
 
     setIsDataLoaded(false)
   }
@@ -382,6 +391,21 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
               <Typography variant='body2' color='text.secondary'>
                 {cartData?.schoolId?.schoolName}
               </Typography>
+            </CardContent>
+          </Card>
+          <Card className='common-block-dashboard'>
+            <CardContent className='p-0'>
+              <TextField
+                className='mt-2'
+                label={dictionary?.form?.label?.notes || 'Notes'}
+                variant='outlined'
+                multiline
+                fullWidth
+                rows={4}
+                placeholder={dictionary?.form?.placeholder?.notes || 'Enter your notes here...'}
+                value={notes}
+                onChange={handleNoteChange}
+              />
             </CardContent>
           </Card>
           <Card sx={{ mb: 2 }}>

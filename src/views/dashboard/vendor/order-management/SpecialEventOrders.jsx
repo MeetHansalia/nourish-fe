@@ -213,10 +213,10 @@ const OrdersTableComponent = ({ mode, dictionary }) => {
         )
       }),
       columnHelper.accessor('expectedDeliveryDate', {
-        header: `${dictionary?.datatable?.column?.expected_delivery_date}`,
+        header: `${dictionary?.datatable?.column?.delivery_date}`,
         cell: ({ row }) => (
           <Typography sx={{ fontFamily: 'inherit', fontSize: 'inherit', color: 'inherit' }}>
-            {`${row?.original?.orders[0]?.orderType}`}
+            {`${row?.original?.orders[0]?.schoolInfo?.expectedDeliveryTime}`}
           </Typography>
         )
       }),

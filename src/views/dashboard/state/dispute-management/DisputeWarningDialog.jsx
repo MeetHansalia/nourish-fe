@@ -83,8 +83,6 @@ const DisputeWarningDialog = ({ dictionary, open, onClose, details, refreshData 
       vendorId: details?.vendorId?._id
     }
 
-    console.log('selectedChild: ', apiFormData)
-
     axiosApiCall
       .post(API_ROUTER?.ADMIN?.CREATE_DISPUTE, apiFormData)
       .then(response => {
@@ -97,8 +95,6 @@ const DisputeWarningDialog = ({ dictionary, open, onClose, details, refreshData 
         reset(formDefaultValues)
       })
       .catch(error => {
-        console.log('error: ', error)
-
         if (!isCancel(error)) {
           setIsFormSubmitLoading(false)
           const apiResponseErrorHandlingData = apiResponseErrorHandling(error)

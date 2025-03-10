@@ -25,6 +25,15 @@ export const AOS_INIT_CONFIG_OPTIONS = {
   once: true // Whether animation should happen only once
 }
 
+// Avatar Images
+export const AVATARS = {
+  avatar_1: '/images/avatars/avatar_1.png',
+  avatar_2: '/images/avatars/avatar_2.png',
+  avatar_3: '/images/avatars/avatar_3.png',
+  avatar_4: '/images/avatars/avatar_4.jpg',
+  avatar_5: '/images/avatars/avatar_5.jpg'
+}
+
 export const USER_PANELS = {
   super_admin: 'super-admin',
   admin: 'admin',

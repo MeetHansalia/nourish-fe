@@ -57,7 +57,7 @@ import { PHONE_NUMBER_DEFAULT_COUNTRY_CODE } from '@/utils/constants'
 /**
  * Page
  */
-const EditDetails = ({ dictionary, userData, setUserData }) => {
+const EditDetails = ({ dictionary, userData, setUserData, selectedAvatar }) => {
   // Hooks
   const router = useRouter()
   const { lang: locale } = useParams()
@@ -142,6 +142,7 @@ const EditDetails = ({ dictionary, userData, setUserData }) => {
   }, [userData])
 
   const onSubmit = async data => {
+
     const locationData = Object.fromEntries(
       Object.entries(data?.google_address || {}).filter(([key]) =>
         ['country', 'state', 'city', 'district', 'latitude', 'longitude', 'address'].includes(key)
@@ -152,6 +153,7 @@ const EditDetails = ({ dictionary, userData, setUserData }) => {
       ...data,
       ...locationData,
       google_address: undefined,
+      avtar: selectedAvatar,
       expectedDeliveryTime: data?.expectedDeliveryTime
         ? format(data?.expectedDeliveryTime, 'h:mm aa')
         : data?.expectedDeliveryTime

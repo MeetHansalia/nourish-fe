@@ -32,12 +32,6 @@ const ConfirmationDialog = ({
   onSubmitConfirm,
   isConfirmSubmiting
 }) => {
-  const [alertDetails, setAlertDetails] = useState([])
-
-  const handleCancel = async id => {
-    // console.log('idIS', id)
-  }
-
   return (
     <Dialog
       fullWidth

@@ -40,7 +40,8 @@ import {
   LinearProgress,
   TablePagination,
   Grid,
-  Box
+  Box,
+  IconButton
 } from '@mui/material'
 
 // View Imports
@@ -93,14 +94,7 @@ const DisputeListManagement = props => {
     const session = await getSession()
     const userRole = session?.user?.role || ''
 
-    console.log('roel', userRole)
-
     setRole(userRole)
-  }
-
-  const handleOpenDialog = rowData => {
-    setSelectedRow(rowData) // Set the selected row data
-    setOpenDialog(true) // Open the dialog
   }
 
   const handleIssueDetails = rowData => {
@@ -116,40 +110,13 @@ const DisputeListManagement = props => {
   }
 
   const openDisputeForm = () => {
-    console.log('rowData', 'rowData----')
-
     setOpenDisputeDialog(true)
     // setSelectedRow(rowData) // Set the selected row data
   }
 
   const closeDisputeForm = rowData => {
-    console.log('rowData', rowData)
-
     setOpenDisputeDialog(false)
     setSelectedRow(null) // Set the selected row data
-  }
-
-  const handleViewOpenDialog = rowData => {
-    setSelectedRow(rowData) // Set the selected row data
-    setIsDetails(true)
-    setOpenDialog(true) // Open the dialog
-  }
-
-  const handleCloseDialog = () => {
-    setSelectedRow(null) // Clear the selected row data
-    setOpenDialog(false) // Close the dialog
-  }
-
-  const handleOpenDispute = () => {
-    setSelectedRow(null) // Clear the selected row data
-    alert('hello')
-    setOpenDisputeDialog(false) // Close the dialog
-  }
-
-  const handleViewCloseDialog = () => {
-    setSelectedRow(null) // Clear the selected row data
-    setIsDetails(false)
-    setOpenDialog(false) // Close the dialog
   }
 
   const getAllDisputes = async () => {
@@ -160,14 +127,6 @@ const DisputeListManagement = props => {
 
     // Create a new AbortController for the new request
     abortController.current = new AbortController()
-
-    // const orderBy = sorting.reduce((acc, { id, desc }) => {
-    //   acc[id] = desc ? 'desc' : 'asc'
-
-    //   return acc
-    // }, {})
-
-    // const orderByString = JSON.stringify(orderBy)
 
     setIsDataTableServerLoading(true)
 
@@ -185,8 +144,6 @@ const DisputeListManagement = props => {
       const users = response?.data?.response?.issues || []
 
       setData(users)
-      // setTotalCount(meta.totalFiltered || 0)
-      // setTotalPages(meta.totalPage || 1)
 
       const meta1 = response?.data?.meta || {}
 
@@ -205,8 +162,6 @@ const DisputeListManagement = props => {
 
     setIsDataTableServerLoading(false)
   }
-
-  // console.log('kokok', recordMetaData)
 
   const columns = useMemo(
     () => [
@@ -240,16 +195,13 @@ const DisputeListManagement = props => {
       columnHelper.accessor('viewDetails', {
         header: dictionary?.datatable?.column?.view,
         cell: ({ row }) => (
-          <Box display='flex' alignItems='center' justifyContent='center' style={{ width: '50%', height: '40px' }}>
-            <img
-              src='/images/nourishubs/front/eye.png'
-              alt='view-icon'
-              style={{ width: '30px', height: '30px' }}
-              onClick={() => {
-                handleIssueDetails(row.original)
-              }}
-            />
-          </Box>
+          <IconButton
+            onClick={() => {
+              handleIssueDetails(row.original)
+            }}
+          >
+            <i className='tabler-eye' />
+          </IconButton>
         )
       }),
       columnHelper.accessor('view', {
@@ -328,40 +280,12 @@ const DisputeListManagement = props => {
     }
   }, [page, itemsPerPage, globalFilter, sorting, selectedDate])
 
-  // const DEBOUNCE_DELAY = 300
-
-  // useEffect(() => {
-  //   const debouncedFunctions = debounce(() => {
-  //     getRole()
-  //     getAllDisputes()
-  //   }, DEBOUNCE_DELAY)
-
-  //   debouncedFunctions()
-
-  //   return () => {
-  //     debouncedFunctions.cancel() // Cancel any pending debounce calls
-
-  //     if (abortController.current) {
-  //       abortController.current.abort()
-  //     }
-  //   }
-  // }, [page, itemsPerPage, globalFilter, sorting, selectedDate])
-
-  useEffect(() => {
-    console.log('openDisputeDialog: ', openDisputeDialog)
-  }, [openDisputeDialog])
-
   const refreshData = () => {
     setPage(1)
     setData([])
     refreshCounts()
     getAllDisputes()
   } // refresh data
-
-  const handleFormSubmit = formData => {
-    // Add your logic to save or process the form data here
-    setOpenDialog(false) // Close the dialog
-  }
 
   return (
     <div>
@@ -373,7 +297,6 @@ const DisputeListManagement = props => {
               <AppReactDatepicker
                 selected={selectedDate}
                 onChange={date => {
-                  console.log('date', date)
                   setSelectedDate(date)
                 }}
                 // includeDates={availableDates}

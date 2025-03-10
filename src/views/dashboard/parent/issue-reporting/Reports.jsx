@@ -1,24 +1,19 @@
 'use client'
-// React Imports
-import { useEffect, useState } from 'react'
 
 // Next Imports
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 
 // MUI Imports
-import { Card, CardContent, Grid, Typography } from '@mui/material'
+import { Card, CardContent, Typography } from '@mui/material'
 
 // Core Component Imports
 import CustomAvatar from '@/@core/components/mui/Avatar'
 
 // Util Imports
 import { numberFormat } from '@utils/globalFilters'
-import axiosApiCall from '@utils/axiosApiCall'
-import { API_ROUTER } from '@/utils/apiRoutes'
 
 // View Imports
-import { toastError } from '@/utils/globalFunctions'
 import { USER_PANELS } from '@/utils/constants'
 
 /**
@@ -26,11 +21,8 @@ import { USER_PANELS } from '@/utils/constants'
  */
 const Reports = props => {
   // Props
-  console.log('props: ', props)
 
   const { dictionary = null, issueCounts = 0, role = '', isDispute = false, disabled = false } = props
-
-  console.log('dictionary: ', dictionary, issueCounts)
 
   // HOOKS
   const { lang: locale } = useParams()

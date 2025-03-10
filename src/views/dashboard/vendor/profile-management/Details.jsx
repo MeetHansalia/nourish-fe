@@ -4,7 +4,6 @@
 import { Fragment, useState } from 'react'
 
 // MUI Imports
-import EditIcon from '@mui/icons-material/Edit'
 import {
   Avatar,
   Button,
@@ -16,13 +15,16 @@ import {
   List,
   ListItem,
   ListItemText,
-  Typography
+  Typography,
+  Box
 } from '@mui/material'
 
 // Third-party Imports
 import { useDispatch } from 'react-redux'
 
 // Redux Imports
+import { isCancel } from 'axios'
+
 import { setProfile } from '@/redux-store/slices/profile'
 
 // Core Component Imports
@@ -30,65 +32,112 @@ import CustomAvatar from '@/@core/components/mui/Avatar'
 
 // Util Imports
 import axiosApiCall from '@/utils/axiosApiCall'
-import { toastError, toastSuccess } from '@/utils/globalFunctions'
+import {
+  apiResponseErrorHandling,
+  isVariableAnObject,
+  setFormFieldsErrors,
+  toastError,
+  toastSuccess
+} from '@/utils/globalFunctions'
 import { API_ROUTER } from '@/utils/apiRoutes'
 import { getInitials } from '@/utils/getInitials'
 import { titleize } from '@/utils/globalFilters'
 import OpenDialogOnElementClick from '@/components/layout/OpenDialogOnElementClick'
 import ChangePasswordDialog from '@/components/ChangePasswordDialog'
+// import UploadProfilePictureDialogBox from './UploadProfilePictureDialogBox'
+import { AVATARS } from '@/utils/constants'
+import UploadProfileDialog from '@/components/UploadProfileDialog'
 
 /**
  * Page
  */
-const Details = ({ dictionary, userData }) => {
+const Details = ({ dictionary, userData, setSelectedAvatar, selectedAvatar }) => {
   // Hooks
   const dispatch = useDispatch()
 
   // States
-  const [preview, setPreview] = useState(userData?.profileImage)
-  const [isFormSubmitLoading, setIsFormSubmitLoading] = useState(false)
+  const [preview, setPreview] = useState()
+  const [selectedFile, setSelectedFile] = useState(null)
+  const [isUploading, setIsUploading] = useState(false)
+  const [isNewImageOrAvatarSelected, setIsNewImageOrAvatarSelected] = useState(false)
 
   const handleImageChange = event => {
-    const file = event.target.files[0]
+    const fileInput = event.target
+    const file = fileInput.files[0]
+
+    setIsNewImageOrAvatarSelected(true)
+    setSelectedAvatar(null)
+    setSelectedFile(null)
 
     if (file) {
-      onSubmitFileUpload(file)
-      const reader = new FileReader()
+      setSelectedFile(file)
+      setPreview(URL.createObjectURL(file))
 
-      reader.onloadend = () => {
-        setPreview(reader.result)
-      }
-
-      reader.readAsDataURL(file)
+      fileInput.value = ''
     } else {
       toastError('Please select a valid file.')
     }
   }
 
-  const onSubmitFileUpload = async file => {
+  const handleAvatarChange = (avatarName, avatarUrl) => {
+    setIsNewImageOrAvatarSelected(true)
+    setSelectedFile(null)
+    setSelectedAvatar(avatarName)
+    setPreview(avatarUrl)
+  }
+
+  const onSubmitFileUpload = async onSuccess => {
+    if (!selectedFile && !selectedAvatar) return
+
     const apiFormData = new FormData()
 
-    apiFormData.append('file', file)
+    if (selectedFile) {
+      apiFormData.append('file', selectedFile)
+    }
 
-    setIsFormSubmitLoading(true)
-    axiosApiCall
-      .post(API_ROUTER.VENDOR.VENDOR_UPLOAD_PROFILE, apiFormData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
+    if (!selectedFile && selectedAvatar) {
+      apiFormData.append('avtar', selectedAvatar)
+    }
+
+    setIsUploading(true)
+
+    try {
+      const response = await axiosApiCall.post(API_ROUTER.UPLOAD_PROFILE_IMAGE, apiFormData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      })
+
+      const responseBody = response?.data
+
+      dispatch(setProfile(responseBody?.response?.userData))
+      const profileImage = responseBody?.response?.userData?.profileImage
+      const avatar = responseBody?.response?.userData?.avtar
+
+      if (profileImage) {
+        setPreview(profileImage)
+      } else {
+        setSelectedAvatar(avatar)
+      }
+
+      onSuccess()
+    } catch (error) {
+      setPreview(null)
+
+      if (!isCancel(error)) {
+        const apiResponseErrorHandlingData = apiResponseErrorHandling(error)
+
+        if (isVariableAnObject(apiResponseErrorHandlingData)) {
+          setFormFieldsErrors(apiResponseErrorHandlingData, setError)
+        } else {
+          toastError(apiResponseErrorHandlingData)
         }
-      })
-      .then(response => {
-        const responseBody = response?.data
-
-        toastSuccess(responseBody?.message)
-        dispatch(setProfile(responseBody.response.userData))
-        setIsFormSubmitLoading(false)
-      })
-      .catch(error => {
-        console.log('error', error)
-        toastError('Something went wrong, please try again!')
-      })
+      }
+    } finally {
+      setIsUploading(false)
+    }
   }
+
+  const existingImage =
+    preview || (typeof userData?.avtar === 'string' && AVATARS[userData?.avtar]) || userData?.profileImage
 
   return (
     <Card className='card-shadow-common p-0'>
@@ -99,7 +148,7 @@ const Details = ({ dictionary, userData }) => {
             <label htmlFor='imageUpload' style={{ cursor: 'pointer' }}>
               <div className='flex rounded-bs-md mbs-[-40px] border-[5px] mis-[-5px] border-be-0  border-backgroundPaper bg-backgroundPaper'>
                 <CustomAvatar
-                  src={preview || '/'}
+                  src={existingImage}
                   alt={`${userData?.first_name} ${userData?.last_name}`}
                   size={146}
                   skin='light'
@@ -109,43 +158,29 @@ const Details = ({ dictionary, userData }) => {
                 </CustomAvatar>
               </div>
               <div className='edit-profile'>
-                <i className='tabler-pencil' />
+                <OpenDialogOnElementClick
+                  element={Button}
+                  elementProps={{
+                    children: <i className='tabler-pencil' />
+                  }}
+                  dialog={UploadProfileDialog}
+                  dialogProps={{
+                    handleImageChange,
+                    onSubmitFileUpload,
+                    isUploading,
+                    handleAvatarChange,
+                    isNewImageOrAvatarSelected,
+                    userData,
+                    existingImage
+                  }}
+                />
               </div>
             </label>
-            <input
-              accept='image/*'
-              style={{ display: 'none' }}
-              id='imageUpload'
-              type='file'
-              onChange={handleImageChange}
-            />
           </ListItem>
-
-          {/* <ListItem>
-            <Avatar
-              sx={{
-                textAlign: 'center',
-                bgcolor: 'transparent',
-                width: 64,
-                height: 64,
-                mx: 'auto',
-                borderRadius: 2
-              }}
-            >
-              <label htmlFor='imageUpload' style={{ cursor: 'pointer' }}>
-                <Avatar alt={userData.first_name + ' ' + userData.last_name || ''} src={preview || ''} />
-                <EditIcon />
-              </label>
-              <input
-                accept='image/*'
-                style={{ display: 'none' }}
-                id='imageUpload'
-                type='file'
-                onChange={handleImageChange}
-              />
-            </Avatar>
-          </ListItem> */}
-
+          <ListItem className='text-center capitalize'>
+            {/* Small Avatar Selection */}
+            <Box display='flex' gap={1}></Box>
+          </ListItem>
           <ListItem className='mb-4'>
             <ListItemText
               className='text-center capitalize title-semi-medium-custom'

@@ -67,7 +67,7 @@ const KidListing = ({ dictionary }) => {
   }
 
   const handleSelectKid = id => {
-    router.push(getLocalizedUrl(`/${panelName}/meal-selection/${id}`, locale))
+    router.push(getLocalizedUrl(`/${panelName}/kid-profile-management/kid-update/${id}`, locale))
   }
 
   // Get Notification popups (kid request aprove/reject/pending)
@@ -120,8 +120,8 @@ const KidListing = ({ dictionary }) => {
                   className={kid.verificationStatus === 'pending' ? 'opacity-50 pointer-events-none' : ''}
                 >
                   <div
-                    className='kids-profile-me border rounded sm:items-center flex-col !items-start sm:flex-row gap-2 cursor-pointer'
-                    onClick={() => handleSelectKid(kid._id)}
+                    className='kids-profile-me border rounded sm:items-center flex-col !items-start sm:flex-row gap-2 '
+                    // onClick={() => handleSelectKid(kid._id)}
                   >
                     <div className='kids-profile-me-inner'>
                       <div className='flex justify-between w-full'>
@@ -171,7 +171,7 @@ const KidListing = ({ dictionary }) => {
                             <Typography className='title-small-medium-custom'>
                               {dictionary?.form?.label?.verification_status +
                                 ' : ' +
-                                (kid?.verificationStatus ? kid?.verificationStatus : ' -')}
+                                (kid?.verificationStatus === 'approved' ? 'Verified' : kid?.verificationStatus || ' -')}
                             </Typography>
                           </Grid>
                         </Grid>

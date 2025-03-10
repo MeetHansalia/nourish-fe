@@ -59,6 +59,7 @@ import AppReactDatepicker from '@/libs/styles/AppReactDatepicker'
 import { reviewDialogState, setIsRefreshReviewList } from '@/redux-store/slices/reviewDialog'
 import tableStyles from '@core/styles/table.module.css'
 import OpenDialogOnElementClick from '@/components/layout/OpenDialogOnElementClick'
+import StatusLabel from '@/components/theme/getStatusColours'
 
 const OrderReviewTable = props => {
   //** HOOKS */
@@ -191,22 +192,33 @@ const OrderReviewTable = props => {
           return mealDetails
         }
       }),
-      columnHelper.accessor('Actions', {
+      columnHelper.accessor('Status', {
         header: `${dictionary?.datatable?.column?.status}`,
         enableSorting: false,
         cell: ({ row }) => {
-          const orderStatus = row?.original?.orderId?.orderStatus
+          const orderStatus = row.original.orderId?.orderStatus
 
+          return (
+            <>
+              <StatusLabel status={orderStatus} />
+            </>
+          )
+        }
+      }),
+      columnHelper.accessor('details', {
+        header: `${dictionary?.page.common?.details}`,
+        enableSorting: false,
+        cell: ({ row }) => {
           return (
             <>
               <OpenDialogOnElementClick
                 element={Button}
                 elementProps={{
-                  children: `${orderStatus}`,
+                  children: `${dictionary?.page.common?.details}`,
                   variant: 'contained'
                 }}
                 dialog={ReviewDialog}
-                dialogProps={{ dictionary, selectedRow: row?.original }}
+                dialogProps={{ dictionary, selectedRow: row.original }}
               />
             </>
           )

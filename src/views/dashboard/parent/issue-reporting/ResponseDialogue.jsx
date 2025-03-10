@@ -9,12 +9,10 @@ import {
   DialogActions,
   Button,
   TextField,
-  IconButton,
   Box,
   Typography,
   CircularProgress
 } from '@mui/material'
-import CloseIcon from '@mui/icons-material/Close'
 
 import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
@@ -51,10 +49,8 @@ const ReponseDialogue = ({
   const [isFormSubmitLoading, setIsFormSubmitLoading] = useState(false)
   const [role, setRole] = useState('')
   const [userId, setUserId] = useState('')
+
   // Validation schema
-
-  console.log('role', role)
-
   const schema = yup.object().shape({
     response: yup.string().required(dictionary?.form?.validation?.required)
   })
@@ -83,8 +79,6 @@ const ReponseDialogue = ({
   const getRole = async () => {
     const session = await getSession()
     const userRole = session?.user?.role || ''
-
-    console.log('session?.user?._id', session?.user?._id)
 
     setUserId(session?.user?._id)
     setRole(userRole)

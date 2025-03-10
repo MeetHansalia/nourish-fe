@@ -88,9 +88,9 @@ const ProfileViewDialog = ({ open, setOpen, dialogProps }) => {
             <Typography variant='body2' mb={1}>
               <strong>{t('page.staff_management.staff_card.phone_number')}:</strong> {dialogProps?.phoneNo}
             </Typography>
-            <Typography variant='body2'>
+            {/* <Typography variant='body2'>
               <strong>{t('page.staff_management.staff_card.address')}:</strong> {dialogProps?.location?.city || 'N/A'}
-            </Typography>
+            </Typography> */}
           </DialogContent>
         </>
       ) : (

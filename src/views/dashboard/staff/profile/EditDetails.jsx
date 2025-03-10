@@ -58,7 +58,7 @@ import { PHONE_NUMBER_DEFAULT_COUNTRY_CODE } from '@/utils/constants'
 /**
  * Page
  */
-const EditDetails = ({ dictionary, userData, setUserData, selectedFile }) => {
+const EditDetails = ({ dictionary, userData, setUserData, selectedFile, selectedAvatar }) => {
   // Hooks
   const router = useRouter()
   const { lang: locale } = useParams()
@@ -185,7 +185,11 @@ const EditDetails = ({ dictionary, userData, setUserData, selectedFile }) => {
       ...data,
       ...locationData,
       google_address: undefined,
-      file: selectedFile
+      avtar: selectedAvatar
+    }
+
+    if (!selectedAvatar) {
+      apiFormData.file = selectedFile // Only add file if avatar is not selected
     }
 
     delete apiFormData.language

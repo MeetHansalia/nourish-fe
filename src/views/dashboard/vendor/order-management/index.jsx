@@ -39,7 +39,7 @@ const VendorOrderManagementComponent = ({ dictionary }) => {
     {
       title: 'Regular School Order Request',
       link: 'order-management/regular-order-request',
-      count: totalCount?.regularOrders
+      count: totalCount?.regularOrders + '/'
     },
     {
       title: 'Special Event Order Request',
@@ -59,7 +59,7 @@ const VendorOrderManagementComponent = ({ dictionary }) => {
       <Grid container spacing={6}>
         {CARD_TITLE_DATA?.map((card, index) => (
           <Grid item xs={6} sm={4} md={4} key={index}>
-            <Statistics title={card?.title} link={card?.link} count={card?.count} />
+            <Statistics title={card?.title} link={card?.link} count={card?.count} totalCount={totalCount} />
           </Grid>
         ))}
       </Grid>

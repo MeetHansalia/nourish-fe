@@ -8,9 +8,12 @@ import { useSelector } from 'react-redux'
 import { isCancel } from 'axios'
 
 // MUI Imports
-import { CircularProgress, Grid } from '@mui/material'
+import { Grid } from '@mui/material'
 
 // Util Imports
+
+// import { useSession } from 'next-auth/react'
+
 import axiosApiCall from '@/utils/axiosApiCall'
 import { API_ROUTER } from '@/utils/apiRoutes'
 
@@ -39,6 +42,7 @@ const ProfileManagement = ({ dictionary }) => {
   // States
   const [userData, setUserData] = useState()
   const [isUserDataLoading, setIsUserDataLoading] = useState(true)
+  const [selectedAvatar, setSelectedAvatar] = useState(null)
 
   useEffect(() => {
     if (user?._id) {
@@ -62,10 +66,20 @@ const ProfileManagement = ({ dictionary }) => {
       {userData ? (
         <Grid container spacing={6} className='profile-block'>
           <Grid item xs={12} sm={12} md={4}>
-            <Details dictionary={dictionary} userData={userData} />
+            <Details
+              dictionary={dictionary}
+              userData={userData}
+              setSelectedAvatar={setSelectedAvatar}
+              selectedAvatar={selectedAvatar}
+            />
           </Grid>
-          <Grid item xs={12} sm={12} md={8}>
-            <EditDetails dictionary={dictionary} userData={userData} setUserData={setUserData} />
+          <Grid item xs={12} sm={12} md={8} key={selectedAvatar}>
+            <EditDetails
+              dictionary={dictionary}
+              userData={userData}
+              setUserData={setUserData}
+              selectedAvatar={selectedAvatar}
+            />
           </Grid>
           <Grid item xs={12} sm={12} md={12} lg={12}>
             <MinimumThreshold dictionary={dictionary} userData={userData} />
@@ -84,40 +98,26 @@ const ProfileManagement = ({ dictionary }) => {
       ) : (
         <div className='text-center'>No Data</div>
       )}
-
-      <OpenDialogOnElementClick
-        elementProps={{
-          variant: 'outlined',
-          color: 'primary'
-        }}
-        dialog={ProfileViewDialog}
-        dialogProps={{ dictionary }}
-      />
-
-      {/* {isDataLoaded ? (
-        <Box>
-          <Grid container spacing={2}>
-            <Grid item xs={4}>
-              <Details dictionary={dictionary} userData={userData} />
-            </Grid>
-            <Grid item xs={8}>
-              <EditDetails dictionary={dictionary} userData={userData} setUserData={setUserData} />
-            </Grid>
-          </Grid>
-          <MinimumThreshold dictionary={dictionary} userData={userData} />
-          <UploadDocument dictionary={dictionary} userData={userData} />
-          <PaymentMethod dictionary={dictionary} userData={userData} />
-          <OpenDialogOnElementClick
-            elementProps={{
-              variant: 'outlined',
-              color: 'primary'
-            }}
-            dialog={ProfileViewDialog}
-          />
-        </Box>
-      ) : (
-        <CircularProgress />
-      )} */}
+      {!user?.status === 'suspended' && (
+        <OpenDialogOnElementClick
+          elementProps={{
+            variant: 'outlined',
+            color: 'primary'
+          }}
+          dialog={ProfileViewDialog}
+          dialogProps={{ dictionary }}
+        />
+      )}
+      {user?.status === 'suspended' && (
+        <OpenDialogOnElementClick
+          elementProps={{
+            variant: 'outlined',
+            color: 'primary'
+          }}
+          dialog={ProfileViewDialog}
+          dialogProps={{ dictionary, suspendStart: user?.suspendStartDate, suspendEnd: user?.suspendEndDate }}
+        />
+      )}
     </>
   )
 }

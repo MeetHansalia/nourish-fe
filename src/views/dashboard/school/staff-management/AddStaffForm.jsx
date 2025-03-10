@@ -62,6 +62,34 @@ const AddStaffFormComponent = ({ dictionary }) => {
   const pathname = usePathname()
   const theme = useTheme()
 
+  const [selectedGender, setSelectedGender] = useState('')
+  const [selectedActivityLevel, setSelectedActivityLevel] = useState('')
+  const [selectedWeightUnit, setSelectedWeightUnit] = useState('')
+  const [selectedHeightUnit, setSelectedHeightUnit] = useState('')
+  const genders = dictionary?.form?.dropdown.genders
+  const height_units = dictionary?.form?.dropdown.height_units
+  const weight_units = dictionary?.form?.dropdown.weight_units
+
+  const handleActivityLevelChange = event => {
+    setValue('activityLevel', event?.target?.value)
+    setSelectedActivityLevel(event?.target?.value)
+  }
+
+  const handleGenderChange = event => {
+    setValue('gender', event?.target?.value)
+    setSelectedGender(event?.target?.value)
+  }
+
+  const handleWeightUnitChange = event => {
+    setValue('weight_unit', event?.target?.value)
+    setSelectedWeightUnit(event?.target?.value)
+  }
+
+  const handleHeightUnitChange = event => {
+    setValue('height_in', event?.target?.value)
+    setSelectedHeightUnit(event?.target?.value)
+  }
+
   // Vars
   const id = 0
   const panelName = getPanelName(pathname)
@@ -81,6 +109,42 @@ const AddStaffFormComponent = ({ dictionary }) => {
       .email(dictionary?.form?.validation?.email_address)
       .required(dictionary?.form?.validation?.required),
     phoneNo: yup.string().required(dictionary?.form?.validation?.required),
+    age: yup
+      .number()
+      .typeError(dictionary?.form?.validation?.invalid_number)
+      .min(3, dictionary?.form?.validation?.min_age)
+      .max(18, dictionary?.form?.validation?.max_age)
+      .required(dictionary?.form?.validation?.required)
+      .label(dictionary?.form?.label?.age),
+    gender: yup.string().required(dictionary?.form?.validation?.required).label(dictionary?.form?.label?.gender),
+    height_in: yup
+      .string()
+      .required(dictionary?.form?.validation?.required)
+      .label(dictionary?.form?.label?.height_units),
+    weight: yup
+      .number()
+      .typeError(dictionary?.form?.validation?.invalid_weight)
+      .min(10, dictionary?.form?.validation?.min_weight)
+      .max(150, dictionary?.form?.validation?.max_weight)
+      .required(dictionary?.form?.validation?.required)
+      .label(dictionary?.form?.label?.weight)
+      .test(
+        'decimal-places',
+        dictionary?.form?.validation?.invalid_decimal,
+        value => /^\d+(\.\d{1,2})?$/.test(value?.toString()) // Allows up to 2 decimal places
+      ),
+    height: yup
+      .number()
+      .typeError(dictionary?.form?.validation?.invalid_height)
+      .min(50, dictionary?.form?.validation?.min_height)
+      .max(250, dictionary?.form?.validation?.max_height)
+      .required(dictionary?.form?.validation?.required)
+      .label(dictionary?.form?.label?.height)
+      .test(
+        'decimal-places',
+        dictionary?.form?.validation?.invalid_decimal,
+        value => /^\d+(\.\d{1,2})?$/.test(value?.toString()) // Allows up to 2 decimal places
+      )
     // google_address: yup.object().required(dictionary?.form?.validation?.required),
     // permissions: yup.array().of(
     //   yup.object().shape({
@@ -97,8 +161,15 @@ const AddStaffFormComponent = ({ dictionary }) => {
     email: '',
     phoneNo: '',
     countryCode: '',
-    google_address: null,
-    permissions: []
+    // google_address: null,
+    permissions: [],
+    age: '',
+    gender: '',
+    weight: '',
+    height: '',
+    weight_unit: 'kg',
+    height_in: 'cm',
+    activityLevel: ''
   }
 
   const {
@@ -125,15 +196,17 @@ const AddStaffFormComponent = ({ dictionary }) => {
       )
     )
 
-    const apiFormData = {
-      ...data,
-      ...locationData,
-      google_address: undefined,
-      permissions: data?.permissions?.filter(item => item?.permission && Object.keys(item).length > 0)
-    }
+    const { weight_unit, google_address, ...filteredData } = data
 
-    // console.log('onSubmit: values: ', data)
-    // console.log('apiFormData: ', apiFormData)
+    const apiFormData = {
+      ...filteredData,
+      ...locationData,
+      permissions: filteredData?.permissions?.filter(item => item?.permission && Object.keys(item).length > 0),
+      activityLevel: String(filteredData.activityLevel || ''),
+      height: String(filteredData.height || ''),
+      weight: String(filteredData.weight || ''),
+      age: String(filteredData.age || '')
+    }
 
     setIsFormSubmitLoading(true)
 
@@ -423,7 +496,7 @@ const AddStaffFormComponent = ({ dictionary }) => {
                     {...field}
                     select
                     fullWidth
-                    label={dictionary?.form?.label?.role}
+                    label={dictionary?.page?.staff_management?.staff_card?.role}
                     error={!!errors?.role}
                     helperText={errors?.role?.message}
                     onChange={event => field.onChange(event.target.value)}
@@ -477,6 +550,195 @@ const AddStaffFormComponent = ({ dictionary }) => {
                 )}
               />
             </Grid> */}
+            <Grid item xs={6}>
+              <div className='form-group'>
+                <Controller
+                  name='age'
+                  control={control}
+                  render={({ field }) => (
+                    <CustomTextField
+                      {...field}
+                      fullWidth
+                      label={dictionary?.form?.label?.age}
+                      placeholder={dictionary?.form?.placeholder?.age}
+                      {...(errors.age && { error: true, helperText: errors.age.message })}
+                    />
+                  )}
+                />
+              </div>
+            </Grid>
+            <Grid item xs={6}>
+              <div className='form-group address-fill-common'>
+                <Controller
+                  name='gender'
+                  className='diff-select-block'
+                  control={control}
+                  render={({ field }) => (
+                    <CustomTextField
+                      {...field}
+                      select
+                      fullWidth
+                      className='diff-select-block'
+                      value={selectedGender}
+                      label={dictionary?.form?.label?.gender}
+                      error={Boolean(errors.gender)}
+                      helperText={errors?.gender?.message || ''}
+                      SelectProps={{
+                        displayEmpty: true,
+                        onChange: handleGenderChange
+                      }}
+                    >
+                      <MenuItem disabled value=''>
+                        <Typography color='text.disabled'>{dictionary?.form?.placeholder?.gender}</Typography>
+                      </MenuItem>
+                      {genders?.map(item => (
+                        <MenuItem value={item?.id} key={item?.id}>
+                          {item?.name}
+                        </MenuItem>
+                      ))}
+                    </CustomTextField>
+                  )}
+                />
+              </div>
+            </Grid>
+            <Grid item xs={3}>
+              <div className='form-group'>
+                <Controller
+                  name='weight'
+                  control={control}
+                  render={({ field }) => (
+                    <CustomTextField
+                      {...field}
+                      fullWidth
+                      label={dictionary?.form?.label?.weight}
+                      placeholder={dictionary?.form?.placeholder?.weight}
+                      {...(errors.weight && { error: true, helperText: errors.weight.message })}
+                    />
+                  )}
+                />
+              </div>
+            </Grid>
+            <Grid item xs={3}>
+              <div className='form-group address-fill-common'>
+                <Controller
+                  name='weight_unit'
+                  control={control}
+                  render={({ field }) => (
+                    <CustomTextField
+                      {...field}
+                      select
+                      fullWidth
+                      className='diff-select-block'
+                      label={dictionary?.form?.label?.weight_units}
+                      error={Boolean(errors.weight_unit)}
+                      helperText={errors?.weight_unit?.message || ''}
+                      SelectProps={{
+                        displayEmpty: true,
+                        onChange: e => {
+                          field.onChange(e) // Updates form state
+                          handleWeightUnitChange(e) // Custom handler
+                        }
+                      }}
+                    >
+                      <MenuItem disabled value=''>
+                        <Typography color='text.disabled'>{dictionary?.form?.placeholder?.weight_units}</Typography>
+                      </MenuItem>
+                      {weight_units?.map(item => (
+                        <MenuItem value={item?.id} key={item?.id}>
+                          {item?.name}
+                        </MenuItem>
+                      ))}
+                    </CustomTextField>
+                  )}
+                />
+              </div>
+            </Grid>
+            <Grid item xs={3}>
+              <div className='form-group'>
+                <Controller
+                  name='height'
+                  control={control}
+                  render={({ field }) => (
+                    <CustomTextField
+                      {...field}
+                      fullWidth
+                      label={dictionary?.form?.label?.height}
+                      placeholder={dictionary?.form?.placeholder?.height}
+                      {...(errors.height && { error: true, helperText: errors.height.message })}
+                    />
+                  )}
+                />
+              </div>
+            </Grid>
+            <Grid item xs={3}>
+              <div className='form-group address-fill-common'>
+                <Controller
+                  name='height_in'
+                  control={control}
+                  render={({ field }) => (
+                    <CustomTextField
+                      {...field}
+                      select
+                      fullWidth
+                      className='diff-select-block'
+                      label={dictionary?.form?.label?.height_units}
+                      error={Boolean(errors.height_in)}
+                      helperText={errors?.height_in?.message || ''}
+                      SelectProps={{
+                        displayEmpty: true,
+                        onChange: e => {
+                          field.onChange(e.target.value) // Updates form state
+                          handleHeightUnitChange(e) // Custom handler (if needed)
+                        }
+                      }}
+                    >
+                      <MenuItem disabled value=''>
+                        <Typography color='text.disabled'>{dictionary?.form?.placeholder?.height_units}</Typography>
+                      </MenuItem>
+                      {height_units?.map(item => (
+                        <MenuItem value={item?.id} key={item?.id}>
+                          {item?.name}
+                        </MenuItem>
+                      ))}
+                    </CustomTextField>
+                  )}
+                />
+              </div>
+            </Grid>
+            <Grid item xs={6}>
+              <div className='form-group address-fill-common'>
+                <Controller
+                  name='activityLevel'
+                  className='diff-select-block'
+                  control={control}
+                  // defaultValue={kidData?.activityLevel || ''}
+                  render={({ field }) => (
+                    <CustomTextField
+                      {...field}
+                      select
+                      fullWidth
+                      className='diff-select-block'
+                      value={selectedActivityLevel}
+                      label={dictionary?.form?.label?.activity_level}
+                      error={Boolean(errors.activityLevel)}
+                      helperText={errors?.activityLevel?.message || ''}
+                      SelectProps={{
+                        displayEmpty: true,
+                        onChange: handleActivityLevelChange
+                      }}
+                      // disabled={kidData?.verificationStatus === 'approved'}
+                    >
+                      <MenuItem value=''>
+                        <Typography color='text.disabled'>{dictionary?.form?.placeholder?.activity_level}</Typography>
+                      </MenuItem>
+                      <MenuItem value={1.2}>{dictionary?.form?.label?.sedentary} </MenuItem>
+                      <MenuItem value={1.55}>{dictionary?.form?.label?.moderate} </MenuItem>
+                      <MenuItem value={1.9}>{dictionary?.form?.label?.active1} </MenuItem>
+                    </CustomTextField>
+                  )}
+                />
+              </div>
+            </Grid>
             <Grid item xs={12} sm={6} className='nh-phone-input-wrapper'>
               <div className='form-group'>
                 <InputLabel
@@ -527,7 +789,7 @@ const AddStaffFormComponent = ({ dictionary }) => {
                 {errors.countryCode && <FormHelperText error>{errors?.countryCode?.message}</FormHelperText>}
               </div>
             </Grid>
-            <Grid item xs={12} md={6}>
+            {/* <Grid item xs={12} md={6}>
               <Controller
                 name='google_address'
                 control={control}
@@ -559,7 +821,7 @@ const AddStaffFormComponent = ({ dictionary }) => {
               {errors.district && <FormHelperText error>{errors?.district?.message}</FormHelperText>}
               {errors.latitude && <FormHelperText error>{errors?.latitude?.message}</FormHelperText>}
               {errors.longitude && <FormHelperText error>{errors?.longitude?.message}</FormHelperText>}
-            </Grid>
+            </Grid> */}
 
             <Grid item xs={12} className={'hidden'}>
               <FormLabel>{dictionary?.form?.label?.permission}</FormLabel>

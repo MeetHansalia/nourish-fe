@@ -35,15 +35,29 @@ import {
 
 // Third-party Imports
 import classnames from 'classnames'
+import { useSelector } from 'react-redux'
 
 // Utils Imports
+import { isCancel } from 'axios'
+
 import axiosApiCall from '@/utils/axiosApiCall'
 import { useTranslation } from '@/utils/getDictionaryClient'
-import { actionConfirmWithLoaderAlert, getPanelName, successAlert, toastError } from '@/utils/globalFunctions'
+import {
+  actionConfirmWithLoaderAlert,
+  getPanelName,
+  successAlert,
+  toastError,
+  isUserHasPermission,
+  apiResponseErrorHandling,
+  isVariableAnObject,
+  setFormFieldsErrors
+} from '@/utils/globalFunctions'
 import { API_ROUTER } from '@/utils/apiRoutes'
 
 // Component Imports
 import CustomTextField from '@/@core/components/mui/TextField'
+
+import { profileState } from '@/redux-store/slices/profile'
 
 // import OpenDialogOnElementClick from '@/components/layout/OpenDialogOnElementClick'
 
@@ -62,6 +76,8 @@ const VendorRegistrationRequestsTable = ({ dictionary }) => {
   const panelName = getPanelName(pathname)
 
   const { t } = useTranslation(locale)
+
+  const { user = null } = useSelector(profileState)
   // const { t: t_aboutUs } = useTranslation(locale, 'about-us')
 
   // States
@@ -75,6 +91,18 @@ const VendorRegistrationRequestsTable = ({ dictionary }) => {
   const [isDataTableServerLoading, setIsDataTableServerLoading] = useState(true)
 
   const abortController = useRef(null)
+
+  // Vars
+  const isUserHasPermissionSections = useMemo(
+    () => ({
+      verify_user: isUserHasPermission({
+        permissions: user?.permissions,
+        permissionToCheck: 'user_management',
+        subPermissionsToCheck: ['verify_user']
+      })
+    }),
+    [user?.permissions]
+  )
 
   // Fetch Data
   const getAllRequests = async () => {
@@ -108,20 +136,25 @@ const VendorRegistrationRequestsTable = ({ dictionary }) => {
       })
 
       const users = response?.data?.response?.documentsVerificationRequests || []
-      const meta = response?.data?.meta || {}
+      const recordedMetaData = response?.data?.meta || {}
 
       setData(users)
-      setTotalCount(meta.totalFiltered || 0)
-      setTotalPages(meta.totalPage || 1)
+      setRecordMetaData(recordedMetaData)
 
       // if last page have 1 only user then this...
       if (users.length === 0 && page > 1) {
         setPage(prevPage => prevPage - 1)
       }
     } catch (error) {
-      if (error.name !== 'AbortError') {
-        // Handle errors only if it's not an abort error
-        toastError(error?.response?.data?.message)
+      if (!isCancel(error)) {
+        setIsDataTableServerLoading(false)
+        const apiResponseErrorHandlingData = apiResponseErrorHandling(error)
+
+        if (isVariableAnObject(apiResponseErrorHandlingData)) {
+          setFormFieldsErrors(apiResponseErrorHandlingData, setError)
+        } else {
+          toastError(apiResponseErrorHandlingData)
+        }
       }
     }
 
@@ -130,8 +163,8 @@ const VendorRegistrationRequestsTable = ({ dictionary }) => {
 
   const columnHelper = createColumnHelper()
 
-  const columns = useMemo(
-    () => [
+  const columns = useMemo(() => {
+    const cols = [
       columnHelper.accessor('serialNumber', {
         header: `${dictionary?.datatable?.column?.serial_number}`,
         cell: info => info.getValue(),
@@ -153,28 +186,34 @@ const VendorRegistrationRequestsTable = ({ dictionary }) => {
       columnHelper.accessor('address', {
         header: `${dictionary?.datatable?.column?.country_name}`,
         cell: info => info.getValue() || <span className='italic text-gray-500'>N/A</span>
-      }),
-
-      columnHelper.accessor('viewDetails', {
-        header: dictionary?.datatable?.column?.view_menu,
-        cell: ({ row }) => (
-          <Link
-            href={getLocalizedUrl(
-              `${panelName}/vendor-management/vendor-document-requests/${row?.original?._id}`,
-              locale
-            )}
-            className='flex'
-          >
-            <IconButton>
-              <i className='tabler-eye text-textSecondary' />
-            </IconButton>
-          </Link>
-        ),
-        enableSorting: false
       })
-    ],
-    [dictionary]
-  )
+    ]
+
+    // ✅ Conditionally add the "View Menu" column if the user has permission
+    if (isUserHasPermissionSections?.verify_user) {
+      cols.push(
+        columnHelper.accessor('viewDetails', {
+          header: `${dictionary?.datatable?.column?.view_details}`,
+          cell: ({ row }) => (
+            <Link
+              href={getLocalizedUrl(
+                `${panelName}/vendor-management/vendor-document-requests/${row?.original?._id}`,
+                locale
+              )}
+              className='flex'
+            >
+              <IconButton>
+                <i className='tabler-eye text-textSecondary' />
+              </IconButton>
+            </Link>
+          ),
+          enableSorting: false
+        })
+      )
+    }
+
+    return cols
+  }, [dictionary, isUserHasPermissionSections]) // ✅ Added dependency for permission
 
   const dataWithSerialNumber = useMemo(
     () =>
@@ -223,19 +262,23 @@ const VendorRegistrationRequestsTable = ({ dictionary }) => {
 
   return (
     <>
-      <Card>
+      <Card className='common-block-dashboard table-block-no-pad'>
         <CardHeader
+          className='common-block-title'
           title={dictionary?.datatable?.verification_request_Table?.table_title}
           action={
-            <DebouncedInput
-              value={globalFilter ?? ''}
-              onChange={value => setGlobalFilter(String(value))}
-              placeholder={dictionary?.datatable?.common?.search_placeholder}
-            />
+            <div className='form-group'>
+              <DebouncedInput
+                value={globalFilter ?? ''}
+                onChange={value => setGlobalFilter(String(value))}
+                placeholder={dictionary?.datatable?.common?.search_placeholder}
+              />
+            </div>
           }
-          className='flex-wrap gap-4'
+          // className='flex-wrap gap-4'
         />
-        <div className='overflow-x-auto'>
+        {/* <div className='overflow-x-auto'> */}
+        <div className='table-common-block p-0 overflow-x-auto'>
           <table className={tableStyles.table}>
             <thead>
               {table.getHeaderGroups().map(headerGroup => (
@@ -265,7 +308,7 @@ const VendorRegistrationRequestsTable = ({ dictionary }) => {
               ))}
               {isDataTableServerLoading && (
                 <tr>
-                  <td colSpan={columns?.length}>
+                  <td colSpan={columns?.length} className='no-pad-td'>
                     <LinearProgress color='primary' sx={{ height: '2px' }} />
                   </td>
                 </tr>

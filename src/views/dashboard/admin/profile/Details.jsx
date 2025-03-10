@@ -4,7 +4,7 @@
 import { useState } from 'react'
 
 // Next Imports
-import { useParams, useRouter, usePathname } from 'next/navigation'
+import { useParams, usePathname } from 'next/navigation'
 
 // MUI Imports
 import EditIcon from '@mui/icons-material/Edit'
@@ -19,50 +19,132 @@ import {
   List,
   ListItem,
   ListItemText,
-  Typography
+  Typography,
+  Box
 } from '@mui/material'
 
 // Core Component Imports
+import { isCancel } from 'axios'
+
+import { useDispatch } from 'react-redux'
+
 import CustomAvatar from '@/@core/components/mui/Avatar'
 
 // Util Imports
 import { getLocalizedUrl } from '@/utils/i18n'
-import { getFullName, getPanelName } from '@/utils/globalFunctions'
+import {
+  apiResponseErrorHandling,
+  getFullName,
+  getPanelName,
+  isVariableAnObject,
+  setFormFieldsErrors,
+  toastError
+} from '@/utils/globalFunctions'
 import { getInitials } from '@/utils/getInitials'
 import OpenDialogOnElementClick from '@/components/layout/OpenDialogOnElementClick'
 import ChangePasswordDialog from '@/components/ChangePasswordDialog'
+import { AVATARS } from '@/utils/constants'
+import UploadProfileDialog from '@/components/UploadProfileDialog'
+import axiosApiCall from '@/utils/axiosApiCall'
+import { API_ROUTER } from '@/utils/apiRoutes'
+import { setProfile } from '@/redux-store/slices/profile'
 
 /**
  * Page
  */
-const Details = ({ dictionary, userData, setSelectedFile }) => {
+const Details = ({ dictionary, userData, setSelectedAvatar, selectedAvatar }) => {
   // Hooks
+  const dispatch = useDispatch()
   const { lang: locale } = useParams()
-  const router = useRouter()
   const pathname = usePathname()
 
   // Vars
   const panelName = getPanelName(pathname)
 
   // States
-  const [preview, setPreview] = useState(userData?.profileImage)
+  const [preview, setPreview] = useState()
+  const [selectedFile, setSelectedFile] = useState(null)
+  const [isUploading, setIsUploading] = useState(false)
+  const [isNewImageOrAvatarSelected, setIsNewImageOrAvatarSelected] = useState(false)
 
   const handleImageChange = event => {
-    const file = event.target.files[0]
+    const fileInput = event.target
+    const file = fileInput.files[0]
+
+    setIsNewImageOrAvatarSelected(true)
+    setSelectedAvatar(null)
+    setSelectedFile(null)
 
     if (file) {
+      // console.log(file, 'Selected file from PC')
       setSelectedFile(file)
-      const reader = new FileReader()
+      setPreview(URL.createObjectURL(file))
 
-      reader.onloadend = () => {
-        setPreview(reader.result)
-      }
-
-      reader.readAsDataURL(file)
+      fileInput.value = ''
     } else {
       toastError('Please select a valid file.')
     }
   }
+
+  const handleAvatarChange = (avatarName, avatarUrl) => {
+    setIsNewImageOrAvatarSelected(true)
+    setSelectedFile(null)
+    setSelectedAvatar(avatarName)
+    setPreview(avatarUrl)
+  }
+
+  const onSubmitFileUpload = async onSuccess => {
+    if (!selectedFile && !selectedAvatar) return
+
+    const apiFormData = new FormData()
+
+    if (selectedFile) {
+      apiFormData.append('file', selectedFile)
+    }
+
+    if (!selectedFile && selectedAvatar) {
+      apiFormData.append('avtar', selectedAvatar)
+    }
+
+    setIsUploading(true)
+
+    try {
+      const response = await axiosApiCall.post(API_ROUTER.UPLOAD_PROFILE_IMAGE, apiFormData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      })
+
+      const responseBody = response?.data
+
+      dispatch(setProfile(responseBody?.response?.userData))
+      const profileImage = responseBody?.response?.userData?.profileImage
+      const avatar = responseBody?.response?.userData?.avtar
+
+      if (profileImage) {
+        setPreview(profileImage)
+      } else {
+        setSelectedAvatar(avatar)
+      }
+
+      onSuccess()
+    } catch (error) {
+      setPreview(null)
+
+      if (!isCancel(error)) {
+        const apiResponseErrorHandlingData = apiResponseErrorHandling(error)
+
+        if (isVariableAnObject(apiResponseErrorHandlingData)) {
+          setFormFieldsErrors(apiResponseErrorHandlingData, setError)
+        } else {
+          toastError(apiResponseErrorHandlingData)
+        }
+      }
+    } finally {
+      setIsUploading(false)
+    }
+  }
+
+  const existingImage =
+    preview || (typeof userData?.avtar === 'string' && AVATARS[userData?.avtar]) || userData?.profileImage
 
   return (
     <Card>
@@ -73,7 +155,7 @@ const Details = ({ dictionary, userData, setSelectedFile }) => {
             <label htmlFor='imageUpload' style={{ cursor: 'pointer' }}>
               <div className='flex rounded-bs-md mbs-[-40px] border-[5px] mis-[-5px] border-be-0  border-backgroundPaper bg-backgroundPaper'>
                 <CustomAvatar
-                  src={preview || '/'}
+                  src={existingImage}
                   alt={getFullName({ first_name: userData?.first_name, last_name: userData?.last_name })}
                   size={120}
                   skin='light'
@@ -82,8 +164,23 @@ const Details = ({ dictionary, userData, setSelectedFile }) => {
                   {getInitials(getFullName({ first_name: userData?.first_name, last_name: userData?.last_name }))}
                 </CustomAvatar>
               </div>
-              <div className='flex justify-center items-center'>
-                <i className='tabler-edit text-textSecondary' />
+              <div className='edit-profile'>
+                <OpenDialogOnElementClick
+                  element={Button}
+                  elementProps={{
+                    children: <i className='tabler-pencil' />
+                  }}
+                  dialog={UploadProfileDialog}
+                  dialogProps={{
+                    handleImageChange,
+                    onSubmitFileUpload,
+                    isUploading,
+                    handleAvatarChange,
+                    isNewImageOrAvatarSelected,
+                    userData,
+                    existingImage
+                  }}
+                />
               </div>
             </label>
             <input
@@ -119,7 +216,21 @@ const Details = ({ dictionary, userData, setSelectedFile }) => {
               />
             </Avatar>
           </ListItem> */}
-
+          {/* <ListItem className='text-center capitalize'>
+            <Box display='flex' gap={1}>
+              {Object.entries(AVATARS).map(([avatarName, avatarUrl]) => (
+                <Avatar
+                  key={avatarName}
+                  src={avatarUrl}
+                  alt={avatarName}
+                  sx={{ width: 40, height: 40, cursor: 'pointer' }}
+                  onClick={() => {
+                    selectAvatar(avatarName, avatarUrl)
+                  }}
+                />
+              ))}
+            </Box>
+          </ListItem> */}
           <ListItem>
             <ListItemText
               className='text-center capitalize'

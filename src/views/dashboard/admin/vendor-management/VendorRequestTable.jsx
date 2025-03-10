@@ -19,6 +19,8 @@ import {
   flexRender
 } from '@tanstack/react-table'
 
+import { useSelector } from 'react-redux'
+
 // MUI Imports
 import {
   Card,
@@ -39,17 +41,20 @@ import tableStyles from '@core/styles/table.module.css'
 // Util Imports
 import { API_ROUTER } from '@/utils/apiRoutes'
 import { useTranslation } from '@/utils/getDictionaryClient'
-import { toastError, actionConfirmWithLoaderAlert, successAlert } from '@/utils/globalFunctions'
+import { toastError, actionConfirmWithLoaderAlert, successAlert, isUserHasPermission } from '@/utils/globalFunctions'
 import axiosApiCall from '@utils/axiosApiCall'
 import Link from '@/components/Link'
 import DebouncedInput from '@/components/nourishubs/DebouncedInput'
+
+import { profileState } from '@/redux-store/slices/profile'
+import StatusLabel from '@/components/theme/getStatusColours'
 
 const VendorManagement = props => {
   const { dictionary = null } = props
   const { lang: locale } = useParams()
   const { t } = useTranslation(locale)
   const router = useRouter()
-
+  const { user = null } = useSelector(profileState)
   const [page, setPage] = useState(1)
   const [data, setData] = useState([])
   const [columnFilters, setColumnFilters] = useState([])
@@ -58,6 +63,18 @@ const VendorManagement = props => {
   const [itemsPerPage, setItemsPerPage] = useState(5)
   const [recordMetaData, setRecordMetaData] = useState(null)
   const [isDataTableServerLoading, setIsDataTableServerLoading] = useState(false)
+
+  // Vars
+  const isUserHasPermissionSections = useMemo(
+    () => ({
+      verify_user: isUserHasPermission({
+        permissions: user?.permissions,
+        permissionToCheck: 'user_management',
+        subPermissionsToCheck: ['verify_user']
+      })
+    }),
+    [user?.permissions]
+  )
 
   // useRef for aborting request
   const abortController = useRef(null)
@@ -122,39 +139,58 @@ const VendorManagement = props => {
   }
 
   const columns = useMemo(
-    () => [
-      columnHelper.accessor('serialNumber', {
-        header: `${dictionary?.datatable?.column?.serial_number}`,
-        enableSorting: false
-      }),
-      columnHelper.accessor('first_name', {
-        // header: `${dictionary?.datatable?.column?.vendor_name}`
-        header: `${dictionary?.datatable?.column?.vendor_name}`,
-        cell: ({ row }) => `${row?.original?.first_name ?? ''} ${row?.original?.last_name ?? ''}`
-      }),
-      columnHelper.accessor('companyName', {
-        header: `${dictionary?.form?.label?.company_name}`,
-        cell: ({ row }) => `${row?.original?.companyName ?? ''}`
-      }),
-      columnHelper.accessor('phoneNo', {
-        header: `${dictionary?.datatable?.column?.contact}`
-      }),
-      columnHelper.accessor('status', {
-        header: `${dictionary?.datatable?.column?.vendor_status}`
-      }),
-      columnHelper.accessor('view', {
-        header: `View Menu`,
-        cell: ({ row }) => (
-          <Link href={`vendor-management/${row?.original?._id}`}>
-            <IconButton onClick={() => router.push(`vendor-management/${row?.original?._id}`)}>
-              <i className='tabler-eye' />
-            </IconButton>
-          </Link>
-        ),
-        enableSorting: false
-      })
-    ],
-    []
+    () => {
+      const cols = [
+        columnHelper.accessor('serialNumber', {
+          header: `${dictionary?.datatable?.column?.serial_number}`,
+          enableSorting: false
+        }),
+        columnHelper.accessor('first_name', {
+          header: `${dictionary?.datatable?.column?.vendor_name}`,
+          cell: ({ row }) => `${row?.original?.first_name ?? ''} ${row?.original?.last_name ?? ''}`
+        }),
+        columnHelper.accessor('companyName', {
+          header: `${dictionary?.form?.label?.company_name}`,
+          cell: ({ row }) => `${row?.original?.companyName ?? ''}`
+        }),
+        columnHelper.accessor('phoneNo', {
+          header: `${dictionary?.datatable?.column?.contact}`
+        }),
+        columnHelper.accessor('status', {
+          header: `${dictionary?.datatable?.column?.status}`,
+          enableSorting: false,
+          cell: ({ row }) => {
+            const vendorStatus = row.original?.status
+
+            return (
+              <>
+                <StatusLabel status={vendorStatus} />
+              </>
+            )
+          }
+        })
+      ]
+
+      // ✅ Conditionally add the "View Menu" column if the user has permission
+      if (isUserHasPermissionSections?.verify_user) {
+        cols.push(
+          columnHelper.accessor('view', {
+            header: `${dictionary?.datatable?.column?.view_details}`,
+            cell: ({ row }) => (
+              <Link href={`vendor-management/${row?.original?._id}`}>
+                <IconButton onClick={() => router.push(`vendor-management/${row?.original?._id}`)}>
+                  <i className='tabler-eye' />
+                </IconButton>
+              </Link>
+            ),
+            enableSorting: false
+          })
+        )
+      }
+
+      return cols
+    },
+    [isUserHasPermissionSections] // ✅ Add dependencies to useMemo
   )
 
   const dataWithSerialNumber = useMemo(
@@ -183,7 +219,6 @@ const VendorManagement = props => {
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    // getFilteredRowModel: getFilteredRowModel(),
     manualPagination: true,
     manualSorting: true
   })
@@ -204,18 +239,22 @@ const VendorManagement = props => {
   }, [page, itemsPerPage, globalFilter, sorting])
 
   return (
-    <Card>
+    <Card className='common-block-dashboard table-block-no-pad'>
       <CardHeader
+        className='common-block-title'
         title={dictionary?.datatable?.vendor_management_table?.table_title}
         action={
-          <DebouncedInput
-            value={globalFilter ?? ''}
-            onChange={value => setGlobalFilter(String(value))}
-            placeholder={dictionary?.datatable?.common?.search_placeholder}
-          />
+          <div className='form-group'>
+            <DebouncedInput
+              value={globalFilter ?? ''}
+              onChange={value => setGlobalFilter(String(value))}
+              placeholder={dictionary?.datatable?.common?.search_placeholder}
+            />
+          </div>
         }
       />
-      <div className='overflow-x-auto'>
+      {/* <div className='overflow-x-auto'> */}
+      <div className='table-common-block p-0 overflow-x-auto'>
         <table className={tableStyles.table}>
           <thead>
             {table.getHeaderGroups().map(headerGroup => (
@@ -243,7 +282,7 @@ const VendorManagement = props => {
             ))}
             {isDataTableServerLoading && (
               <tr>
-                <td colSpan={columns?.length}>
+                <td colSpan={columns?.length} className='no-pad-td'>
                   <LinearProgress color='primary' sx={{ height: '2px' }} />
                 </td>
               </tr>

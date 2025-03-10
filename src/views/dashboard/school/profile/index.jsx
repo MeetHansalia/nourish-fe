@@ -37,6 +37,7 @@ const ProfileManagement = ({ dictionary }) => {
   // states
   const [userData, setUserData] = useState()
   const [isUserDataLoading, setIsUserDataLoading] = useState(true)
+  const [selectedAvatar, setSelectedAvatar] = useState(null)
 
   useEffect(() => {
     axiosApiCall
@@ -61,10 +62,20 @@ const ProfileManagement = ({ dictionary }) => {
       {userData ? (
         <Grid container spacing={6}>
           <Grid item xs={12} sm={12} md={4} lg={4}>
-            <Details dictionary={dictionary} userData={userData} />
+            <Details
+              dictionary={dictionary}
+              userData={userData}
+              setSelectedAvatar={setSelectedAvatar}
+              selectedAvatar={selectedAvatar}
+            />
           </Grid>
-          <Grid item xs={12} sm={12} md={8} lg={8}>
-            <EditDetails dictionary={dictionary} userData={userData} setUserData={setUserData} />
+          <Grid item xs={12} sm={12} md={8} lg={8} key={selectedAvatar}>
+            <EditDetails
+              dictionary={dictionary}
+              userData={userData}
+              setUserData={setUserData}
+              selectedAvatar={selectedAvatar}
+            />
           </Grid>
           <Grid item xs={12} sm={12} md={12} lg={12}>
             <UploadDocument dictionary={dictionary} userData={userData} />

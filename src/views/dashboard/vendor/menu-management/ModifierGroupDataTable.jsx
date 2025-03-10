@@ -277,21 +277,24 @@ const ModifierGroupDataTable = props => {
   }, [page, itemsPerPage, globalFilter, sorting])
 
   return (
-    <Card>
+    <Card className='common-block-dashboard p-0'>
       <CardHeader
+        className='common-block-title m-0'
         title={dictionary?.datatable?.menu_management_table?.table_title}
         action={
-          <TextField
-            label={dictionary?.datatable?.common?.search_placeholder}
-            variant='outlined'
-            value={globalFilter}
-            onChange={e => setGlobalFilter(e.target.value)}
-            fullWidth
-            sx={{ maxWidth: 300 }}
-          />
+          <div className='form-group'>
+            <TextField
+              label={dictionary?.datatable?.common?.search_placeholder}
+              variant='outlined'
+              value={globalFilter}
+              onChange={e => setGlobalFilter(e.target.value)}
+              fullWidth
+              sx={{ maxWidth: 300 }}
+            />
+          </div>
         }
       />
-      <TableContainer component={Paper}>
+      <TableContainer className='table-common-block' component={Paper}>
         <Table>
           <TableHead>
             {table.getHeaderGroups().map(headerGroup => (
@@ -310,7 +313,7 @@ const ModifierGroupDataTable = props => {
             ))}
             {isDataTableServerLoading && (
               <tr>
-                <td colSpan={columns?.length}>
+                <td className='no-pad-td' colSpan={columns?.length}>
                   <LinearProgress color='primary' sx={{ height: '2px' }} />
                 </td>
               </tr>
@@ -346,7 +349,7 @@ const ModifierGroupDataTable = props => {
       </TableContainer>
       <TablePagination
         component={() => (
-          <div className='flex justify-between items-center flex-wrap pli-6 border-bs bs-auto plb-[12.5px] gap-2'>
+          <div className='flex justify-between items-center flex-wrap pli-6 plb-[12.5px] gap-2'>
             <Typography color='text.disabled'>
               {t('datatable.common.footer_showing_entries', {
                 startIndex: totalCount > 0 ? (page - 1) * itemsPerPage + 1 : 0,

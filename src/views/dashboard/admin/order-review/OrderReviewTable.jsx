@@ -52,7 +52,7 @@ import ChevronRight from '@menu/svg/ChevronRight'
 // Util Imports
 import { API_ROUTER } from '@/utils/apiRoutes'
 import { useTranslation } from '@/utils/getDictionaryClient'
-import { toastError } from '@/utils/globalFunctions'
+import { toastError, isUserHasPermission } from '@/utils/globalFunctions'
 import axiosApiCall from '@utils/axiosApiCall'
 import CustomTextField from '@/@core/components/mui/TextField'
 import { globalState } from '@/redux-store/slices/global'
@@ -60,6 +60,8 @@ import ReviewDialog from './ReviewDialog'
 import AppReactDatepicker from '@/libs/styles/AppReactDatepicker'
 import { reviewDialogState, setIsRefreshReviewList } from '@/redux-store/slices/reviewDialog'
 import OpenDialogOnElementClick from '@/components/layout/OpenDialogOnElementClick'
+import { profileState } from '@/redux-store/slices/profile'
+import StatusLabel from '@/components/theme/getStatusColours'
 
 const OrderReviewTable = props => {
   //** HOOKS */
@@ -90,6 +92,20 @@ const OrderReviewTable = props => {
   //** REDUX DATA */
   const { isRefreshReviewList, isCompleteOrderApiCall } = useSelector(reviewDialogState)
   const dispatch = useDispatch()
+
+  const { user = null } = useSelector(profileState)
+
+  // Vars
+  const isUserHasPermissionSections = useMemo(
+    () => ({
+      users_list: isUserHasPermission({
+        permissions: user?.permissions,
+        permissionToCheck: 'user_management',
+        subPermissionsToCheck: ['get_users']
+      })
+    }),
+    [user?.permissions]
+  )
 
   //** FETCH DATA */
   const getAllCompletedOrders = async () => {
@@ -192,7 +208,7 @@ const OrderReviewTable = props => {
           return mealDetails
         }
       }),
-      columnHelper.accessor('Actions', {
+      columnHelper.accessor('Status', {
         header: `${dictionary?.datatable?.column?.status}`,
         enableSorting: false,
         cell: ({ row }) => {
@@ -200,10 +216,21 @@ const OrderReviewTable = props => {
 
           return (
             <>
+              <StatusLabel status={orderStatus} />
+            </>
+          )
+        }
+      }),
+      columnHelper.accessor('details', {
+        header: `${dictionary?.page.common?.details}`,
+        enableSorting: false,
+        cell: ({ row }) => {
+          return (
+            <>
               <OpenDialogOnElementClick
                 element={Button}
                 elementProps={{
-                  children: `${orderStatus}`,
+                  children: `${dictionary?.page.common?.details}`,
                   variant: 'contained'
                 }}
                 dialog={ReviewDialog}
@@ -261,7 +288,9 @@ const OrderReviewTable = props => {
   }
 
   useEffect(() => {
-    getVendorData()
+    {
+      isUserHasPermissionSections.users_list && getVendorData()
+    }
     // getAllCompletedOrders()
   }, [])
 

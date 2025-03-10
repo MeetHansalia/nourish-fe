@@ -3,6 +3,8 @@
 // Mui Imports
 import { useEffect, useState } from 'react'
 
+import { useParams } from 'next/navigation'
+
 import { Grid } from '@mui/material'
 
 // Component Imports
@@ -13,6 +15,7 @@ import { toastError } from '@/utils/globalFunctions'
 import { API_ROUTER } from '@/utils/apiRoutes'
 
 import MonthlyOrdersChart from '../../common/MonthlyOrdersChart'
+import { useTranslation } from '@/utils/getDictionaryClient'
 
 const AdminDashboard = ({ dictionary }) => {
   const { lang: locale } = useParams()

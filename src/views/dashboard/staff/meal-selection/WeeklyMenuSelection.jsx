@@ -454,6 +454,9 @@ const WeeklyMenuSelection = ({ dictionary }) => {
       </div>
       <div className='common-block-dashboard'>
         <div className='common-form-dashboard  border-0 flex justify-between items-center'>
+          <Button variant='contained' onClick={() => router.back()}>
+            {dictionary?.form?.button?.back}
+          </Button>
           <Typography variant='h5' className='font-bold'>
             {dictionary?.common?.weekly_menu_selection}
           </Typography>
@@ -581,8 +584,8 @@ const WeeklyMenuSelection = ({ dictionary }) => {
                           />
                         </Tooltip>
                         <div className='menu-selection-block-inner-p-l flex justify-between items-center'>
-                          <Button variant='outlined' onClick={() => handleDialogOpen(dish)}>
-                            <i className='tabler-plus' />
+                          <Button variant='outlined' onClick={() => handleDecreaseDialogOpen(dish, cartId)}>
+                            <i className='tabler-minus' />
                           </Button>
 
                           {/* Display totalQty instead of static '1' */}
@@ -597,9 +600,9 @@ const WeeklyMenuSelection = ({ dictionary }) => {
                           <Button
                             className='border-radius-block'
                             variant='outlined'
-                            onClick={() => handleDecreaseDialogOpen(dish, cartId)}
+                            onClick={() => handleDialogOpen(dish)}
                           >
-                            <i className='tabler-minus' />
+                            <i className='tabler-plus' />
                           </Button>
                         </div>
                       </div>

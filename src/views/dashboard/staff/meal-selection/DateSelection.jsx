@@ -19,7 +19,10 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  DialogContentText
+  DialogContentText,
+  FormControlLabel,
+  Radio,
+  RadioGroup
 } from '@mui/material'
 
 // Local imports come after third-party imports
@@ -86,6 +89,10 @@ const DateSelection = ({ dictionary }) => {
   const [oldCartDate, setOldCartDate] = useState()
 
   const [orderType, setOrderType] = useState(null)
+
+  const [orderTypeDialog, setOrderTypeDialog] = useState(false)
+
+  const [orderTypeValue, setOrderTypeValue] = useState()
 
   const singleDate = useSelector(state => state.date.singleDate)
 
@@ -191,7 +198,8 @@ const DateSelection = ({ dictionary }) => {
           // setEvents(mappedEvents)
           setEvents(vendors)
 
-          toastSuccess(response?.data?.message)
+          // toastSuccess(response?.data?.message)
+          setOrderTypeDialog(true)
         }
       } catch (error) {
         const errorMessage = apiResponseErrorHandling(error)
@@ -263,6 +271,14 @@ const DateSelection = ({ dictionary }) => {
     }
   }, [selectedVendor])
 
+  const handleOrderTypeDialogClose = () => {
+    setOrderTypeDialog(false)
+  }
+
+  const orderTypeSelected = () => {
+    setOrderTypeDialog(false)
+  }
+
   return (
     <>
       <Grid container spacing={6}>
@@ -276,45 +292,50 @@ const DateSelection = ({ dictionary }) => {
 
               <Grid container spacing={6}>
                 <Grid item xs={12}>
-                  <div className='form-group'>
-                    <AppReactDatepicker
-                      selectsRange
-                      startDate={startDate}
-                      endDate={endDate}
-                      selected={startDate}
-                      id='date-range-picker'
-                      onChange={handleOnChange}
-                      shouldCloseOnSelect={false}
-                      minDate={addDays(new Date(), 7)} // Start selection after 7 days
-                      maxDate={addDays(new Date(), 21)} // Allow up to 14 days from minDate
-                      filterDate={date => {
-                        const day = date.getDay()
+                  {orderTypeValue === 'multiple' && (
+                    <div className='form-group'>
+                      <AppReactDatepicker
+                        selectsRange
+                        startDate={startDate}
+                        endDate={endDate}
+                        selected={startDate}
+                        id='date-range-picker'
+                        onChange={handleOnChange}
+                        shouldCloseOnSelect={false}
+                        minDate={addDays(new Date(), 7)} // Start selection after 7 days
+                        maxDate={addDays(new Date(), 21)} // Allow up to 14 days from minDate
+                        filterDate={date => {
+                          const day = date.getDay()
 
-                        return day !== 0 && day !== 6 // Disable weekends (Sunday = 0, Saturday = 6)
-                      }}
-                      customInput={<CustomInput label='Date Range' start={startDate} end={endDate} />}
-                    />
-                    {error && <span style={{ color: 'red' }}>{error}</span>}
-                  </div>
+                          return day !== 0 && day !== 6 // Disable weekends (Sunday = 0, Saturday = 6)
+                        }}
+                        dayClassName={date => (date.toDateString() === new Date().toDateString() ? 'bold-date' : '')}
+                        customInput={<CustomInput label='Date Range' start={startDate} end={endDate} />}
+                      />
+                      {error && <span style={{ color: 'red' }}>{error}</span>}
+                    </div>
+                  )}
                 </Grid>
               </Grid>
-              <div className='flex justify-center' sx={{ alignItems: 'center' }}>
-                <Button
-                  variant='contained'
-                  color='primary'
-                  sx={{ mt: 2 }}
-                  className='theme-common-btn min-width-auto'
-                  onClick={handleRedirect}
-                  disabled={!startDate || !endDate || isSubmitting}
-                >
-                  {isSubmitting ? 'Loading...' : `${dictionary?.common?.weekly_order}`}
-                </Button>
-              </div>
+              {orderTypeValue === 'multiple' && (
+                <div className='flex justify-center' sx={{ alignItems: 'center' }}>
+                  <Button
+                    variant='contained'
+                    color='primary'
+                    sx={{ mt: 2 }}
+                    className='theme-common-btn min-width-auto'
+                    onClick={handleRedirect}
+                    disabled={!startDate || !endDate || isSubmitting}
+                  >
+                    {isSubmitting ? 'Loading...' : `${dictionary?.common?.weekly_order}`}
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
         </Grid>
 
-        <Grid item xs={12} className="pt-0">
+        <Grid item xs={12} className='pt-0'>
           <Card className='overflow-visible common-block-dashboard p-0'>
             <AppFullCalendar className='app-calendar'>
               <div className='p-6 pbe-0 flex-grow overflow-visible bg-backgroundPaper rounded'>
@@ -324,6 +345,7 @@ const DateSelection = ({ dictionary }) => {
                   setCalEndDate={setCalEndDate}
                   // onOrderNow={handleOrderNow}
                   setSelectedVendor={setSelectedVendor}
+                  orderTypeValue={orderTypeValue}
                 />
               </div>
             </AppFullCalendar>
@@ -349,6 +371,28 @@ const DateSelection = ({ dictionary }) => {
         <DialogActions className='dialog-actions-dense'>
           <Button onClick={handleReplaceDialogClose}>{dictionary?.form?.placeholder?.no}</Button>
           <Button onClick={() => replaceOrder()}>{dictionary?.form?.placeholder?.replace}</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={orderTypeDialog}
+        onClose={handleOrderTypeDialogClose}
+        aria-labelledby='alert-dialog-title'
+        aria-describedby='alert-dialog-description'
+        closeAfterTransition={false}
+      >
+        <DialogTitle id='alert-dialog-title'>{dictionary?.datatable?.column?.select_order_type}?</DialogTitle>
+        <DialogContent>
+          <DialogContentText id='alert-dialog-description'>
+            <RadioGroup value={orderTypeValue} onChange={e => setOrderTypeValue(e.target.value)}>
+              <FormControlLabel value='single' control={<Radio />} label='Single Day Ordering' />
+              <FormControlLabel value='multiple' control={<Radio />} label='Multiple Day Ordering' />
+            </RadioGroup>
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions className='dialog-actions-dense'>
+          {/* <Button onClick={handleOrderTypeDialogClose}>{dictionary?.form?.button?.cancel}</Button> */}
+          <Button onClick={() => orderTypeSelected()}>{dictionary?.form?.button?.submit}</Button>
         </DialogActions>
       </Dialog>
     </>

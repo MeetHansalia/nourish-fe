@@ -104,9 +104,11 @@ const UserCard = ({
               <i className='tabler-pencil text-textSecondary'></i>
             </Button>
           </Link>
-          <Button className='alert-icon-block' onClick={() => handleSuspendUser(user?._id)}>
-            <i className='tabler-alert-small text-textSecondary'></i>
-          </Button>
+          {user?.role === 'Vendor' && (
+            <Button className='alert-icon-block' onClick={() => handleSuspendUser(user?._id)}>
+              <i className='tabler-alert-small text-textSecondary'></i>
+            </Button>
+          )}
           <Button className='delete-icon-block' onClick={() => handleDeleteUser(user?._id)}>
             <i className='tabler-trash text-textSecondary'></i>
           </Button>

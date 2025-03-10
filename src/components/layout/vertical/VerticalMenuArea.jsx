@@ -39,10 +39,25 @@ const VerticalMenuArea = ({ dictionary, userRole, userPanel }) => {
         permissions: user?.permissions,
         permissionToCheck: 'foodchart_management',
         subPermissionsToCheck: ['create_foodchart', 'approve_foodchart', 'get_foodchart_requests']
+      }),
+      dispute_management: isUserHasPermission({
+        permissions: user?.permissions,
+        permissionToCheck: 'dispute_management',
+        subPermissionsToCheck: [
+          'get_dispute_list',
+          'dispute_create',
+          'dispute_response',
+          'dispute_authority_response',
+          'dispute_response_list',
+          'get_dispute_details',
+          'mark_issue_as_resolved'
+        ]
       })
     }),
     [user?.permissions]
   )
+
+  const disputeResolutionPath = `/${locale}/${userPanel}/dispute-management`
 
   return (
     <>
@@ -66,7 +81,15 @@ const VerticalMenuArea = ({ dictionary, userRole, userPanel }) => {
       >
         {dictionary['navigation'].school_vendor_associates}
       </MenuItem>
-
+      <MenuItem
+        href={disputeResolutionPath}
+        icon={<i className='tabler-info-circle' />}
+        activeUrl={disputeResolutionPath}
+        exactMatch={false}
+        className={isUserHasPermissionNavigation?.dispute_management ? '' : 'hidden'}
+      >
+        {dictionary['navigation'].dispute_resolution}
+      </MenuItem>
       <MenuItem
         href={`/${locale}/${userPanel}/food-chart-creation`}
         icon={<i className='tabler-tools-kitchen-3' />}

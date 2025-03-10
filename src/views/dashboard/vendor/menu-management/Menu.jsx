@@ -20,7 +20,7 @@ function MenuBar({ tabValue, onOpenPage, isEdit }) {
   const { t } = useTranslation(locale)
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
+    <Box className='common-block-dashboard menu-management-block'>
       <AppBar position='static' color='default'>
         <Toolbar>
           <Typography variant='h6' component='div' sx={{ flexGrow: 1 }}>
@@ -30,17 +30,33 @@ function MenuBar({ tabValue, onOpenPage, isEdit }) {
           {!isEdit && (
             <>
               {tabValue === 0 && (
-                <Button variant='contained' color='success' onClick={() => onOpenPage(0)}>
+                <Button
+                  className='theme-common-btn theme-btn-color'
+                  variant='contained'
+                  color='success'
+                  onClick={() => onOpenPage(0)}
+                >
                   {t('form.label.add_category')}
                 </Button>
               )}
               {tabValue === 1 && (
-                <Button variant='contained' color='primary' onClick={() => onOpenPage(1)} sx={{ mx: 1 }}>
+                <Button
+                  className='theme-common-btn theme-btn-color'
+                  variant='contained'
+                  color='primary'
+                  onClick={() => onOpenPage(1)}
+                  sx={{ mx: 1 }}
+                >
                   {t('form.label.add_dish')}
                 </Button>
               )}
               {tabValue === 2 && (
-                <Button variant='contained' color='secondary' onClick={() => onOpenPage(2)}>
+                <Button
+                  className='theme-common-btn theme-btn-color'
+                  variant='contained'
+                  color='secondary'
+                  onClick={() => onOpenPage(2)}
+                >
                   {t('form.label.add_modifier_group')}
                 </Button>
               )}

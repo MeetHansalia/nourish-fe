@@ -28,7 +28,8 @@ import {
   DialogContent,
   DialogActions,
   FormControlLabel,
-  Checkbox
+  Checkbox,
+  TextField
 } from '@mui/material'
 
 import { useForm, Controller } from 'react-hook-form'
@@ -44,6 +45,7 @@ import { getLocalizedUrl } from '@/utils/i18n'
 import { useTranslation } from '@/utils/getDictionaryClient'
 
 import SpeedometerChart from '@/components/nourishubs/GaugeChart'
+import IngredientsTable from '../../common/IngredientsTable'
 
 export default function CheckoutPage({ dictionary, vendorId }) {
   const router = useRouter()
@@ -69,7 +71,16 @@ export default function CheckoutPage({ dictionary, vendorId }) {
 
   const [deliveryPrice, setDeliveryPrice] = useState(0)
 
+  const [nutrition, setNutrition] = useState({})
+  const [kidNutrition, setKidNutrition] = useState({})
+
   const [itemTotal, setItemTotal] = useState(0)
+
+  const [notes, setNote] = useState('') // State to store the notes
+
+  const handleNoteChange = event => {
+    setNote(event.target.value) // Update state when the user types
+  }
 
   const validationSchema = selectedDish =>
     yup.object().shape({
@@ -229,7 +240,7 @@ export default function CheckoutPage({ dictionary, vendorId }) {
 
   const handlePayNow = async () => {
     try {
-      const response = await axiosApiCall.post(API_ROUTER.SCHOOL_ADMIN.PLACE_ORDER, { cartId: cartData?._id })
+      const response = await axiosApiCall.post(API_ROUTER.SCHOOL_ADMIN.PLACE_ORDER, { cartId: cartData?._id, notes })
 
       const { status, message } = response?.data || {}
 
@@ -255,6 +266,18 @@ export default function CheckoutPage({ dictionary, vendorId }) {
       if (!response?.data || (typeof response.data === 'string' && response.data.trim() === '')) {
         emptyCart()
       }
+
+      setKidNutrition(
+        response?.data?.kidId?.nutrition
+          ? response?.data.kidId.nutrition
+          : {
+              fat: 0,
+              sugar: 0,
+              protein: 0,
+              sodium: 0,
+              carbohydrate: 0
+            }
+      )
 
       setCartData(response?.data)
 
@@ -401,6 +424,21 @@ export default function CheckoutPage({ dictionary, vendorId }) {
             </CardContent>
           </Card>
           <Card className='common-block-dashboard'>
+            <CardContent className='p-0'>
+              <TextField
+                className='mt-2'
+                label={dictionary?.form?.label?.notes || 'Notes'}
+                variant='outlined'
+                multiline
+                fullWidth
+                rows={4}
+                placeholder={dictionary?.form?.placeholder?.notes || 'Enter your notes here...'}
+                value={notes} // Controlled input
+                onChange={handleNoteChange} // Update state on change
+              />
+            </CardContent>
+          </Card>
+          <Card className='common-block-dashboard'>
             <CardContent
               className='p-0'
               sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
@@ -416,12 +454,17 @@ export default function CheckoutPage({ dictionary, vendorId }) {
                     justifyContent: 'center'
                   }}
                 >
-                  <SpeedometerChart />
+                  <SpeedometerChart totalNutrition={nutrition} kidNutrition={kidNutrition} />
                 </Box>
               </div>
               <div className='block-chart-table-in'>
                 {Object.keys(cartData).length > 0 && (
-                  <MealNutritionTable key={JSON.stringify(cartData)} dictionary={dictionary} cartData={cartData} />
+                  <MealNutritionTable
+                    key={JSON.stringify(cartData)}
+                    dictionary={dictionary}
+                    cartData={cartData}
+                    setNutrition={setNutrition}
+                  />
                 )}
               </div>
             </CardContent>
@@ -701,8 +744,18 @@ export default function CheckoutPage({ dictionary, vendorId }) {
                 ))}
                 <div className='block-chart-common flex align-center justify-between'>
                   <div className='block-chart-inner' style={{ width: 200, height: 200 }}>
-                    <SpeedometerChart />
+                    <SpeedometerChart
+                      totalNutrition={selectedDish?.dishId?.calculatedNutrition}
+                      kidNutrition={kidNutrition}
+                    />
                   </div>
+                </div>
+                <div className='block-chart-table-in'>
+                  <IngredientsTable
+                    ingredientsData={selectedDish?.dishId?.ingredients}
+                    selectedDish={selectedDish?.dishId}
+                    dictionary={dictionary}
+                  />
                 </div>
                 <div className='modal-footer'>
                   <Typography variant='h6' color='textSecondary' className='title-small-medium-custom'>

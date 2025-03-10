@@ -63,7 +63,7 @@ const DishGrid = ({ dictionary = {}, getId = () => {} }) => {
   }
 
   return (
-    <Box sx={{ flexGrow: 1, padding: 3, backgroundColor: '#f5f5f5' }}>
+    <Box className='menu-add-dish-block'>
       <InfiniteScroll
         dataLength={dishes.length}
         next={() => fetchDishes(page)}
@@ -79,10 +79,11 @@ const DishGrid = ({ dictionary = {}, getId = () => {} }) => {
           </Box>
         }
       >
-        <Grid container spacing={2}>
+        <Grid container spacing={6}>
           {dishes.map(dish => (
-            <Grid item xs={12} sm={6} md={4} key={dish._id}>
+            <Grid item xs={12} sm={6} md={6} key={dish._id}>
               <Card
+                className='common-block-dashboard'
                 sx={{
                   display: 'flex',
                   padding: 1,
@@ -92,6 +93,7 @@ const DishGrid = ({ dictionary = {}, getId = () => {} }) => {
                 }}
               >
                 <IconButton
+                  className='icon-btn-fill'
                   sx={{
                     position: 'absolute',
                     top: 8,
@@ -106,44 +108,57 @@ const DishGrid = ({ dictionary = {}, getId = () => {} }) => {
                   <EditIcon fontSize='small' />
                 </IconButton>
 
-                <CardMedia
-                  component='img'
-                  sx={{ width: 120, height: 120, borderRadius: 2 }}
-                  image={dish.image || 'https://via.placeholder.com/120'}
-                  alt={dish.name}
-                />
-                <CardContent sx={{ flex: 1 }}>
-                  <Typography variant='h6' fontWeight='bold'>
-                    {dish.name || dictionary.dishName || 'Dish Name'}
-                  </Typography>
-                  {/* <Typography variant='body2' color='textSecondary'>
-                    <strong>{dictionary.description || 'Description'}:</strong> {dish.description || 'N/A'}
-                  </Typography> */}
-                  <TruncatedTextWithModal
-                    id={dish._id}
-                    title={dish.name}
-                    text={dish.description}
-                    wordLimit={20}
-                    activeId={activeId}
-                    setActiveId={setActiveId}
-                  />
+                <CardContent className='p-0' sx={{ flex: 1 }}>
+                  <div className='flex'>
+                    <Typography
+                      className='disc-common-custom-small font-weight-bold-inner'
+                      variant='body2'
+                      fontWeight='bold'
+                    >
+                      {dish.name || dictionary.dishName || 'Dish Name'} :
+                    </Typography>
+                    {/* <Typography variant='body2' color='textSecondary'>
+                      <strong>{dictionary.description || 'Description'}:</strong> {dish.description || 'N/A'}
+                    </Typography> */}
+                    <TruncatedTextWithModal
+                      id={dish._id}
+                      title={dish.name}
+                      text={dish.description}
+                      wordLimit={20}
+                      activeId={activeId}
+                      setActiveId={setActiveId}
+                    />
+                  </div>
 
-                  <Typography variant='body2' color='textSecondary'>
-                    <strong>{dictionary.categories || 'Categories'}:</strong>{' '}
+                  <Typography className='disc-common-custom-small' variant='body2' color='textSecondary'>
+                    <strong className='font-weight-bold-inner'>{dictionary.categories || 'Categories'}:</strong>{' '}
                     {dish?.categoryIds?.map(category => category.name).join(', ') || 'N/A'}
                   </Typography>
-                  <Typography variant='body2' color='textSecondary'>
-                    <strong>{dictionary.ingredients || 'Ingredients'}:</strong>{' '}
+                  <Typography className='disc-common-custom-small' variant='body2' color='textSecondary'>
+                    <strong className='font-weight-bold-inner'>{dictionary.ingredients || 'Ingredients'}:</strong>{' '}
                     {dish?.ingredients?.map(ingredient => ingredient.name).join(', ') || 'N/A'}
                   </Typography>
-                  <Typography variant='body2' color='textSecondary'>
-                    <strong>{dictionary.price || 'Price'}:</strong> ${dish.pricing || 'N/A'}
-                  </Typography>
-                  <Typography variant='body2' color='textSecondary'>
-                    <strong>{dictionary.availability || 'Availability'}:</strong>{' '}
+                  {/* <Typography className='disc-common-custom-small' variant='body2' color='textSecondary'>
+                    <strong className='font-weight-bold-inner'>{dictionary.price || 'Price'}:</strong> $
+                    {dish.pricing || 'N/A'}
+                  </Typography> */}
+                  <Typography className='disc-common-custom-small' variant='body2' color='textSecondary'>
+                    <strong className='font-weight-bold-inner'>{dictionary.availability || 'Availability'}:</strong>{' '}
                     {dish.is_available ? dictionary.available || 'Available' : dictionary.unavailable || 'Unavailable'}
                   </Typography>
                 </CardContent>
+                <div className='img-block-card'>
+                  <CardMedia
+                    component='img'
+                    sx={{ width: 120, height: 120, borderRadius: 2 }}
+                    image={dish.image || 'https://via.placeholder.com/120'}
+                    alt={dish.name}
+                  />
+                  <Typography className='disc-common-custom-small' variant='body2' color='textSecondary'>
+                    <strong className='font-weight-bold-inner'>{dictionary.price || 'Price'}:</strong>
+                    <span className='title-medium-custom theme-color'>${dish.pricing || 'N/A'}</span>
+                  </Typography>
+                </div>
               </Card>
             </Grid>
           ))}

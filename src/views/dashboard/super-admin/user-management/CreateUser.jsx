@@ -211,7 +211,7 @@ const CreateUser = props => {
 
         toastSuccess(responseBody?.message)
         // reset(formDefaultValues)
-        router.push(getLocalizedUrl(`/${panelName}/user-management`, locale))
+        // router.push(getLocalizedUrl(`/${panelName}/user-management`, locale))
       })
       .catch(error => {
         if (!isCancel(error)) {

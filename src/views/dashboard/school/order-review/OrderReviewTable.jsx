@@ -119,7 +119,7 @@ const OrderReviewTable = props => {
         signal: abortController.current.signal
       })
 
-      const responseOrderList = response?.data?.response?.mealReviewList || []
+      const responseOrderList = response?.data?.response?.mealReviewList.data || []
       const meta = response?.data?.meta || {}
 
       setData(responseOrderList)

@@ -1,7 +1,7 @@
 'use client'
 
 // React Imports
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 // Next Imports
 import { useRouter } from 'next/navigation'
@@ -11,29 +11,14 @@ import { useRouter } from 'next/navigation'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { isCancel } from 'axios'
 import { Controller, useForm } from 'react-hook-form'
-import { useDispatch } from 'react-redux'
 import * as yup from 'yup'
 
 // MUI Imports
+import { Button, Card, CardHeader, CircularProgress, Grid, TextareaAutosize, Typography } from '@mui/material'
 
-import { t } from 'i18next'
-
-import { Button, Card, CardHeader, CircularProgress, Grid, MenuItem, TextareaAutosize, Typography } from '@mui/material'
-
-// MUI Imports
-
-// Component Imports
-import { apiBaseUrl } from 'next-auth/client/_utils'
-
-import { getServerSession } from 'next-auth'
-
-import { format, set } from 'date-fns'
+import { format } from 'date-fns'
 
 import CustomTextField from '@/@core/components/mui/TextField'
-
-import { authOptions } from '@/libs/auth'
-
-// Util Imports
 
 import axiosApiCall from '@/utils/axiosApiCall'
 import AppReactDatepicker from '@/libs/styles/AppReactDatepicker'
@@ -95,7 +80,6 @@ const Suspend = ({ dictionary }) => {
   })
 
   const onSubmit = data => {
-    console.log('Submitted Data:', data)
     setIsFormSubmitLoading(true)
 
     const apiFormData = {
@@ -133,8 +117,6 @@ const Suspend = ({ dictionary }) => {
 
   useEffect(() => {
     const param = localStorage.getItem('disputeParam')
-
-    console.log('param', param)
 
     setVendorData(JSON.parse(param))
   }, [])

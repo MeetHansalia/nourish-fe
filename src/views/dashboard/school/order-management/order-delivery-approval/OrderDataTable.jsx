@@ -247,11 +247,17 @@ const OrdersTableComponent = ({ mode, dictionary }) => {
       }),
       columnHelper.accessor('orderDate', {
         header: `${dictionary?.datatable?.column?.order_date}`,
-        cell: ({ row }) => (
-          <Typography sx={{ fontFamily: 'inherit', fontSize: 'inherit', color: 'inherit' }}>
-            {`${row?.original?.orders[0]?.orderDate}`}
-          </Typography>
-        )
+        cell: ({ row }) => {
+          const createdAt = row?.original?.orders?.[0]?.createdAt
+
+          const formattedDate = createdAt ? moment(createdAt).format('YYYY-MM-DD') : 'N/A'
+
+          return (
+            <Typography sx={{ fontFamily: 'inherit', fontSize: 'inherit', color: 'inherit' }}>
+              {formattedDate}
+            </Typography>
+          )
+        }
       }),
       columnHelper.accessor('orderType', {
         header: `${dictionary?.datatable?.column?.order_type}`,
@@ -262,11 +268,24 @@ const OrdersTableComponent = ({ mode, dictionary }) => {
           </Typography>
         )
       }),
-      columnHelper.accessor('expectedDeliveryDate', {
+      columnHelper.accessor('delivery_date', {
+        header: `${dictionary?.datatable?.column?.delivery_date}`,
+        cell: ({ row }) => {
+          const deliveryDate = row?.original?.orders?.[0]?.orderDate
+
+          return (
+            <Typography sx={{ fontFamily: 'inherit', fontSize: 'inherit', color: 'inherit' }}>
+              {deliveryDate ? deliveryDate : 'N/A'}
+            </Typography>
+          )
+        }
+      }),
+
+      columnHelper.accessor('expectedDeliveryTime', {
         header: `${dictionary?.datatable?.column?.expected_delivery_date}`,
         cell: ({ row }) => (
           <Typography sx={{ fontFamily: 'inherit', fontSize: 'inherit', color: 'inherit' }}>
-            {`${row?.original?.orders[0]?.orderType}`}
+            {`${row?.original?.orders[0]?.schoolInfo?.expectedDeliveryTime}`}
           </Typography>
         )
       }),
@@ -290,8 +309,9 @@ const OrdersTableComponent = ({ mode, dictionary }) => {
                 onClick={() => handleAction('accept', row?.original?._id?.vendorId, row?.original?.orders)}
                 disabled={row?.original?.status === 'Accepted'}
               >
-                Accept
+                {dictionary?.form?.button?.deliverd}
               </Button>
+
               <Button
                 variant='outlined'
                 color='error'
@@ -305,7 +325,7 @@ const OrdersTableComponent = ({ mode, dictionary }) => {
                 }}
                 disabled={row?.original?.status === 'Rejected'}
               >
-                Reject
+                {dictionary?.form?.button?.not_deliverd}
               </Button>
             </Box>
           </Box>
@@ -425,7 +445,7 @@ const OrdersTableComponent = ({ mode, dictionary }) => {
   return (
     <Card>
       <CardHeader
-        // title={dictionary?.datatable?.suspended_user_table?.table_title}
+        title={dictionary?.datatable?.order_delivery_approval?.table_title}
         action={
           <DebouncedInput
             value={globalFilter ?? ''}

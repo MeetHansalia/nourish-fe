@@ -65,6 +65,7 @@ const VerticalNavContent = ({ children }) => {
   return (
     <>
       <NavHeader>
+        <div className="nav-header-block">
         <Link href='/'>
           <Logo />
         </Link>
@@ -73,6 +74,7 @@ const VerticalNavContent = ({ children }) => {
           unlockedIcon={<i className='tabler-circle-chevron-right text-xl' />}
           closeIcon={<i className='tabler-x text-xl' />}
         />
+        </div>
       </NavHeader>
       <StyledBoxForShadow ref={shadowRef} />
       <ScrollWrapper

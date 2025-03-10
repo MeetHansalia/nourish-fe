@@ -9,6 +9,8 @@ import { useParams, useRouter } from 'next/navigation'
 // Thirdparty Import
 import classnames from 'classnames'
 
+import { useSelector } from 'react-redux'
+
 // Table Imports
 import {
   useReactTable,
@@ -40,7 +42,8 @@ import {
   LinearProgress,
   TablePagination,
   Grid,
-  Box
+  Box,
+  IconButton
 } from '@mui/material'
 
 // View Imports
@@ -50,13 +53,15 @@ import { getSession } from 'next-auth/react'
 
 import { API_ROUTER } from '@/utils/apiRoutes'
 import { useTranslation } from '@/utils/getDictionaryClient'
-import { toastError, actionConfirmWithLoaderAlert, successAlert } from '@/utils/globalFunctions'
+import { toastError, actionConfirmWithLoaderAlert, successAlert, isUserHasPermission } from '@/utils/globalFunctions'
 import axiosApiCall from '@utils/axiosApiCall'
 import OpenDialogOnElementClick from '@/components/layout/OpenDialogOnElementClick'
 import DisputeDetailsDialog from '../../parent/issue-reporting/DisputeDialogue'
 import DisputeWarningDialog from './DisputeWarningDialog'
 import { USER_PANELS } from '@/utils/constants'
 import AppReactDatepicker from '@/libs/styles/AppReactDatepicker'
+
+import { profileState } from '@/redux-store/slices/profile'
 
 const DisputeListManagement = props => {
   const { dictionary = null, refreshCounts = () => {} } = props
@@ -79,6 +84,7 @@ const DisputeListManagement = props => {
   const [role, setRole] = useState('')
   const [openDisputeDialog, setOpenDisputeDialog] = useState(false) // Control dispute dialog visibility
   const [selectedDate, setSelectedDate] = useState(null)
+    const { user = null } = useSelector(profileState)
 
   // doc verification count store
 
@@ -86,6 +92,23 @@ const DisputeListManagement = props => {
   const abortController = useRef(null)
 
   const columnHelper = createColumnHelper()
+
+    // Vars
+    const isUserHasPermissionSections = useMemo(
+      () => ({
+        get_dispute_details: isUserHasPermission({
+          permissions: user?.permissions,
+          permissionToCheck: 'dispute_management',
+          subPermissionsToCheck: ['get_dispute_details']
+        }),
+        dispute_response: isUserHasPermission({
+          permissions: user?.permissions,
+          permissionToCheck: 'dispute_management',
+          subPermissionsToCheck: ['dispute_response']
+        })
+      }),
+      [user?.permissions]
+    )
 
   // Fetch Data
 
@@ -208,8 +231,8 @@ const DisputeListManagement = props => {
 
   // console.log('kokok', recordMetaData)
 
-  const columns = useMemo(
-    () => [
+  const columns = useMemo(() => {
+    const cols = [
       columnHelper.accessor('serialNumber', {
         header: `${dictionary?.datatable?.column?.serial_number}`
       }),
@@ -240,46 +263,60 @@ const DisputeListManagement = props => {
       columnHelper.accessor('viewDetails', {
         header: dictionary?.datatable?.column?.view,
         cell: ({ row }) => (
-          <Box display='flex' alignItems='center' justifyContent='center' style={{ width: '50%', height: '40px' }}>
-            <img
-              src='/images/nourishubs/front/eye.png'
-              alt='view-icon'
-              style={{ width: '30px', height: '30px' }}
-              onClick={() => {
-                handleIssueDetails(row.original)
-              }}
-            />
-          </Box>
-        )
-      }),
-      columnHelper.accessor('view', {
-        header: () => (
-          <Box textAlign='center' style={{ width: '100%' }}>
-            {dictionary?.datatable?.column?.status}
-          </Box>
-        ),
-        cell: ({ row }) => (
-          <Box display='flex' alignItems='center' justifyContent='center' style={{ width: '100%', height: '40px' }}>
-            <Button
-              disabled={row?.original?.vendorId?.status === 'suspended'}
-              variant='contained'
-              color='primary'
-              sx={{ px: 2, mx: 1 }}
-              onClick={() => {
-                const param = JSON.stringify(row?.original?.vendorId)
-
-                localStorage.setItem('disputeParam', param)
-                router.push(`/${locale}/${USER_PANELS?.admin}/dispute-management/suspend`)
-              }}
-            >
-              {row?.original?.vendorId?.status === 'suspended' ? 'Suspended' : dictionary?.datatable?.button?.suspend}
-            </Button>
-          </Box>
+          <IconButton
+            onClick={() => {
+              handleIssueDetails(row.original)
+            }}
+          >
+            <i className='tabler-eye' />
+          </IconButton>
         )
       })
-    ],
-    []
-  )
+    ]
+
+    // ✅ Conditionally add "Status" column if `get_dispute_details` permission is available
+    if (isUserHasPermissionSections?.get_dispute_details) {
+      cols.push(
+        columnHelper.accessor('view', {
+          header: () => (
+            <Box textAlign='center' style={{ width: '100%' }}>
+              {dictionary?.datatable?.column?.status}
+            </Box>
+          ),
+          cell: () => <span>{dictionary?.datatable?.column?.status}</span>
+        })
+      )
+    }
+
+    // ✅ Conditionally add "Suspend" button if `dispute_response` permission is available
+    if (isUserHasPermissionSections?.dispute_response) {
+      cols.push(
+        columnHelper.accessor('suspend', {
+          header: '',
+          cell: ({ row }) => (
+            <Box display='flex' alignItems='center' justifyContent='center' style={{ width: '100%', height: '40px' }}>
+              <Button
+                disabled={row?.original?.vendorId?.status === 'suspended'}
+                variant='contained'
+                color='primary'
+                sx={{ px: 2, mx: 1 }}
+                onClick={() => {
+                  const param = JSON.stringify(row?.original?.vendorId)
+
+                  localStorage.setItem('disputeParam', param)
+                  router.push(`/${locale}/${USER_PANELS?.admin}/dispute-management/suspend`)
+                }}
+              >
+                {row?.original?.vendorId?.status === 'suspended' ? 'Suspended' : dictionary?.datatable?.button?.suspend}
+              </Button>
+            </Box>
+          )
+        })
+      )
+    }
+
+    return cols
+  }, [dictionary, isUserHasPermissionSections, locale, router])
 
   const dataWithSerialNumber = useMemo(
     () =>

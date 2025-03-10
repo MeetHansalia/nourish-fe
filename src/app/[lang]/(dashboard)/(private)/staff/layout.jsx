@@ -2,6 +2,8 @@
 import { getServerSession } from 'next-auth'
 
 // Lib Imports
+import { Toaster } from 'react-hot-toast'
+
 import { authOptions } from '@/libs/auth'
 
 // Component Imports
@@ -25,6 +27,7 @@ const Layout = async ({ children, params }) => {
   return (
     <RoleAuthGuard locale={params.lang} allowedUserRoles={['teacher_role', 'school_otherers_role']}>
       <GlobalReviewDialog />
+      <Toaster position='top-right' />
 
       <SocketHandler />
       {children}

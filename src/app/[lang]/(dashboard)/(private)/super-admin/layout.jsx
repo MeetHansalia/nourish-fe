@@ -1,4 +1,6 @@
 // HOC Imports
+import { Toaster } from 'react-hot-toast'
+
 import RoleAuthGuard from '@/hocs/RoleAuthGuard'
 import SocketHandler from '@/socket/SocketHandler'
 
@@ -15,6 +17,8 @@ const Layout = async ({ children, params }) => {
 
   return (
     <RoleAuthGuard locale={params.lang} allowedUserRoles={['super_admin_role']}>
+      <Toaster position='top-right' />
+
       <SocketHandler />
       {children}
     </RoleAuthGuard>

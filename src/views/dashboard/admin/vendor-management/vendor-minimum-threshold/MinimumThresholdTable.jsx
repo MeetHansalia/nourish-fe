@@ -41,6 +41,10 @@ import {
   IconButton
 } from '@mui/material'
 
+import { useSelector } from 'react-redux'
+
+import { profileState } from '@/redux-store/slices/profile'
+
 // Style Imports
 import tableStyles from '@core/styles/table.module.css'
 
@@ -49,7 +53,7 @@ import ChevronRight from '@menu/svg/ChevronRight'
 // Util Imports
 import { API_ROUTER } from '@/utils/apiRoutes'
 import { useTranslation } from '@/utils/getDictionaryClient'
-import { toastError, actionConfirmWithLoaderAlert, successAlert } from '@/utils/globalFunctions'
+import { toastError, actionConfirmWithLoaderAlert, successAlert, isUserHasPermission } from '@/utils/globalFunctions'
 import axiosApiCall from '@utils/axiosApiCall'
 import OpenDialogOnElementClick from '@/components/layout/OpenDialogOnElementClick'
 
@@ -63,7 +67,7 @@ const OrderDataTable = props => {
   const { dictionary = null } = props
   const { lang: locale } = useParams()
   const { t } = useTranslation(locale)
-
+  const { user = null } = useSelector(profileState)
   const [page, setPage] = useState(1)
   const [data, setData] = useState([])
   const [columnFilters, setColumnFilters] = useState([])
@@ -76,6 +80,18 @@ const OrderDataTable = props => {
 
   // useRef for aborting request
   const abortController = useRef(null)
+
+  // Vars
+  const isUserHasPermissionSections = useMemo(
+    () => ({
+      verify_user: isUserHasPermission({
+        permissions: user?.permissions,
+        permissionToCheck: 'user_management',
+        subPermissionsToCheck: ['verify_user']
+      })
+    }),
+    [user?.permissions]
+  )
 
   // Fetch Data
   const getAllSuspendedUsers = async () => {
@@ -131,14 +147,12 @@ const OrderDataTable = props => {
 
   const columnHelper = createColumnHelper()
 
-  const columns = useMemo(
-    () => [
-      // columnHelper.accessor('first_name', {
-      //   header: `${dictionary?.datatable?.column?.first_name}`
-      // }),
-      // columnHelper.accessor('last_name', {
-      //   header: `${dictionary?.datatable?.column?.last_name}`
-      // }),
+  const columns = useMemo(() => {
+    const cols = [
+      columnHelper.accessor('serialNumber', {
+        header: `${dictionary?.datatable?.column?.serial_number}`,
+        enableSorting: false
+      }),
       columnHelper.accessor('vendorName', {
         header: `${dictionary?.datatable?.column?.vendor_name}`,
         cell: ({ row }) => {
@@ -163,46 +177,52 @@ const OrderDataTable = props => {
       columnHelper.accessor('email', {
         header: `${dictionary?.datatable?.column?.contact}`
       }),
-
       columnHelper.accessor('createdAt', {
         header: `${dictionary?.datatable?.column?.created_at}`,
         cell: info => new Date(info.getValue()).toLocaleDateString()
       }),
       columnHelper.accessor('minThresHold', {
         header: `${dictionary?.datatable?.column?.number_of_venue}`
-      }),
-      columnHelper.accessor('Actions', {
-        header: `${dictionary?.datatable?.column?.actions}`,
-        cell: ({ row }) => (
-          <div className='flex items-center gap-4'>
-            <OpenDialogOnElementClick
-              element={IconButton}
-              elementProps={{
-                children: <i className='tabler-eye' />
-              }}
-              dialog={ThresholdViewDialogBox}
-              dialogProps={{ dictionary, selectedRow: row.original, setData }}
-            />
-            <OpenDialogOnElementClick
-              element={Button}
-              elementProps={{
-                children: `${dictionary?.common?.reject}`,
-                variant: 'contained'
-              }}
-              dialog={RejectViewDialogBox}
-              dialogProps={{
-                selectedRow: row.original,
-                dictionary,
-                setData
-              }}
-            />
-          </div>
-        ),
-        enableSorting: false
       })
-    ],
-    []
-  )
+    ]
+
+    // ✅ Conditionally add "Actions" column if the user has permission
+    if (isUserHasPermissionSections?.verify_user) {
+      cols.push(
+        columnHelper.accessor('Actions', {
+          header: `${dictionary?.datatable?.column?.actions}`,
+          cell: ({ row }) => (
+            <div className='flex items-center gap-4'>
+              <OpenDialogOnElementClick
+                element={IconButton}
+                elementProps={{
+                  children: <i className='tabler-eye' />
+                }}
+                dialog={ThresholdViewDialogBox}
+                dialogProps={{ dictionary, selectedRow: row.original, setData }}
+              />
+              <OpenDialogOnElementClick
+                element={Button}
+                elementProps={{
+                  children: `${dictionary?.common?.reject}`,
+                  variant: 'contained'
+                }}
+                dialog={RejectViewDialogBox}
+                dialogProps={{
+                  selectedRow: row.original,
+                  dictionary,
+                  setData
+                }}
+              />
+            </div>
+          ),
+          enableSorting: false
+        })
+      )
+    }
+
+    return cols
+  }, [dictionary, isUserHasPermissionSections])
 
   const dataWithSerialNumber = useMemo(
     () =>
@@ -230,7 +250,6 @@ const OrderDataTable = props => {
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    // getFilteredRowModel: getFilteredRowModel(),
     manualPagination: true,
     manualSorting: true
   })
@@ -251,18 +270,22 @@ const OrderDataTable = props => {
   }, [page, itemsPerPage, globalFilter, sorting])
 
   return (
-    <Card>
+    <Card className='common-block-dashboard table-block-no-pad'>
       <CardHeader
+        className='common-block-title'
         title={dictionary?.page?.order_management?.vendor_minimum_thresholds_verfication_requests}
         action={
-          <DebouncedInput
-            value={globalFilter ?? ''}
-            onChange={value => setGlobalFilter(String(value))}
-            placeholder={dictionary?.datatable?.common?.search_placeholder}
-          />
+          <div className='form-group'>
+            <DebouncedInput
+              value={globalFilter ?? ''}
+              onChange={value => setGlobalFilter(String(value))}
+              placeholder={dictionary?.datatable?.common?.search_placeholder}
+            />
+          </div>
         }
       />
-      <div className='overflow-x-auto'>
+      {/* <div className='overflow-x-auto'> */}
+      <div className='table-common-block p-0 overflow-x-auto'>
         <table className={tableStyles.table}>
           <thead>
             {table.getHeaderGroups().map(headerGroup => (
@@ -292,7 +315,8 @@ const OrderDataTable = props => {
             ))}
             {isDataTableServerLoading && (
               <tr>
-                <td colSpan={columns?.length}>
+                {/* <td colSpan={columns?.length}> */}
+                <td className='no-pad-td' colSpan={columns?.length}>
                   <LinearProgress color='primary' sx={{ height: '2px' }} />
                 </td>
               </tr>

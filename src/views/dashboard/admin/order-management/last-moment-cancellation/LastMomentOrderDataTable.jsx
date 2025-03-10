@@ -6,6 +6,8 @@ import { useState, useEffect, useMemo, useRef } from 'react'
 // Next Imports
 import { useParams } from 'next/navigation'
 
+import { useSelector, useDispatch } from 'react-redux'
+
 // React Table Imports
 import {
   useReactTable,
@@ -30,7 +32,9 @@ import {
   Grid,
   Link,
   CircularProgress,
-  CardHeader
+  CardHeader,
+  FormControl,
+  Select
 } from '@mui/material'
 
 // Third-party Imports
@@ -41,8 +45,6 @@ import moment from 'moment'
 
 import { isCancel } from 'axios'
 
-import { useDispatch } from 'react-redux'
-
 import axiosApiCall from '@/utils/axiosApiCall'
 import { useTranslation } from '@/utils/getDictionaryClient'
 import {
@@ -52,7 +54,8 @@ import {
   setFormFieldsErrors,
   successAlert,
   toastError,
-  toastSuccess
+  toastSuccess,
+  isUserHasPermission
 } from '@/utils/globalFunctions'
 import { API_ROUTER } from '@/utils/apiRoutes'
 
@@ -71,6 +74,9 @@ import { numberFormat } from '@/utils/globalFilters'
 import DebouncedInput from '@/components/nourishubs/DebouncedInput'
 import { setOrderId } from '@/redux-store/slices/global'
 
+import { profileState } from '@/redux-store/slices/profile'
+import StatusLabel from '@/components/theme/getStatusColours'
+
 const LastMomentOrderDataTable = ({ dictionary }) => {
   const { lang: locale } = useParams()
   const { t } = useTranslation(locale)
@@ -80,17 +86,34 @@ const LastMomentOrderDataTable = ({ dictionary }) => {
   // States
   const [data, setData] = useState([])
   const [globalFilter, setGlobalFilter] = useState('')
-  const [itemsPerPage, setItemsPerPage] = useState(10)
+  const [itemsPerPage, setItemsPerPage] = useState(5)
   const [recordMetaData, setRecordMetaData] = useState(null)
   const [page, setPage] = useState(1)
   const [isDataTableServerLoading, setIsDataTableServerLoading] = useState(true)
   const [selectedRow, setSelectedRow] = useState(null)
-
+  const { user = null } = useSelector(profileState)
   const [isLoading, setIsLoading] = useState(false)
   const [isNearVendorDialogShow, setIsNearVendorDialogShow] = useState(false)
   // const [isLastMomentCancalationCount, setLastMomentCancelationCount] = useState(false)
 
   const abortController = useRef(null)
+
+  // Vars
+  const isUserHasPermissionSections = useMemo(
+    () => ({
+      approve_last_movement_cancellation: isUserHasPermission({
+        permissions: user?.permissions,
+        permissionToCheck: 'order_management',
+        subPermissionsToCheck: ['approve_last_movement_cancellation']
+      }),
+      get_last_movement_cancellation_order_details: isUserHasPermission({
+        permissions: user?.permissions,
+        permissionToCheck: 'order_management',
+        subPermissionsToCheck: ['get_last_movement_cancellation_order_details']
+      })
+    }),
+    [user?.permissions]
+  )
 
   // Fetch Data
   const getAllRequests = async () => {
@@ -187,8 +210,8 @@ const LastMomentOrderDataTable = ({ dictionary }) => {
 
   const columnHelper = createColumnHelper()
 
-  const columns = useMemo(
-    () => [
+  const columns = useMemo(() => {
+    const cols = [
       columnHelper.accessor('serialNumber', {
         header: `${dictionary?.datatable?.column?.serial_number}`,
         cell: info => info.getValue(),
@@ -213,63 +236,133 @@ const LastMomentOrderDataTable = ({ dictionary }) => {
       columnHelper.accessor('deliveryAddress', {
         header: `${dictionary?.page?.vendor_management?.vendor_address}`,
         cell: info => info.getValue() || <span className='italic text-gray-500'>N/A</span>
-      }),
-      columnHelper.display({
-        id: 'actions',
-        header: `${dictionary?.datatable?.column?.status}`,
-        cell: ({ row }) => {
-          const cancelOrderRequestStatus = row?.original?.cancelorderRequestStatus // Get status
-
-          return (
-            <div className='flex gap-2' onClick={e => e.stopPropagation()}>
-              <Button
-                variant='contained'
-                onClick={e => {
-                  if (cancelOrderRequestStatus == 'initiate') {
-                    e.stopPropagation()
-                    // setOpenKidsDetailDialog(true)
-                    setSelectedRow(row?.original)
-                    handleApprove(row?.original)
-                  } else if (cancelOrderRequestStatus == 'accepted') {
-                    setIsNearVendorDialogShow(true)
-                    setSelectedRow(row?.original)
-                    dispatch(setOrderId(row?.original._id))
-                  }
-                }}
-              >
-                {cancelOrderRequestStatus === 'initiate'
-                  ? dictionary?.common?.approve
-                  : cancelOrderRequestStatus === 'accepted'
-                    ? 'Reorder'
-                    : 'Rejected'}
-              </Button>
-              {cancelOrderRequestStatus == 'initiate' && (
-                <OpenDialogOnElementClick
-                  element={Button}
-                  elementProps={{
-                    variant: 'outlined',
-                    children: `${dictionary?.common?.reject}`,
-                    onClick: e => {
-                      e.stopPropagation()
-                    }
-                  }}
-                  dialog={RejectConfirmationDialogBox}
-                  dialogProps={{
-                    getAllRequests,
-                    dictionary,
-                    page,
-                    itemsPerPage,
-                    vendorData: row?.original
-                  }}
-                />
-              )}
-            </div>
-          )
-        }
       })
-    ],
-    [dictionary]
-  )
+    ]
+
+    // ✅ Conditionally add "Actions" column if `approve_last_movement_cancellation` permission exists
+    if (isUserHasPermissionSections.approve_last_movement_cancellation) {
+      cols.push(
+        // columnHelper.display({
+        //   id: 'actions',
+        //   header: `${dictionary?.datatable?.column?.status}`,
+        //   cell: ({ row }) => {
+        //     const cancelOrderRequestStatus = row?.original?.cancelorderRequestStatus // Get status
+
+        //     return (
+        //       <div className='flex gap-2' onClick={e => e.stopPropagation()}>
+        //         <Button
+        //           variant='contained'
+        //           onClick={e => {
+        //             if (cancelOrderRequestStatus === 'initiate') {
+        //               e.stopPropagation()
+        //               setSelectedRow(row?.original)
+        //               handleApprove(row?.original)
+        //             } else if (cancelOrderRequestStatus === 'accepted') {
+        //               setIsNearVendorDialogShow(true)
+        //               setSelectedRow(row?.original)
+        //               dispatch(setOrderId(row?.original._id))
+        //             }
+        //           }}
+        //         >
+        //           {cancelOrderRequestStatus === 'initiate'
+        //             ? dictionary?.common?.approve
+        //             : cancelOrderRequestStatus === 'accepted'
+        //             ? 'Reorder'
+        //             : 'Rejected'}
+        //         </Button>
+        //         {cancelOrderRequestStatus === 'initiate' && (
+        //           <OpenDialogOnElementClick
+        //             element={Button}
+        //             elementProps={{
+        //               variant: 'outlined',
+        //               children: `${dictionary?.common?.reject}`,
+        //               onClick: e => e.stopPropagation()
+        //             }}
+        //             dialog={RejectConfirmationDialogBox}
+        //             dialogProps={{
+        //               getAllRequests,
+        //               dictionary,
+        //               page,
+        //               itemsPerPage,
+        //               vendorData: row?.original
+        //             }}
+        //           />
+        //         )}
+        //       </div>
+        //     )
+        //   }
+        // })
+        columnHelper.accessor('Status', {
+          header: `${dictionary?.datatable?.column?.status}`,
+          enableSorting: false,
+          cell: ({ row }) => {
+            const cancelOrderRequestStatus = row?.original?.cancelorderRequestStatus // Get status
+
+            return (
+              <>
+                <div className='flex gap-2' onClick={e => e.stopPropagation()}>
+                  <StatusLabel status={cancelOrderRequestStatus} />
+                </div>
+              </>
+            )
+          }
+        }),
+        columnHelper.display({
+          id: 'actions',
+          header: `${dictionary?.datatable?.column?.actions}`,
+          cell: ({ row }) => {
+            const cancelOrderRequestStatus = row?.original?.cancelorderRequestStatus // Get status
+
+            return (
+              <div className='flex gap-2' onClick={e => e.stopPropagation()}>
+                {cancelOrderRequestStatus !== 'reject' && (
+                  <>
+                    <Button
+                      variant='contained'
+                      onClick={e => {
+                        e.stopPropagation()
+                        setSelectedRow(row?.original)
+
+                        if (cancelOrderRequestStatus === 'initiate') {
+                          handleApprove(row?.original)
+                        } else if (cancelOrderRequestStatus === 'accepted') {
+                          setIsNearVendorDialogShow(true)
+                          dispatch(setOrderId(row?.original._id))
+                        }
+                      }}
+                    >
+                      {cancelOrderRequestStatus === 'initiate' ? dictionary?.common?.approve : 'Reorder'}
+                    </Button>
+
+                    {cancelOrderRequestStatus === 'initiate' && (
+                      <OpenDialogOnElementClick
+                        element={Button}
+                        elementProps={{
+                          variant: 'outlined',
+                          children: dictionary?.common?.reject,
+                          onClick: e => e.stopPropagation()
+                        }}
+                        dialog={RejectConfirmationDialogBox}
+                        dialogProps={{
+                          getAllRequests,
+                          dictionary,
+                          page,
+                          itemsPerPage,
+                          vendorData: row?.original
+                        }}
+                      />
+                    )}
+                  </>
+                )}
+              </div>
+            )
+          }
+        })
+      )
+    }
+
+    return cols
+  }, [dictionary, isUserHasPermissionSections])
 
   const dataWithSerialNumber = useMemo(
     () =>
@@ -298,7 +391,6 @@ const LastMomentOrderDataTable = ({ dictionary }) => {
     onGlobalFilterChange: setGlobalFilter,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    // getFilteredRowModel: getFilteredRowModel(),
     manualPagination: true,
     manualSorting: true
   })
@@ -349,44 +441,48 @@ const LastMomentOrderDataTable = ({ dictionary }) => {
         </Grid>
       </Grid> */}
 
-      <Card>
+      <Card className='common-block-dashboard table-block-no-pad'>
         {/* <CardContent className='flex justify-between flex-col items-start md:items-center md:flex-row gap-4'>
-                  <div className='flex flex-col sm:flex-row items-center justify-between gap-4 is-full sm:is-auto'>
-                    <div className='flex items-center gap-2 is-full sm:is-auto'>
-                      <Typography className='hidden sm:block'>{dictionary?.datatable?.common?.show}</Typography>
-                      <CustomTextField
-                        select
-                        value={itemsPerPage || 10}
-                        onChange={e => setItemsPerPage(e.target.value)}
-                        className='is-[70px] max-sm:is-full'
-                      >
-                        <MenuItem value='5'>05</MenuItem>
-                        <MenuItem value='10'>10</MenuItem>
-                        <MenuItem value='25'>25</MenuItem>
-                        <MenuItem value='50'>50</MenuItem>
-                      </CustomTextField>
-                    </div>
-                  </div>
-                  <div className='flex max-sm:flex-col max-sm:is-full sm:items-center gap-4'>
-                    <DebouncedInput
-                      value={globalFilter ?? ''}
-                      onChange={value => setGlobalFilter(String(value))}
-                      placeholder={dictionary?.datatable?.common?.search_placeholder}
-                      className='max-sm:is-full sm:is-[250px]'
-                    />
-                  </div>
-                </CardContent> */}
-        <CardHeader
-          title={dictionary?.page?.order_management?.last_moment_cancellation}
-          action={
+          <div className='flex flex-col sm:flex-row items-center justify-between gap-4 is-full sm:is-auto'>
+            <div className='flex items-center gap-2 is-full sm:is-auto'>
+              <Typography className='hidden sm:block'>{dictionary?.datatable?.common?.show}</Typography>
+              <CustomTextField
+                select
+                value={itemsPerPage || 10}
+                onChange={e => setItemsPerPage(e.target.value)}
+                className='is-[70px] max-sm:is-full'
+              >
+                <MenuItem value='5'>05</MenuItem>
+                <MenuItem value='10'>10</MenuItem>
+                <MenuItem value='25'>25</MenuItem>
+                <MenuItem value='50'>50</MenuItem>
+              </CustomTextField>
+            </div>
+          </div>
+          <div className='flex max-sm:flex-col max-sm:is-full sm:items-center gap-4'>
             <DebouncedInput
               value={globalFilter ?? ''}
               onChange={value => setGlobalFilter(String(value))}
               placeholder={dictionary?.datatable?.common?.search_placeholder}
+              className='max-sm:is-full sm:is-[250px]'
             />
+          </div>
+        </CardContent> */}
+        <CardHeader
+          className='common-block-title'
+          title={dictionary?.page?.order_management?.last_moment_cancellation}
+          action={
+            <div className='form-group'>
+              <DebouncedInput
+                value={globalFilter ?? ''}
+                onChange={value => setGlobalFilter(String(value))}
+                placeholder={dictionary?.datatable?.common?.search_placeholder}
+              />
+            </div>
           }
         />
-        <div className='overflow-x-auto'>
+        {/* <div className='overflow-x-auto'> */}
+        <div className='table-common-block p-0 overflow-x-auto'>
           <table className={tableStyles.table}>
             <thead>
               {table.getHeaderGroups().map(headerGroup => (
@@ -412,7 +508,7 @@ const LastMomentOrderDataTable = ({ dictionary }) => {
               ))}
               {isDataTableServerLoading && (
                 <tr>
-                  <td colSpan={columns?.length}>
+                  <td className='no-pad-td' colSpan={columns?.length}>
                     <LinearProgress color='primary' sx={{ height: '2px' }} />
                   </td>
                 </tr>
@@ -460,6 +556,17 @@ const LastMomentOrderDataTable = ({ dictionary }) => {
                   totalFiltered: recordMetaData?.totalFiltered || 0
                 })}
               </Typography>
+              <FormControl variant='outlined' size='small'>
+                <div className='flex items-center gap-2 is-full sm:is-auto'>
+                  <Typography className='hidden sm:block'>{dictionary?.datatable?.common?.show}</Typography>
+                  <Select value={itemsPerPage} onChange={e => setItemsPerPage(e.target.value)}>
+                    <MenuItem value={5}>05</MenuItem>
+                    <MenuItem value={10}>10</MenuItem>
+                    <MenuItem value={15}>15</MenuItem>
+                    <MenuItem value={20}>20</MenuItem>
+                  </Select>
+                </div>
+              </FormControl>
 
               <Pagination
                 shape='rounded'

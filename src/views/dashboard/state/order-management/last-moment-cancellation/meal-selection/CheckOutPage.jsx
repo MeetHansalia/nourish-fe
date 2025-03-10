@@ -28,7 +28,8 @@ import {
   DialogContent,
   DialogActions,
   FormControlLabel,
-  Checkbox
+  Checkbox,
+  TextField
 } from '@mui/material'
 
 import { useForm, Controller } from 'react-hook-form'
@@ -141,6 +142,12 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
   const selectedDates = useSelector(state => state.date.singleDate)
   const { orderId } = useSelector(globalState)
 
+  const [notes, setNote] = useState('') // State to store the notes
+
+  const handleNoteChange = event => {
+    setNote(event.target.value) // Update state when the user types
+  }
+
   const {
     control,
     handleSubmit,
@@ -214,7 +221,7 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
 
   const handlePayNow = async () => {
     try {
-      const response = await axiosApiCall.post(API_ROUTER.STATE.PLACE_ORDER(cartData._id))
+      const response = await axiosApiCall.post(API_ROUTER.STATE.PLACE_ORDER(cartData._id), { notes })
 
       const { status, message } = response?.data || {}
 
@@ -384,6 +391,21 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
               </Typography>
             </CardContent>
           </Card>
+          <Card className='common-block-dashboard'>
+            <CardContent className='p-0'>
+              <TextField
+                className='mt-2'
+                label={dictionary?.form?.label?.notes || 'Notes'}
+                variant='outlined'
+                multiline
+                fullWidth
+                rows={4}
+                placeholder={dictionary?.form?.placeholder?.notes || 'Enter your notes here...'}
+                value={notes} // Controlled input
+                onChange={handleNoteChange} // Update state on change
+              />
+            </CardContent>
+          </Card>
           <Card sx={{ mb: 2 }}>
             <CardContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <Box
@@ -432,17 +454,6 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
         </Grid>
 
         <Grid item xs={12} md={4} lg={4}>
-          <Card sx={{ mb: 2 }}>
-            <CardContent>
-              <Box display='flex' alignItems='center' justifyContent='space-between' mb={1}>
-                <Typography variant='h6'>{dictionary?.common?.checkout}</Typography>
-                <Button variant='contained' color='success' onClick={handlePayNow}>
-                  {dictionary?.form?.button?.pay_now}
-                </Button>
-              </Box>
-            </CardContent>
-          </Card>
-
           <Box sx={{ p: 3 }}>
             {cartData?.cartItems?.map((dish, index) => {
               const modifiersTotal = dish.modifiers?.reduce((sum, modifier) => sum + (modifier.price || 0), 0) || 0
@@ -481,7 +492,7 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
                           {dictionary?.form?.label?.quantity}: {dish.quantity}
                         </Typography>
                         <Typography variant='subtitle1' sx={{ mt: 1 }}>
-                          ${dishTotal.toFixed(2)}
+                          ${dishTotal.toFixed(0)}
                         </Typography>
                       </Box>
 
@@ -529,7 +540,7 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
                 {/ Item Total Calculation /}
                 <Box display='flex' justifyContent='space-between' mt={2}>
                   <Typography>{dictionary?.common?.item_total}</Typography>
-                  <Typography>${itemTotal.toFixed(2)}</Typography>
+                  <Typography>${itemTotal.toFixed(0)}</Typography>
                 </Box>
 
                 {/ Delivery Fees /}
@@ -552,11 +563,21 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
                     {dictionary?.common?.total_pay}
                   </Typography>
                   <Typography variant='subtitle1' fontWeight='bold'>
-                    ${itemTotal.toFixed(2) + deliveryPrice}
+                    ${(itemTotal + deliveryPrice).toFixed(0)}
                   </Typography>
                 </Box>
               </CardContent>
             )}
+          </Card>
+          <Card sx={{ mb: 2 }}>
+            <CardContent>
+              <Box display='flex' alignItems='center' justifyContent='space-between' mb={1}>
+                <Typography variant='h6'>{dictionary?.common?.checkout}</Typography>
+                <Button variant='contained' color='success' onClick={handlePayNow}>
+                  {dictionary?.form?.button?.pay_now}
+                </Button>
+              </Box>
+            </CardContent>
           </Card>
         </Grid>
       </Grid>
@@ -645,7 +666,7 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
                 </div>
 
                 <Typography variant='h6' color='textSecondary' className='mb-3'>
-                  {dictionary?.meal?.total_price}: ${totalPrice?.toFixed(2)}
+                  {dictionary?.meal?.total_price}: ${totalPrice?.toFixed(0)}
                 </Typography>
 
                 <div className='mt-4 text-center'>

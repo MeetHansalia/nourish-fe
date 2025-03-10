@@ -31,21 +31,37 @@ const Statistics = props => {
   const { lang: locale } = useParams()
   const pathname = usePathname()
   const panelName = getPanelName(pathname)
+  const [statisticData, setStatisticData] = useState({})
 
-  const [vednerMinimumThresholdsVerificationCount, setVednerMinimumThresholdsVerificationCount] = useState(0)
+  // const [vednerMinimumThresholdsVerificationCount, setVednerMinimumThresholdsVerificationCount] = useState(0)
 
-  const getTotalSuspendedAccountNumber = async () => {
-    try {
-      const response = await axiosApiCall.get(API_ROUTER.SUPER_ADMIN_ORDER.MINIMUM_THRESHOLD)
+  // const getTotalSuspendedAccountNumber = async () => {
+  //   try {
+  //     const response = await axiosApiCall.get(API_ROUTER.SUPER_ADMIN_ORDER.MINIMUM_THRESHOLD)
 
-      setVednerMinimumThresholdsVerificationCount(response?.data?.response?.thresholdRequestCount || 0)
-    } catch (error) {
-      toastError(error?.response?.message || 'An error occurred while fetching data.')
-    }
+  //     setVednerMinimumThresholdsVerificationCount(response?.data?.response?.thresholdRequestCount || 0)
+  //   } catch (error) {
+  //     toastError(error?.response?.message || 'An error occurred while fetching data.')
+  //   }
+  // }
+
+  // useEffect(() => {
+  //   getTotalSuspendedAccountNumber()
+  // }, [])
+
+  const getStatistics = async () => {
+    await axiosApiCall
+      .get(API_ROUTER.SUPER_ADMIN_ORDER.STATISTICS)
+      .then(response => {
+        setStatisticData(response?.data?.response)
+      })
+      .catch(error => {
+        toastError(error?.response?.message)
+      })
   }
 
   useEffect(() => {
-    getTotalSuspendedAccountNumber()
+    getStatistics()
   }, [])
 
   const handleClick = name => {
@@ -87,7 +103,7 @@ const Statistics = props => {
               <div className='number-text-block flex flex-col gap-1'>
                 <div className='number-text-block-inner flex items-center gap-4'>
                   <Typography variant='h4' color='text.primary'>
-                    {numberFormat(0)}
+                    {numberFormat(statisticData?.lastMomentCancelOrders || 0)}
                   </Typography>
                 </div>
               </div>
@@ -111,7 +127,7 @@ const Statistics = props => {
                 <div className='number-text-block flex flex-col gap-1'>
                   <div className='number-text-block-inner flex items-center gap-2'>
                     <Typography variant='h4' color='text.primary'>
-                      {numberFormat(0)}
+                      {numberFormat(statisticData?.completeOrders || 0)}
                     </Typography>
                   </div>
                 </div>

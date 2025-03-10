@@ -73,7 +73,7 @@ const VendorDashboard = () => {
       <div className='top-block-card'>
         <div className='card-block-inner'>
           {CARD_TITLE_DATA?.map((card, index) => (
-            <div className='card-block' item key={index}>
+            <div className='card-block' key={index}>
               <Statistics title={card?.title} link={card?.link} isLoading={isLoading} value={statisticData[card.key]} />
             </div>
           ))}

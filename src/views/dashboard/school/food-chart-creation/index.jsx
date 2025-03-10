@@ -362,6 +362,7 @@ const FoodChartCreation = props => {
                       onChange={date => setMinDate(date)}
                       customInput={<CustomTextField fullWidth />}
                       placeholderText={t('form.label.start_date')}
+                      dayClassName={date => (date.toDateString() === new Date().toDateString() ? 'bold-date' : '')}
                     />
                   </Grid>
                   <Grid item lg={4}>
@@ -371,6 +372,7 @@ const FoodChartCreation = props => {
                       onChange={date => setMaxDate(date)}
                       customInput={<CustomTextField fullWidth />}
                       placeholderText={t('form.label.end_date')}
+                      dayClassName={date => (date.toDateString() === new Date().toDateString() ? 'bold-date' : '')}
                     />
                   </Grid>
                   {isChartUpdated && (

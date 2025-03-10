@@ -55,6 +55,7 @@ import CustomTextField from '@/@core/components/mui/TextField'
 import { globalState } from '@/redux-store/slices/global'
 import AppReactDatepicker from '@/libs/styles/AppReactDatepicker'
 import { reviewDialogState, setIsRefreshReviewList } from '@/redux-store/slices/reviewDialog'
+import StatusLabel from '@/components/theme/getStatusColours'
 
 const OrderDataTable = props => {
   //** HOOKS */
@@ -84,6 +85,21 @@ const OrderDataTable = props => {
   //** REDUX DATA */
   const { isRefreshReviewList, isCompleteOrderApiCall } = useSelector(reviewDialogState)
   const dispatch = useDispatch()
+
+  const getStatusColor = status => {
+    switch (status?.toLowerCase()) {
+      case 'delivered':
+        return 'primary.main'
+      case 'rejected':
+        return 'error.main'
+      case 'cancelled':
+        return 'warning.main'
+      case 'pending':
+        return 'warning.main'
+      default:
+        return 'text.primary' // Default text color
+    }
+  }
 
   //** FETCH DATA */
   const getAllCompletedOrders = async () => {
@@ -183,22 +199,14 @@ const OrderDataTable = props => {
           return mealDetails
         }
       }),
-      columnHelper.accessor('Actions', {
-        header: `${dictionary?.datatable?.column?.actions}`,
-        cell: ({ row }) => {
-          const isReviewed = row.original.isReviewed
+      columnHelper.accessor('Status', {
+        header: `${dictionary?.datatable?.column?.status}`,
+        enableSorting: false,
 
+        cell: ({ row }) => {
           return (
             <>
-              <Button
-                variant={'contained'}
-                color='primary'
-                disabled={isLoading}
-                onClick={() => handelReviewModal(row.original)}
-                sx={{ minWidth: 90 }}
-              >
-                {row.original?.orderStatus}
-              </Button>
+              <StatusLabel status={row.original?.orderStatus} />
             </>
           )
         }
@@ -269,11 +277,6 @@ const OrderDataTable = props => {
   }, [])
 
   //** HANDLERS */
-
-  const handelReviewModal = order => {
-    if (order?.isReviewed) return
-    setSelectedOrder(order)
-  }
 
   const handelDateChange = date => {
     const formattedDate = date ? format(date, 'yyyy-MM-dd') : null

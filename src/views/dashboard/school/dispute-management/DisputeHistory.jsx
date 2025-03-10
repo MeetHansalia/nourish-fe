@@ -97,17 +97,18 @@ const DisputeHistory = props => {
   const [openDisputeDialog, setOpenDisputeDialog] = useState(false) // Control dispute dialog visibility
   const [openAlert, setOpenAlert] = useState(false) // Control dialog visibility
   const [isConfirming, setIsConfirming] = useState(false) // Control dialog visibility
-  const [selectedFilter, setSelectedFilter] = useState(dictionary?.datatable?.column?.all)
   const [selectedDate, setSelectedDate] = useState(null)
 
   // doc verification count store
   const [verificationRequestCount, setVerificationRequestCount] = useState()
 
   const filterData = [
-    { id: 1, name: dictionary?.common?.all },
-    { id: 2, name: dictionary?.common?.completed },
-    { id: 3, name: dictionary?.common?.ongoing }
+    { id: 1, name: dictionary?.common?.all, value: 'All' },
+    { id: 2, name: dictionary?.common?.completed, value: true },
+    { id: 3, name: dictionary?.common?.ongoing, value: false }
   ]
+
+  const [selectedFilter, setSelectedFilter] = useState(filterData[0]?.value)
 
   const CheckboxInput = styled(Checkbox, {
     name: 'MuiCustomInputHorizontal',
@@ -133,8 +134,6 @@ const DisputeHistory = props => {
   const getRole = async () => {
     const session = await getSession()
     const userRole = session?.user?.role || ''
-
-    console.log('roel', userRole, `${dictionary?.datatable?.column?.serial_number}`)
 
     setRole(userRole)
   }
@@ -259,8 +258,6 @@ const DisputeHistory = props => {
 
     setIsDataTableServerLoading(false)
   }
-
-  // console.log('kokok', recordMetaData)
 
   const columns = useMemo(
     () => [
@@ -406,10 +403,6 @@ const DisputeHistory = props => {
     }
   }, [page, itemsPerPage, globalFilter, sorting, selectedFilter, selectedDate])
 
-  useEffect(() => {
-    console.log('openDisputeDialog: ', openDisputeDialog)
-  }, [openDisputeDialog])
-
   const refreshData = () => {
     setPage(1)
     setData([])
@@ -434,16 +427,14 @@ const DisputeHistory = props => {
                 label={dictionary?.datatable?.common?.dropdown_label}
                 value={selectedFilter}
                 onChange={event => {
-                  console.log('event.target.value', event.target.value)
-
                   setSelectedFilter(event.target.value)
                   // Trigger API call
                 }}
                 sx={{ minWidth: 150, height: 40 }}
               >
                 {filterData?.map(item => (
-                  <MenuItem value={item?.name} key={item?.id}>
-                    {`${item?.name}`}
+                  <MenuItem value={item?.value} key={item?.id}>
+                    {dictionary?.common?.[item?.name] || item?.name} {/* Language-specific name */}
                   </MenuItem>
                 ))}
               </CustomTextField>
@@ -453,7 +444,6 @@ const DisputeHistory = props => {
               <AppReactDatepicker
                 selected={selectedDate}
                 onChange={date => {
-                  console.log('date', date)
                   setSelectedDate(date)
                 }}
                 customInput={

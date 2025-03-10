@@ -8,20 +8,16 @@ import { useParams, useRouter } from 'next/navigation'
 import { getSession } from 'next-auth/react'
 
 // MUI Imports
-import { Grid, Card, Box, CircularProgress, Button } from '@mui/material'
-
-// Third-party Imports
-import InfiniteScroll from 'react-infinite-scroll-component'
+import { Grid } from '@mui/material'
 
 // Util Imports
 import axiosApiCall from '@utils/axiosApiCall'
-import { getLocalizedUrl } from '@/utils/i18n'
 import { API_ROUTER } from '@/utils/apiRoutes'
 
 // View Imports
 import Reports from '@/views/dashboard/parent/issue-reporting/Reports'
 import DetailForm from '@/views/dashboard/parent/issue-reporting/DetailForm'
-import { toastError, actionConfirmWithLoaderAlert, successAlert } from '@/utils/globalFunctions'
+import { toastError } from '@/utils/globalFunctions'
 
 /**
  * Page
@@ -29,20 +25,10 @@ import { toastError, actionConfirmWithLoaderAlert, successAlert } from '@/utils/
 const IssueReporting = props => {
   // Props
   const { dictionary = null } = props
-  const [allUsers, setAllUsers] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [hasMore, setHasMore] = useState(true)
-  const [page, setPage] = useState(1)
-  const [itemsPerPage, setItemsPerPage] = useState(6)
   const [issueCounts, setIssueCount] = useState(0)
   const [kidData, setKidData] = useState([])
   const [staticIssues, setStaticIssues] = useState([])
   const [role, setRole] = useState('')
-
-  const router = useRouter()
-
-  // HOOKS
-  const { lang: locale } = useParams()
 
   /**
    * Axios Test: Start
@@ -63,8 +49,6 @@ const IssueReporting = props => {
     await axiosApiCall
       .get(API_ROUTER?.PARENT?.GET_CHILDREN)
       .then(response => {
-        console.log('response: child', response)
-
         setKidData(response?.data?.response?.kidData)
       })
       .catch(error => {
@@ -76,8 +60,6 @@ const IssueReporting = props => {
     await axiosApiCall
       .get(API_ROUTER?.PARENT?.GET_STATIC_ISSUES)
       .then(response => {
-        console.log('response: ', response)
-
         setStaticIssues(response?.data?.response?.issueData)
       })
       .catch(error => {
@@ -85,11 +67,6 @@ const IssueReporting = props => {
       })
   }
 
-  /** Axios Test: End */
-
-  /**
-   * Page Life Cycle: Start
-   */
   useEffect(() => {
     getRole()
     getIssueCount()
@@ -101,10 +78,6 @@ const IssueReporting = props => {
       getChildren()
     }
   }, [role])
-
-  /** Page Life Cycle: End */
-
-  //Functions
 
   const refreshData = () => {
     getIssueCount()

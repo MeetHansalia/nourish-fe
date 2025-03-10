@@ -7,9 +7,11 @@ import Link from 'next/link'
 import { useParams, usePathname } from 'next/navigation'
 
 // MUI Imports
-import { Card, CardContent, Grid, Typography } from '@mui/material'
+import { Card, CardContent, CircularProgress, Grid, Typography } from '@mui/material'
 
 // Core Component Imports
+import { isCancel } from 'axios'
+
 import CustomAvatar from '@/@core/components/mui/Avatar'
 
 // Util Imports
@@ -18,7 +20,13 @@ import axiosApiCall from '@utils/axiosApiCall'
 import { getLocalizedUrl } from '@/utils/i18n'
 import { API_ROUTER } from '@/utils/apiRoutes'
 // View Imports
-import { getPanelName, toastError } from '@/utils/globalFunctions'
+import {
+  apiResponseErrorHandling,
+  getPanelName,
+  isVariableAnObject,
+  setFormFieldsErrors,
+  toastError
+} from '@/utils/globalFunctions'
 
 /**
  * Page
@@ -33,14 +41,28 @@ const Statistics = props => {
   const panelName = getPanelName(pathname)
 
   const [statisticsCount, setStatisticsCount] = useState(0)
+  const [isStatisticsCountLoaded, setIsStatisticCountLoaded] = useState(false)
 
   const getTotalSuspendedAccountNumber = async () => {
+    setIsStatisticCountLoaded(false)
+
     try {
       const response = await axiosApiCall.get(API_ROUTER.ADMIN.GET_STATISTIC)
 
       setStatisticsCount(response?.data?.response || 0)
+      setIsStatisticCountLoaded(true)
     } catch (error) {
-      toastError(error?.response?.message || 'An error occurred while fetching data.')
+      // toastError(error?.response?.message || 'An error occurred while fetching data.')
+      if (!isCancel(error)) {
+        setIsStatisticCountLoaded(false)
+        const apiResponseErrorHandlingData = apiResponseErrorHandling(error)
+
+        if (isVariableAnObject(apiResponseErrorHandlingData)) {
+          setFormFieldsErrors(apiResponseErrorHandlingData, setError)
+        } else {
+          toastError(apiResponseErrorHandlingData)
+        }
+      }
     }
   }
 
@@ -66,7 +88,11 @@ const Statistics = props => {
                 <div className='number-text-block flex flex-col gap-1'>
                   <div className='number-text-block-inner flex items-center gap-4'>
                     <Typography variant='h4' color='text.primary'>
-                      {numberFormat(statisticsCount?.vendorDocumentRequests)}
+                      {isStatisticsCountLoaded ? (
+                        numberFormat(statisticsCount?.vendorDocumentRequests)
+                      ) : (
+                        <CircularProgress size={20} />
+                      )}
                     </Typography>
                   </div>
                 </div>
@@ -90,7 +116,11 @@ const Statistics = props => {
                 <div className='number-text-block flex flex-col gap-1'>
                   <div className='number-text-block-inner flex items-center gap-2'>
                     <Typography variant='h4' color='text.primary'>
-                      {numberFormat(statisticsCount?.vendorThresholdRequests)}
+                      {isStatisticsCountLoaded ? (
+                        numberFormat(statisticsCount?.vendorDocumentRequests)
+                      ) : (
+                        <CircularProgress size={20} />
+                      )}
                     </Typography>
                   </div>
                 </div>

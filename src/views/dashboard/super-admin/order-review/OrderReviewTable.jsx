@@ -59,6 +59,7 @@ import AppReactDatepicker from '@/libs/styles/AppReactDatepicker'
 import { reviewDialogState, setIsRefreshReviewList } from '@/redux-store/slices/reviewDialog'
 import OpenDialogOnElementClick from '@/components/layout/OpenDialogOnElementClick'
 import tableStyles from '@core/styles/table.module.css'
+import StatusLabel from '@/components/theme/getStatusColours'
 
 const OrderReviewTable = props => {
   //** HOOKS */
@@ -87,7 +88,6 @@ const OrderReviewTable = props => {
   const abortController = useRef(null)
 
   //** REDUX DATA */
-  const { isRefreshReviewList, isCompleteOrderApiCall } = useSelector(reviewDialogState)
   const dispatch = useDispatch()
 
   //** FETCH DATA */
@@ -192,7 +192,7 @@ const OrderReviewTable = props => {
           return mealDetails
         }
       }),
-      columnHelper.accessor('Actions', {
+      columnHelper.accessor('Status', {
         header: `${dictionary?.datatable?.column?.status}`,
         enableSorting: false,
         cell: ({ row }) => {
@@ -200,10 +200,21 @@ const OrderReviewTable = props => {
 
           return (
             <>
+              <StatusLabel status={orderStatus} />
+            </>
+          )
+        }
+      }),
+      columnHelper.accessor('details', {
+        header: `${dictionary?.page.common?.details}`,
+        enableSorting: false,
+        cell: ({ row }) => {
+          return (
+            <>
               <OpenDialogOnElementClick
                 element={Button}
                 elementProps={{
-                  children: `${orderStatus}`,
+                  children: `${dictionary?.page.common?.details}`,
                   variant: 'contained'
                 }}
                 dialog={ReviewDialog}
@@ -211,8 +222,7 @@ const OrderReviewTable = props => {
               />
             </>
           )
-        },
-        enableSorting: false
+        }
       })
     ],
     []

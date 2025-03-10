@@ -20,6 +20,13 @@ export const API_ROUTER = {
   //change password
   PATCH_CHANGE_PASSWORD: '/v1/users/change-password',
 
+  // upload profile image
+  UPLOAD_PROFILE_IMAGE: '/v1/users/upload-profile-image',
+
+  //notification listing
+  NOTIFICATIONLIST: '/v1/usernotification/list',
+  READALLNOTIFICATION: '/v1/usernotification/read-all',
+
   // roles
   ROLE: {
     GET_ROLE: '/v1/role',
@@ -88,14 +95,16 @@ export const API_ROUTER = {
     PLACE_ORDER: id => `/v1/super-admin-order-management/place-order/${id}`,
     GET_CART_MODIFIER_DISH: id => `/v1/super-admin-order-management/cart-dish-details/${id}`,
     GET_CART_MODIFIER_DISH: id => `/v1/super-admin-order-management/cart-dish-details/${id}`,
-    GET_SUPER_ADMIN_VENDOR_LIST: '/v1/super-admin-menu-suggestions/vendors'
+    GET_SUPER_ADMIN_VENDOR_LIST: '/v1/super-admin-menu-suggestions/vendors',
+    STATISTICS: '/v1/super-admin-order-management/statistics'
+
   },
 
   // school /dashboard
   SCHOOL: {
     GET_PARENT_REQUESTS: '/v1/school-admin-dashboard/registration-requests',
     POST_APPROVE_REJECT_PARENT_REQUESTS: '/v1/school-admin-dashboard/update-request-status',
-    REVIEW_LIST: '/v1/school-admin-review-meal',
+    REVIEW_LIST: '/v1/school-admin-review-meal'
   },
 
   // school /foodchart
@@ -168,7 +177,7 @@ export const API_ROUTER = {
   VENDOR: {
     GET_ALL_ORDERS: '/v1/vendor/order-management/all-orders',
     VENDOR_MIN_THRESHOLD: '/v1/vendor/request-threshold', //post
-    VENDOR_UPLOAD_PROFILE: '/v1/vendor/upload-profile-image',
+    // VENDOR_UPLOAD_PROFILE: '/v1/vendor/upload-profile-image',
     VENDOR_UPLOAD_DOCUMENT: '/v1/vendor/upload-document',
     VENDOR_EDIT: '/v1/vendor/',
     GET_VENDOR_DETAILS: '/v1/vendor/details',
@@ -374,7 +383,7 @@ export const API_ROUTER = {
     // vendor management
     GET_ALL_VENDOR: '/v1/admin/vendor-management',
     GET_SPECIFIC_VENDOR: id => `/v1/admin/vendor-management/${id}`,
-    GET_ADMIN_VENDOR_LIST: '/v1/sadmin-menu-suggestions/vendors',
+    GET_ADMIN_VENDOR_LIST: '/v1/admin-menu-suggestions/vendors',
     SUSPEND_VENDOR: id => `/v1/admin/vendor-management/suspend/${id}`,
 
     // threshold
@@ -429,7 +438,9 @@ export const API_ROUTER = {
     PLACE_ORDER: id => `/v1/area-executive-order-management/place-order/${id}`,
     GET_CART_MODIFIER_DISH: id => `/v1/area-executive-order-management/cart-dish-details/${id}`,
     GET_ALL_CATEGORIES: `/v1/area-executive-order-management/get-all-categories`,
-    REVIEW_LIST: '/v1/area-executive-review-list'
+    REVIEW_LIST: '/v1/area-executive-review-list',
+    GET_STATISTICS: '/v1/area-executive-order-management/statistics',
+
   },
 
   /**

@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 // MUI Imports
 import { useParams, usePathname } from 'next/navigation'
 
-import { Card, CardContent, Typography } from '@mui/material'
+import { Card, CardContent, CircularProgress, Typography } from '@mui/material'
 
 // Core Component Imports
 import { isCancel } from 'axios'
@@ -32,6 +32,7 @@ const Statistics = props => {
   // Props
   const { dictionary = null, setShowDropDown, showDropDdown } = props
   const [orderStatistics, setOrderStatistics] = useState(0)
+  const [isLoadingStatistic, setIsLoadingStatistic] = useState(false)
 
   // HOOKS
   // const handleNavigation = () => {
@@ -60,17 +61,17 @@ const Statistics = props => {
     })
   }
 
-  const getLastMomentCancelationStatistic = async () => {
-    // setLastMomentCancelationCount(true)
+  const getStatistic = async () => {
+    setIsLoadingStatistic(true)
     await axiosApiCall
       .get(API_ROUTER.STATE.GET_LAST_MOMENT_STATISTIC)
       .then(response => {
         setOrderStatistics(response?.data?.response)
-        // setLastMomentCancelationCount(false)
+        setIsLoadingStatistic(false)
       })
       .catch(response => {
         if (!isCancel(error)) {
-          // setIsFormSubmitLoading(false)
+          setIsLoadingStatistic(false)
           const apiResponseErrorHandlingData = apiResponseErrorHandling(error)
 
           if (isVariableAnObject(apiResponseErrorHandlingData)) {
@@ -83,7 +84,7 @@ const Statistics = props => {
   }
 
   useEffect(() => {
-    getLastMomentCancelationStatistic()
+    getStatistic()
   }, [])
   // Page Life Cycle: End
 
@@ -104,7 +105,16 @@ const Statistics = props => {
               </div>
               <div className='number-text-block flex flex-col gap-1'>
                 <div className='number-text-block-inner flex items-center gap-4'>
-                  <Typography variant='h4'>{numberFormat(orderStatistics.lastMomentCancelOrderRequests)}</Typography>
+                  <Typography variant='h4'>
+                    {isLoadingStatistic ? (
+                      <CircularProgress
+                        size={20}
+                        className={`${showDropDdown.last_moment_cancellation ? 'text-white' : ''}`}
+                      />
+                    ) : (
+                      numberFormat(orderStatistics.lastMomentCancelOrders)
+                    )}
+                  </Typography>
                 </div>
               </div>
             </CardContent>
@@ -126,7 +136,16 @@ const Statistics = props => {
                 </div>
                 <div className='number-text-block flex flex-col gap-1'>
                   <div className='number-text-block-inner flex items-center gap-2'>
-                    <Typography variant='h4'>{numberFormat(orderStatistics.completeOrders)}</Typography>
+                    <Typography variant='h4'>
+                      {isLoadingStatistic ? (
+                        <CircularProgress
+                          size={20}
+                          className={`${showDropDdown.meal_monitoring ? 'text-white' : ''}`}
+                        />
+                      ) : (
+                        numberFormat(orderStatistics?.completeOrders || 0)
+                      )}
+                    </Typography>
                   </div>
                 </div>
               </CardContent>

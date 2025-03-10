@@ -5,6 +5,8 @@ import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 
 // Lib Imports
+import { Toaster } from 'react-hot-toast'
+
 import { authOptions } from '@/libs/auth'
 
 // HOC Imports
@@ -26,6 +28,8 @@ import GlobalReviewDialog from '@/views/dashboard/school/order-management/order-
 const Layout = async ({ children, params }) => {
   return (
     <RoleAuthGuard locale={params.lang} allowedUserRoles={['school_role']}>
+      <Toaster position='top-right' />
+
       <GlobalReviewDialog />
       <SocketHandler />
       {children}

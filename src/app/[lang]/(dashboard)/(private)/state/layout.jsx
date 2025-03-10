@@ -1,4 +1,6 @@
 // HOC Imports
+import { Toaster } from 'react-hot-toast'
+
 import RoleAuthGuard from '@/hocs/RoleAuthGuard'
 import SocketHandler from '@/socket/SocketHandler'
 import CheckPagePermissionForStatePanel from '@/views/dashboard/state/CheckPagePermissionForStatePanel'
@@ -9,6 +11,8 @@ import CheckPagePermissionForStatePanel from '@/views/dashboard/state/CheckPageP
 const Layout = async ({ children, params }) => {
   return (
     <RoleAuthGuard locale={params.lang} allowedUserRoles={['state_executive_role']}>
+      <Toaster position='top-right' />
+
       <SocketHandler />
       {/* {children} */}
       <CheckPagePermissionForStatePanel>{children}</CheckPagePermissionForStatePanel>

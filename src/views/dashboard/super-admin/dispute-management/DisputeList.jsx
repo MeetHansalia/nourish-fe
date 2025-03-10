@@ -399,7 +399,7 @@ const DisputeListManagement = props => {
             </Box>
           }
         />
-        <div className='overflow-x-auto'>
+        <div className='table-common-block overflow-x-auto'>
           <table className={tableStyles.table}>
             <thead>
               {table.getHeaderGroups().map(headerGroup => (
@@ -413,7 +413,7 @@ const DisputeListManagement = props => {
               ))}
               {isDataTableServerLoading && (
                 <tr>
-                  <td colSpan={columns?.length}>
+                  <td className="p-0" colSpan={columns?.length}>
                     <LinearProgress color='primary' sx={{ height: '2px' }} />
                   </td>
                 </tr>

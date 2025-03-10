@@ -50,6 +50,7 @@ import { useTranslation } from '@/utils/getDictionaryClient'
 import { getLocalizedUrl } from '@/utils/i18n'
 
 import { getPanelName } from '@/utils/globalFunctions'
+import IngredientsTable from '../../common/IngredientsTable'
 
 const Menu = ({ dictionary, vendorId }) => {
   const router = useRouter()
@@ -72,6 +73,13 @@ const Menu = ({ dictionary, vendorId }) => {
   const [activeId, setActiveId] = useState(null)
   const [cartData, setCartData] = useState([])
   const [dishData, setDishData] = useState([])
+  const [totalQty1, settotalQty1] = useState(1)
+  const [qty, setQty] = useState(totalQty1)
+  const [kidNutrition, setKidNutrition] = useState({})
+
+  useEffect(() => {
+    setQty(totalQty1)
+  }, [totalQty1])
 
   const userId = useSelector(state => state.profile.user?._id)
 
@@ -81,12 +89,23 @@ const Menu = ({ dictionary, vendorId }) => {
         .array()
         .of(
           yup.object().shape({
+            qty: yup
+              .number()
+              .typeError('Quantity must be a number')
+              .min(1, 'At least 1 quantity is required')
+              .required('Quantity is required'),
             name: yup.string().required(t('form.validation.modifier_name')),
+
             requireCustomerToSelectDish: yup.boolean(),
             what_the_maximum_amount_of_item_customer_can_select: yup.boolean(),
             max_selection: yup.number().nullable(),
             required_rule: yup.string().oneOf(['atleast', 'exactly', 'maximum']).required(),
             quantity: yup.number().required(t('form.validation.quantity')),
+            // qty: yup
+            //   .number()
+            //   .typeError('Quantity must be a number')
+            //   .min(1, 'At least 1 quantity is required') // Ensures minimum 1
+            //   .required('Quantity is required'),
             dishIds: yup
               .array()
               .of(
@@ -153,13 +172,17 @@ const Menu = ({ dictionary, vendorId }) => {
     handleSubmit,
     formState: { errors },
     reset,
+    setValue,
     clearErrors
   } = useForm({
     resolver: yupResolver(validationSchema(selectedDish)), // ✅ Pass selectedDish
     defaultValues: {
-      modifiers: []
+      modifiers: [],
+      qty: totalQty1
     }
   })
+
+  console.log('errors', errors)
 
   const handleOrderNow = vendorId => {
     if ((cartData?.length || 0) > 0) {
@@ -238,7 +261,8 @@ const Menu = ({ dictionary, vendorId }) => {
     }
   }
 
-  const handleDialogOpen = dish => {
+  const handleDialogOpen = (dish, totalQty) => {
+    settotalQty1(totalQty)
     setSelectedDish(dish)
     setTotalPrice(dish?.pricing)
     setValidationError(false)
@@ -316,6 +340,7 @@ const Menu = ({ dictionary, vendorId }) => {
     setValidationError(false)
     reset()
     setTotalPrice(0)
+    // setQty(0)
     setSelectedDish(null)
     setSelectedModifierIds([])
     setDialogOpen(false)
@@ -347,7 +372,7 @@ const Menu = ({ dictionary, vendorId }) => {
 
       const cartItem = {
         dishId: selectedDish._id,
-        quantity: 1,
+        quantity: qty,
         modifiers
       }
 
@@ -480,8 +505,8 @@ const Menu = ({ dictionary, vendorId }) => {
 
                         {/* Quantity buttons and field */}
                         <div className='menu-selection-block-inner-p-l flex justify-between items-center'>
-                          <Button variant='outlined' onClick={() => handleDialogOpen(dish)}>
-                            <i className='tabler-plus' />
+                          <Button variant='outlined'>
+                            <i className='tabler-minus' onClick={() => handleDecreaseDialogOpen(dish)} />
                           </Button>
 
                           {/* Qty field placed between + and - */}
@@ -496,9 +521,9 @@ const Menu = ({ dictionary, vendorId }) => {
                           <Button
                             className='border-radius-block'
                             variant='outlined'
-                            onClick={() => handleDecreaseDialogOpen(dish)}
+                            onClick={() => handleDialogOpen(dish, totalQty)}
                           >
-                            <i className='tabler-minus' />
+                            <i className='tabler-plus' />
                           </Button>
                         </div>
                       </div>
@@ -514,7 +539,6 @@ const Menu = ({ dictionary, vendorId }) => {
           </Grid>
         </CardContent>
       </Card>
-
       {selectedDish && (
         <Dialog
           className='common-modal-theme'
@@ -551,45 +575,47 @@ const Menu = ({ dictionary, vendorId }) => {
                     </Typography>
 
                     {modifier.dishIds?.map((dish, dishIndex) => (
-                      <Controller
-                        key={dish._id}
-                        name={`modifiers[${index}].dishIds[${dishIndex}].selected`}
-                        control={control}
-                        defaultValue={false}
-                        render={({ field }) => (
-                          <FormControlLabel
-                            className='label-block-modal-body'
-                            control={
-                              <Checkbox
-                                {...field}
-                                checked={field.value}
-                                onChange={e => {
-                                  const isSelected = e.target.checked
-                                  const dishPrice = parseFloat(dish.pricing) || 0
+                      <div key={dish._id} className='modifier-item'>
+                        {/* Checkbox Selection */}
+                        <Controller
+                          name={`modifiers[${index}].dishIds[${dishIndex}].selected`}
+                          control={control}
+                          defaultValue={false}
+                          render={({ field }) => (
+                            <FormControlLabel
+                              className='label-block-modal-body'
+                              control={
+                                <Checkbox
+                                  {...field}
+                                  checked={field.value}
+                                  onChange={e => {
+                                    const isSelected = e.target.checked
+                                    const dishPrice = parseFloat(dish.pricing) || 0
 
-                                  dishTotal(isSelected, dishPrice)
+                                    dishTotal(isSelected, dishPrice)
 
-                                  setSelectedModifierIds(prev => {
-                                    const updatedModifierIds = prev[modifier._id] || []
+                                    setSelectedModifierIds(prev => {
+                                      const updatedModifierIds = prev[modifier._id] || []
 
-                                    return {
-                                      ...prev,
-                                      [modifier._id]: isSelected
-                                        ? [...updatedModifierIds, { id: dish._id, name: dish.name }]
-                                        : updatedModifierIds.filter(item => item.id !== dish._id)
-                                    }
-                                  })
+                                      return {
+                                        ...prev,
+                                        [modifier._id]: isSelected
+                                          ? [...updatedModifierIds, { id: dish._id, name: dish.name }]
+                                          : updatedModifierIds.filter(item => item.id !== dish._id)
+                                      }
+                                    })
 
-                                  clearErrors(`modifiers[${index}].dishIds`)
+                                    clearErrors(`modifiers[${index}].dishIds`)
 
-                                  field.onChange(isSelected)
-                                }}
-                              />
-                            }
-                            label={`${dish.name} +$${dish.pricing ?? '0.00'}`}
-                          />
-                        )}
-                      />
+                                    field.onChange(isSelected)
+                                  }}
+                                />
+                              }
+                              label={`${dish.name} +$${dish.pricing ?? '0.00'}`}
+                            />
+                          )}
+                        />
+                      </div>
                     ))}
 
                     {errors.modifiers?.[index]?.dishIds && (
@@ -597,14 +623,45 @@ const Menu = ({ dictionary, vendorId }) => {
                     )}
                   </div>
                 ))}
+
+                {/* Chart Section */}
                 <div className='block-chart-common flex align-center justify-between'>
                   <div className='block-chart-inner' style={{ width: 200, height: 200 }}>
-                    <SpeedometerChart />
+                    <SpeedometerChart totalNutrition={selectedDish?.calculatedNutrition} kidNutrition={kidNutrition} />
                   </div>
                 </div>
+                <div className='block-chart-table-in'>
+                  <IngredientsTable
+                    ingredientsData={selectedDish?.ingredients}
+                    selectedDish={selectedDish}
+                    dictionary={dictionary}
+                  />
+                </div>
+                <TextField
+                  type='number'
+                  inputProps={{ min: 1 }}
+                  value={qty}
+                  onChange={e => {
+                    let newQty = e.target.value === '' ? '' : parseInt(e.target.value, 10)
+
+                    if (newQty === '' || (!isNaN(newQty) && newQty > 0)) {
+                      setQty(newQty)
+                    }
+                  }}
+                  onBlur={() => {
+                    if (qty === '' || qty <= 0) {
+                      setQty(totalQty1)
+                    }
+                  }}
+                  label='Quantity'
+                  variant='outlined'
+                  size='small'
+                  className='quantity-input mt-3'
+                />
+
                 <div className='modal-footer'>
                   <Typography variant='h6' color='textSecondary' className='title-small-medium-custom'>
-                    {dictionary?.meal?.total_price}: ${totalPrice.toFixed(2)}
+                    {dictionary?.meal?.total_price}: ${totalPrice ? totalPrice.toFixed(2) : '0.00'}
                   </Typography>
 
                   <div className='text-center'>

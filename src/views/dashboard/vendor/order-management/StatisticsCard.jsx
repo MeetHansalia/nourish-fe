@@ -7,7 +7,7 @@ import Link from 'next/link'
 import { useParams, usePathname } from 'next/navigation'
 
 // MUI Imports
-import { Card, CardContent, Grid, Typography } from '@mui/material'
+import { Card, CardContent, CircularProgress, Grid, Typography } from '@mui/material'
 
 // Core Component Imports
 import CustomAvatar from '@/@core/components/mui/Avatar'
@@ -26,7 +26,7 @@ import { getPanelName, toastError } from '@/utils/globalFunctions'
  */
 const Statistics = props => {
   // Props
-  const { dictionary = null, title, link, count } = props
+  const { dictionary = null, title, link, count, totalCount } = props
 
   // HOOKS
   const { lang: locale } = useParams()
@@ -47,13 +47,13 @@ const Statistics = props => {
             </CustomAvatar>
             <Typography variant='h4'>{title}</Typography>
             <Typography variant='body2' color='text.disabled'>
-              Last Week
+              {dictionary?.page?.user_managemnt?.suspended_account}
             </Typography>
           </div>
           <div className='flex flex-col gap-1'>
             <div className='flex items-center gap-2'>
               <Typography color='text.primary' className='font-bold text-3xl'>
-                {numberFormat(count)}
+                {totalCount ? numberFormat(count) : <CircularProgress size={20} />}
               </Typography>
             </div>
           </div>

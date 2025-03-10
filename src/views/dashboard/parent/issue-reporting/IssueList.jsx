@@ -41,7 +41,8 @@ import {
   LinearProgress,
   TablePagination,
   Grid,
-  Box
+  Box,
+  IconButton
 } from '@mui/material'
 
 // View Imports
@@ -188,26 +189,27 @@ const IssueListManagement = props => {
         header: `${dictionary?.datatable?.column?.issue_description}`
       }),
       columnHelper.accessor('createdAt', {
-        header: `${dictionary?.datatable?.column?.issue_raise}`,
+        header: `${dictionary?.form?.label?.date}`,
+
         cell: ({ getValue }) => {
           const rawDate = getValue()
 
           return rawDate ? format(new Date(rawDate), 'dd MMM yyyy, hh:mm aa') : '-'
         }
       }),
+      columnHelper.accessor('status', {
+        header: `${dictionary?.form?.label?.verification_status}`
+      }),
       columnHelper.accessor('viewDetails', {
         header: `${dictionary?.datatable?.column?.view}`,
         cell: ({ row }) => (
-          <Box display='flex' alignItems='center' justifyContent='center' style={{ width: '50%', height: '40px' }}>
-            <img
-              src='/images/nourishubs/front/eye.png'
-              alt='view-icon'
-              style={{ width: '30px', height: '30px' }}
-              onClick={() => {
-                handleIssueDetails(row.original)
-              }}
-            />
-          </Box>
+          <IconButton
+            onClick={() => {
+              handleIssueDetails(row.original)
+            }}
+          >
+            <i className='tabler-eye' />
+          </IconButton>
         )
       })
     ]

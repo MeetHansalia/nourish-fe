@@ -20,30 +20,54 @@ import { Chip } from '@mui/material'
 
 import { getSingleDate } from '@/redux-store/slices/dateSlice'
 
-const Calendar = ({ events, onEventClick, setSelectedVendor, setCalStartDate, setCalEndDate }) => {
+const Calendar = ({
+  events,
+  onEventClick,
+  setSelectedVendor,
+  setCalStartDate,
+  setCalEndDate,
+  orderTypeValue,
+  onDateSelect
+}) => {
   const [eventData, setEventData] = useState([])
+  const [selectedDates, setSelectedDates] = useState([])
 
   useEffect(() => {
     if (events.length > 0) {
       const eventsDa = events.map((item, index) => ({
-        title: item.vendorId?.first_name || 'Unknown',
+        title: item.vendorId?.companyName || 'N/A',
         id: index + 1,
         start: item.date,
         vendorId: item.vendorId?._id || 'N/A'
       }))
 
-      setEventData(eventsDa)
+      // Add selected dates as "highlighted" events
+      const selectedDateEvents = selectedDates.map(date => ({
+        title: '',
+        id: `selected-${date}`,
+        start: date,
+        display: 'background', // ✅ Highlights full day
+        backgroundColor: '#1976d2', // ✅ Blue color for selection
+        borderColor: '#1976d2'
+      }))
+
+      setEventData([...eventsDa, ...selectedDateEvents])
     }
-  }, [events])
+  }, [events, selectedDates])
 
   const dispatch = useDispatch()
   const [selectedDate, setSelectedDate] = useState(null)
 
   const handleDateClick = info => {
-    const clickedDate = format(info.date, 'yyyy-MM-dd')
+    if (orderTypeValue === 'multiple') {
+      const clickedDate = format(info.date, 'yyyy-MM-dd')
 
-    setSelectedDate(clickedDate)
-    dispatch(getSingleDate(clickedDate))
+      setSelectedDates(prevDates => {
+        return prevDates.includes(clickedDate)
+          ? prevDates.filter(date => date !== clickedDate) // Remove if already selected
+          : [...prevDates, clickedDate] // Add new date
+      })
+    }
   }
 
   const theme = useTheme()
@@ -67,6 +91,12 @@ const Calendar = ({ events, onEventClick, setSelectedVendor, setCalStartDate, se
     end: addDays(startOfToday(), 22)
   }
 
+  const handleSelect = selectionInfo => {
+    if (onDateSelect) {
+      onDateSelect(selectionInfo) // ✅ Calls parent function
+    }
+  }
+
   const calendarOptions = {
     plugins: [dayGridPlugin, listPlugin, timeGridPlugin, interactionPlugin],
     initialView: 'dayGridMonth',
@@ -76,13 +106,14 @@ const Calendar = ({ events, onEventClick, setSelectedVendor, setCalStartDate, se
     },
     events: eventData,
     editable: true,
-    selectable: true,
+    selectable: orderTypeValue === 'multiple', // ✅ Disables selecting single or multiple days when 'single'
+    select: orderTypeValue === 'multiple' ? handleSelect : null,
+    dateClick: handleDateClick, // ✅ No selection in 'single' mode
     eventClick: ({ event }) => {
       if (onEventClick) {
         onEventClick(event)
       }
     },
-    dateClick: handleDateClick,
     eventContent: renderEventContent,
     height: 'auto',
     dayMaxEvents: false,
@@ -109,14 +140,16 @@ const Calendar = ({ events, onEventClick, setSelectedVendor, setCalStartDate, se
     return (
       <div className='calender-flow'>
         <div className='calender-flow-name'>{eventInfo.event.title}</div>
-        <Chip
-          // className='theme-common-btn'
-          label='Order Now'
-          color='success'
-          size='small'
-          // style={{ marginTop: '5px', cursor: 'pointer' }}
-          onClick={() => handleOrderNow(eventInfo)}
-        />
+        {orderTypeValue === 'single' && (
+          <Chip
+            // className='theme-common-btn'
+            label='Order Now'
+            color='success'
+            size='small'
+            // style={{ marginTop: '5px', cursor: 'pointer' }}
+            onClick={() => handleOrderNow(eventInfo)}
+          />
+        )}
       </div>
     )
   }

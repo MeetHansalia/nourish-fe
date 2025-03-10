@@ -1,75 +1,32 @@
 'use client'
 
 // React Imports
-import { useEffect, useMemo, useRef, useState } from 'react'
-
-// Next Imports
-import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 
 // Third-party Imports
 
 import { yupResolver } from '@hookform/resolvers/yup'
-import { isCancel } from 'axios'
 import { Controller, useForm } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
 import * as yup from 'yup'
 
 // MUI Imports
-
-import { t } from 'i18next'
-
 import { Button, Card, CardHeader, CircularProgress, Grid, MenuItem, TextareaAutosize, Typography } from '@mui/material'
 
-// MUI Imports
-
 // Component Imports
-import { apiBaseUrl } from 'next-auth/client/_utils'
-
-import { getServerSession } from 'next-auth'
-
-import { set } from 'date-fns'
-
 import CustomTextField from '@/@core/components/mui/TextField'
 
-import { authOptions } from '@/libs/auth'
-
-// Util Imports
-
-import axiosApiCall from '@/utils/axiosApiCall'
-
-import {
-  apiResponseErrorHandling,
-  isVariableAnObject,
-  setFormFieldsErrors,
-  toastError,
-  toastSuccess
-} from '@/utils/globalFunctions'
-
-import AppReactDatepicker from '@/libs/styles/AppReactDatepicker'
-
 import primaryColorConfig from '@/configs/primaryColorConfig'
-
-import theme from '@/@core/theme'
-import { API_ROUTER } from '@/utils/apiRoutes'
-import { USER_PANELS } from '@/utils/constants'
 
 //redux
 /**
  * Page
  */
 
-const DisputeForm = ({ dictionary, kidData, staticIssues, refreshData, role }) => {
-  const router = useRouter()
-  const dispatch = useDispatch()
-  const pageFormRef = useRef(null)
-
+const DisputeForm = ({ dictionary, role }) => {
   // states
   const [isFormSubmitLoading, setIsFormSubmitLoading] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
-
-  const [selectedDate, setSelectedDate] = useState('')
-
-  console.log('role', role)
 
   /**
    * Form Validation Schema
@@ -94,43 +51,21 @@ const DisputeForm = ({ dictionary, kidData, staticIssues, refreshData, role }) =
     register,
     handleSubmit,
     formState: { errors },
-    reset,
-    setValue,
-    setError
+    reset
   } = useForm({
     resolver: yupResolver(formValidationSchema),
     defaultValues: formDefaultValues,
     context: { role }
   })
 
-  // Simulated dropdown data
-  const disputerOptions = [
-    { _id: '1', first_name: 'John', last_name: 'Doe' },
-    { _id: '2', first_name: 'Jane', last_name: 'Smith' }
-  ]
-
-  const disputeRaisedOptions = [
-    { _id: '1', name: 'Authority 1' },
-    { _id: '2', name: 'Authority 2' }
-  ]
-
   const onSubmit = data => {
     setIsSubmitting(true)
-    console.log('Form Data:', data)
-
     reset()
   }
 
   const handleCancel = () => {
     reset()
   }
-
-  //   const handleKidChange = event => {
-  //     console.log('event: ', event?.target?.value)
-  //     setSelectedDate('')
-  //     setValue('date', '')
-  //     getAvailableDates(event?.target?.value)
-  //   }
 
   return (
     <Card style={{ marginTop: '16px' }}>

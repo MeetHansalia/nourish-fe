@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from 'react'
 
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, IconButton, Typography, Box } from '@mui/material'
-import CloseIcon from '@mui/icons-material/Close'
 
 import { getSession } from 'next-auth/react'
 
@@ -131,23 +130,27 @@ const DisputeDetailsDialog = ({
         </Box>
       </DialogContent>
       <DialogActions sx={{ justifyContent: 'center', paddingBottom: '16px' }}>
-        {role !== 'parent_role' && role !== 'teacher_role' && role !== 'vendor_role' && (
-          <Button
-            variant='contained'
-            sx={{
-              backgroundColor: primaryColorConfig[5]?.main,
-              color: '#fff',
-              '&:hover': { backgroundColor: primaryColorConfig[5]?.light },
-              width: '120px'
-            }}
-            onClick={() => {
-              onOpenDispute()
-              onClose()
-            }}
-          >
-            {dictionary?.form?.button?.warning}
-          </Button>
-        )}
+        {role == 'super_admin_role' ||
+          role == 'admin_role' ||
+          role == 'state_executive_role' ||
+          role == 'district_executive_role' ||
+          (role == 'area_executive_role' && (
+            <Button
+              variant='contained'
+              sx={{
+                backgroundColor: primaryColorConfig[5]?.main,
+                color: '#fff',
+                '&:hover': { backgroundColor: primaryColorConfig[5]?.light },
+                width: '120px'
+              }}
+              onClick={() => {
+                onOpenDispute()
+                onClose()
+              }}
+            >
+              {dictionary?.form?.button?.warning}
+            </Button>
+          ))}
         <Button
           variant='contained'
           sx={{

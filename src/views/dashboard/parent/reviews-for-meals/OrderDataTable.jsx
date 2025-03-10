@@ -184,23 +184,28 @@ const OrderDataTable = props => {
           return mealDetails
         }
       }),
-      columnHelper.accessor('Actions', {
-        header: `${dictionary?.datatable?.column?.actions}`,
+      columnHelper.accessor('Status', {
+        header: `${dictionary?.datatable?.column?.status}`,
+        enableSorting: false,
+
         cell: ({ row }) => {
           const isReviewed = row.original.isReviewed
 
           return (
             <>
-              <Button
-                variant={isReviewed ? 'contained' : 'customLight'}
-                color='primary'
-                disabled={isLoading}
-                onClick={() => handelReviewModal(row.original)}
-                sx={{ minWidth: 90 }}
-              >
-                {isReviewed ? dictionary?.datatable?.button?.done : dictionary?.datatable?.button?.review}
-                {/* {isLoading && <CircularProgress className='ml-1' size={20} sx={{ color: 'white' }} />} */}
-              </Button>
+              {isReviewed ? (
+                <Typography sx={{ color: 'primary.main', fontWeight: 'bold' }}>
+                  {dictionary?.common?.completed}
+                </Typography>
+              ) : (
+                <Typography
+                  className='cursor-pointer'
+                  sx={{ color: '#FFC107', fontWeight: 'bold' }}
+                  onClick={() => handelReviewModal(row.original)}
+                >
+                  {dictionary?.common?.pending}
+                </Typography>
+              )}
             </>
           )
         }
@@ -366,8 +371,8 @@ const OrderDataTable = props => {
                     <em>{dictionary?.form?.label?.all}</em>
                   </MenuItem>
                   {[
-                    { value: 'true', label: dictionary?.form?.label?.true },
-                    { value: 'false', label: dictionary?.form?.label?.false }
+                    { value: 'true', label: dictionary?.form?.label?.done },
+                    { value: 'false', label: dictionary?.form?.label?.review }
                   ].map(item => (
                     <MenuItem value={item?.value} key={item?.value}>
                       {item?.label}

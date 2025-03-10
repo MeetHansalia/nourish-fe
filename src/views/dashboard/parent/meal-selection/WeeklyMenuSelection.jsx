@@ -48,6 +48,7 @@ import { useTranslation } from '@/utils/getDictionaryClient'
 import { getLocalizedUrl } from '@/utils/i18n'
 import { getPanelName } from '@/utils/globalFunctions'
 import TruncatedTextWithModal from '@/components/TruncatedTextWithModal'
+import IngredientsTable from '../../common/IngredientsTable'
 
 const WeeklyMenuSelection = ({ dictionary, kidId }) => {
   console.log('🚀 ~ WeeklyMenuSelection ~ kidId:', kidId)
@@ -73,6 +74,7 @@ const WeeklyMenuSelection = ({ dictionary, kidId }) => {
   const [fetchAllDishes, setFetchAllDishes] = useState({})
   const [vendorId, setVendorId] = useState(null)
   const [currentDate, setCurrentDate] = useState(null)
+  const [kidNutrition, setKidNutrition] = useState({})
 
   const [selectedDay, setSelectedDay] = useState(0)
   const [activeId, setActiveId] = useState(null)
@@ -376,6 +378,33 @@ const WeeklyMenuSelection = ({ dictionary, kidId }) => {
   useEffect(() => {
     if (kidId) {
       fetchLatestCartDetails(kidId)
+
+      const fetchData = async () => {
+        try {
+          const kidResponse = await axiosApiCall.get(API_ROUTER.PARENT.GET_KID_DASHBOARD(kidId))
+
+          setIsDataLoaded(true)
+          setKidNutrition(
+            kidResponse?.data?.response?.userData?.nutrition
+              ? kidResponse?.data?.response?.userData.nutrition
+              : {
+                  fat: 0,
+                  sugar: 0,
+                  protein: 0,
+                  sodium: 0,
+                  carbohydrate: 0
+                }
+          )
+        } catch (error) {
+          const errorMessage = apiResponseErrorHandling(error)
+
+          toastError(errorMessage)
+        } finally {
+          setIsDataLoaded(false)
+        }
+      }
+
+      fetchData()
     }
   }, [kidId])
 
@@ -458,6 +487,9 @@ const WeeklyMenuSelection = ({ dictionary, kidId }) => {
       <div className='common-block-dashboard p-0'>
         <div className='common-form-dashboard  border-0 flex justify-between items-center'>
           <Typography variant='h5' className='font-medium'>
+            <Button variant='contained' onClick={() => router.back()}>
+              {dictionary?.form?.button?.back}
+            </Button>
             {dictionary?.common?.weekly_menu_selection}
           </Typography>
           <div className='flex items-center gap-4'>
@@ -531,6 +563,7 @@ const WeeklyMenuSelection = ({ dictionary, kidId }) => {
       </div>
 
       {/* Dishes */}
+
       <Card className='menu-selection-block'>
         <CardContent className='p-0'>
           <Grid container spacing={6}>
@@ -566,11 +599,15 @@ const WeeklyMenuSelection = ({ dictionary, kidId }) => {
                 const cartId = matchingCart.cartId
 
                 return (
-                  <Grid item xs={12} sm={6} md={6} key={dish._id}>
-                    <div className='menu-selection-block-inner  flex gap-2 relative cursor-pointer'>
-                      <div className='menu-selection-block-inner-content'>
+                  <Grid item xs={12} sm={6} md={6} key={`${dish._id}-${totalQty}`}>
+                    <div className='menu-selection-block-inner flex gap-2 relative cursor-pointer'>
+                      {/* Entire Card click */}
+                      <div
+                        className='menu-selection-block-inner-content'
+                        onClick={() => handleDialogOpen(dish)} // Trigger popup on card click
+                      >
                         <Typography className='title-medium-custom'>{dish.name}</Typography>
-                        {/* <Typography className='disc-common-custom-small'>{dish.description}</Typography> */}
+
                         <TruncatedTextWithModal
                           id={dish._id}
                           title={dish.name}
@@ -581,6 +618,7 @@ const WeeklyMenuSelection = ({ dictionary, kidId }) => {
                         />
                         <Typography className='title-medium-custom theme-color'>${dish.pricing}</Typography>
                       </div>
+
                       <div className='menu-selection-block-inner-img'>
                         <Tooltip title={`Ingredients: ${dish.ingredients.map(ing => ing.name).join(', ')}`} arrow>
                           <img
@@ -589,27 +627,31 @@ const WeeklyMenuSelection = ({ dictionary, kidId }) => {
                             className='object-cover rounded-lg'
                           />
                         </Tooltip>
-                        {/* Quantity buttons and field */}
+
                         <div className='menu-selection-block-inner-p-l flex justify-between items-center'>
-                          <Button variant='outlined' onClick={() => handleDialogOpen(dish)}>
-                            <i className='tabler-plus' />
-                          </Button>
-
-                          {/* Display totalQty instead of static '1' */}
-                          <TextField
-                            value={totalQty}
-                            InputProps={{ readOnly: true }} // Non-editable qty field
-                            className='text-center' // Center align qty
-                            variant='outlined'
-                            size='small'
-                          />
-
+                          {/* + Button: Trigger popup without opening card */}
                           <Button
-                            className='border-radius-block'
                             variant='outlined'
-                            onClick={() => handleDecreaseDialogOpen(dish, cartId)}
+                            onClick={e => {
+                              e.stopPropagation() // Prevent the click event from reaching the card
+                              handleDecreaseDialogOpen(dish) // Open decrease popup for the specific dish
+                            }}
                           >
                             <i className='tabler-minus' />
+                          </Button>
+
+                          <TextField value={totalQty} InputProps={{ readOnly: true }} variant='outlined' size='small' />
+
+                          {/* - Button: Trigger decrease dialog */}
+                          <Button
+                            variant='outlined'
+                            className='border-radius-block'
+                            onClick={e => {
+                              e.stopPropagation() // Prevent the click event from reaching the card
+                              handleDialogOpen(dish, cartId) // Open popup for the specific dish
+                            }}
+                          >
+                            <i className='tabler-plus' />
                           </Button>
                         </div>
                       </div>
@@ -715,8 +757,15 @@ const WeeklyMenuSelection = ({ dictionary, kidId }) => {
                 ))}
                 <div className='block-chart-common flex align-center justify-between'>
                   <div className='block-chart-inner' style={{ width: 200, height: 200 }}>
-                    <SpeedometerChart />
+                    <SpeedometerChart totalNutrition={selectedDish?.calculatedNutrition} kidNutrition={kidNutrition} />
                   </div>
+                </div>
+                <div className='block-chart-table-in'>
+                  <IngredientsTable
+                    ingredientsData={selectedDish?.ingredients}
+                    selectedDish={selectedDish}
+                    dictionary={dictionary}
+                  />
                 </div>
                 <div className='modal-footer'>
                   <Typography variant='h6' color='textSecondary' className='title-small-medium-custom'>

@@ -35,7 +35,8 @@ const ProfileManagement = ({ dictionary }) => {
   // states
   const [userData, setUserData] = useState()
   const [isUserDataLoading, setIsUserDataLoading] = useState(true)
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null)
+  const [selectedAvatar, setSelectedAvatar] = useState(null)
 
   useEffect(() => {
     axiosApiCall
@@ -60,10 +61,22 @@ const ProfileManagement = ({ dictionary }) => {
       {userData ? (
         <Grid container spacing={6}>
           <Grid item xs={12} sm={12} md={4} lg={4}>
-            <Details dictionary={dictionary} userData={userData} setSelectedFile={setSelectedFile} />
+            <Details
+              dictionary={dictionary}
+              userData={userData}
+              setSelectedFile={setSelectedFile}
+              setSelectedAvatar={setSelectedAvatar}
+              selectedAvatar={selectedAvatar}
+            />
           </Grid>
-          <Grid item xs={12} sm={12} md={8} lg={8}>
-            <EditDetails dictionary={dictionary} userData={userData} setUserData={setUserData} selectedFile={selectedFile} />
+          <Grid item xs={12} sm={12} md={8} lg={8} key={selectedAvatar}>
+            <EditDetails
+              dictionary={dictionary}
+              userData={userData}
+              setUserData={setUserData}
+              selectedFile={selectedFile}
+              selectedAvatar={selectedAvatar}
+            />
           </Grid>
         </Grid>
       ) : isUserDataLoading ? (

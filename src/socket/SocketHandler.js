@@ -5,6 +5,8 @@ import { useEffect } from 'react'
 import { getSession } from 'next-auth/react'
 import { io } from 'socket.io-client'
 import { useSelector, useDispatch } from 'react-redux'
+import toast from 'react-hot-toast'
+
 
 import {
   reviewDialogState,
@@ -61,10 +63,89 @@ const SocketHandler = () => {
         })
 
         socket.on('orderCompletedByVendor', data => {
-          console.log('data orderCompletedByVendor')
           dispatch(setIsDialogFromDeliveryPage(true))
           dispatch(setDialogData(data))
         })
+
+        socket.on('orderCancelRequest', message => {
+          toast.success(`Vendor Alert: ${message.title}`)
+        })
+
+        socket.on('orderCreated', message => {
+          // dispatch(setNotificationCount(1))
+          toast.success(`${message.title}`, {
+            duration: 50000
+          })
+        })
+
+        socket.on('suspendVendor', message => {
+          toast.error(`Vendor Alert: ${message.title}`, {
+            duration: 50000
+          })
+        })
+
+        socket.on('userSuspended', message => {
+          toast.error(`${message.title}`, {
+            duration: 50000
+          })
+        })
+        socket.on('requestStatus', message => {
+          toast.success(`${message.title}`, {
+            duration: 50000
+          })
+        })
+        socket.on('schoolDocumentRequest', message => {
+          toast.info(`${message.title}`, {
+            duration: 50000
+          })
+        })
+        socket.on('statusUpdated', message => {
+          toast.success(`${message.title}`, {
+            duration: 50000
+          })
+        })
+        socket.on('newKidRequest', message => {
+          toast.success(`${message.title}`, {
+            duration: 50000
+          })
+        })
+
+        socket.on('orderDeliveryRejected', message => {
+          toast.error(`${message.title}`, {
+            duration: 50000
+          })
+        })
+        socket.on('thresholdRequest', message => {
+          toast.success(`${message.title}`, {
+            duration: 50000
+          })
+        })
+        socket.on('documentRequestStatus', message => {
+          toast.success(`${message.title}`, {
+            duration: 50000
+          })
+        })
+        socket.on('thresholdRequestStatus', message => {
+          toast.success(`${message.title}`, {
+            duration: 50000
+          })
+        })
+        socket.on('disputeRaised', message => {
+          toast.success(`${message.title}`, {
+            duration: 50000
+          })
+        })
+        socket.on('disputeRespond', message => {
+          toast.success(`${message.title}`, {
+            duration: 50000
+          })
+        })
+        socket.on('createNewIssue', message => {
+          toast.success(`${message.title}`, {
+            duration: 50000
+          })
+        })
+
       } else {
       }
     } catch (error) { }

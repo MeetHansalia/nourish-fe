@@ -95,6 +95,7 @@ const VerticalMenuAdmin = ({ dictionary, userRole, userPanel }) => {
         icon={<i className='tabler-clipboard-text' />}
         activeUrl={`/${locale}/${userPanel}/vendor-management`}
         exactMatch={false}
+        className={isUserHasPermissionNavigation?.user_management ? '' : 'hidden'}
       >
         {dictionary['navigation'].vendor_management}
       </MenuItem>
@@ -121,14 +122,6 @@ const VerticalMenuAdmin = ({ dictionary, userRole, userPanel }) => {
         exactMatch={false}
       >
         {dictionary['navigation'].menu_nutrition_manage}
-      </MenuItem>
-      <MenuItem
-        href={disputeResolutionPath}
-        icon={<i className='tabler-info-circle' />}
-        activeUrl={disputeResolutionPath}
-        exactMatch={false}
-      >
-        {dictionary['navigation'].dispute_resolution}
       </MenuItem>
       <MenuItem href={`/${locale}/${userPanel}/order-reviews`} icon={<i className='tabler-star' />}>
         {dictionary['navigation'].review}

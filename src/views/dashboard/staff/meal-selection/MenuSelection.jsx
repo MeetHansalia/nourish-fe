@@ -380,6 +380,9 @@ const Menu = ({ dictionary, vendorId }) => {
     <div className='multi-order-custom'>
       <div className='common-block-dashboard p-0'>
         <div className='common-form-dashboard flex justify-between items-center'>
+          <Button variant='contained' onClick={() => router.back()}>
+            {dictionary?.form?.button?.back}
+          </Button>
           <Typography variant='h5' className='font-bold'>
             {dictionary?.common?.menu}
           </Typography>
@@ -487,8 +490,8 @@ const Menu = ({ dictionary, vendorId }) => {
 
                         {/* Quantity buttons and field */}
                         <div className='menu-selection-block-inner-p-l flex justify-between items-center'>
-                          <Button variant='outlined' onClick={() => handleDialogOpen(dish)}>
-                            <i className='tabler-plus' />
+                          <Button variant='outlined' onClick={() => handleDecreaseDialogOpen(dish)}>
+                            <i className='tabler-minus' />
                           </Button>
 
                           {/* Qty field placed between + and - */}
@@ -503,9 +506,9 @@ const Menu = ({ dictionary, vendorId }) => {
                           <Button
                             className='border-radius-block'
                             variant='outlined'
-                            onClick={() => handleDecreaseDialogOpen(dish)}
+                            onClick={() => handleDialogOpen(dish)}
                           >
-                            <i className='tabler-minus' />
+                            <i className='tabler-plus' />
                           </Button>
                         </div>
                       </div>

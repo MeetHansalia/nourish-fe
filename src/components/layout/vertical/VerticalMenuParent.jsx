@@ -65,14 +65,14 @@ const VerticalMenuSuperAdmin = ({ dictionary, userRole, userPanel }) => {
         {dictionary['navigation'].dashboard}
       </MenuItem>
 
-      <MenuItem
+      {/* <MenuItem
         href={parentProfilePath}
         activeUrl={parentProfilePath}
         exactMatch={false}
         icon={<i className='tabler-user-cog' />}
       >
         {dictionary['navigation'].parents_profile}
-      </MenuItem>
+      </MenuItem> */}
 
       <MenuItem
         href={kidProfilePath}

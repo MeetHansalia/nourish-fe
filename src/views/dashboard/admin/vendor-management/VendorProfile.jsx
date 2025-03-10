@@ -1,9 +1,11 @@
 'use client'
 
 // React Imports
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 
 import { useRouter } from 'next/navigation'
+
+import { useSelector } from 'react-redux'
 
 // MUI Imports
 import {
@@ -26,13 +28,8 @@ import {
 // Utils Imports
 import { isCancel } from 'axios'
 
-import axiosApiCall from '@/utils/axiosApiCall'
-import { API_ROUTER } from '@/utils/apiRoutes'
-// import { actionConfirmWithLoaderAlert, successAlert } from '@/utils/globalFunctions'
-
-// Component Imports
-import CustomAvatar from '@core/components/mui/Avatar'
 import {
+  isUserHasPermission,
   apiResponseErrorHandling,
   getFullName,
   isVariableAnObject,
@@ -40,19 +37,39 @@ import {
   toastError,
   toastSuccess
 } from '@/utils/globalFunctions'
+
+import axiosApiCall from '@/utils/axiosApiCall'
+import { API_ROUTER } from '@/utils/apiRoutes'
+// import { actionConfirmWithLoaderAlert, successAlert } from '@/utils/globalFunctions'
+
+// Component Imports
+import CustomAvatar from '@core/components/mui/Avatar'
 import { getInitials } from '@/utils/getInitials'
 import { titleize } from '@/utils/globalFilters'
+import { profileState } from '@/redux-store/slices/profile'
 
 const VendorProfile = props => {
   const { dictionary = null, id } = props
 
   const router = useRouter()
-
+  const { user = null } = useSelector(profileState)
   const [userData, setUserData] = useState()
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [reason, setReason] = useState('')
   const [isLoading, setIsLoading] = useState(true)
   const [isSuspendLoading, setIsSuspendLoading] = useState(false)
+
+  // Vars
+  const isUserHasPermissionSections = useMemo(
+    () => ({
+      suspend_users: isUserHasPermission({
+        permissions: user?.permissions,
+        permissionToCheck: 'user_management',
+        subPermissionsToCheck: ['suspend_users']
+      })
+    }),
+    [user?.permissions]
+  )
 
   // Get vendor details api call
   const getSpecificVendoDetail = async id => {
@@ -109,9 +126,11 @@ const VendorProfile = props => {
       <CardHeader
         title={dictionary?.page?.vendor_profile?.title}
         action={
-          <Button variant='contained' onClick={() => setIsDialogOpen(true)} disabled={isLoading}>
-            {dictionary?.page?.vendor_profile?.button_title}
-          </Button>
+          isUserHasPermissionSections?.suspend_users ? (
+            <Button variant='contained' onClick={() => setIsDialogOpen(true)} disabled={isLoading}>
+              {dictionary?.page?.vendor_profile?.button_title}
+            </Button>
+          ) : null
         }
       />
       <Divider />

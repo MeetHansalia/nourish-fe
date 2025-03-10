@@ -68,6 +68,7 @@ import DebouncedInput from '@/components/nourishubs/DebouncedInput'
 
 // Redux Imports
 import { profileState } from '@/redux-store/slices/profile'
+import StatusLabel from '@/components/theme/getStatusColours'
 
 const FoodChartCreationTable = ({ dictionary }) => {
   const { lang: locale } = useParams()
@@ -221,26 +222,61 @@ const FoodChartCreationTable = ({ dictionary }) => {
         minSize: 20,
         enableSorting: false
       }),
-      columnHelper.accessor('status', {
+      // columnHelper.accessor('status', {
+      //   header: `${dictionary?.datatable?.column?.status}`,
+      //   cell: ({ row }) => {
+      //     return (
+      //       <Button
+      //         variant={row?.original?.status === 'Approved' ? 'customLight' : 'contained'}
+      //         onClick={() => {
+      //           if (row?.original?.status !== 'Approved') {
+      //             handleStatusChange(row?.original?.schoolAdminId, row?.original?.groupId)
+      //           }
+      //         }}
+      //         // disabled={row?.original?.status === 'Approved'}
+      //       >
+      //         {row?.original?.status}
+      //       </Button>
+      //     )
+      //   },
+      //   size: 10,
+      //   minSize: 20,
+      //   enableSorting: false
+      // })
+      columnHelper.accessor('Status', {
         header: `${dictionary?.datatable?.column?.status}`,
+        enableSorting: false,
+        cell: ({ row }) => {
+          const orderStatus = row?.original?.status
+
+          return (
+            <>
+              <StatusLabel status={orderStatus} />
+            </>
+          )
+        }
+      }),
+      columnHelper.accessor('Actions', {
+        header: `${dictionary?.datatable?.column?.actions}`,
+        enableSorting: false,
         cell: ({ row }) => {
           return (
-            <Button
-              variant={row?.original?.status === 'Approved' ? 'customLight' : 'contained'}
-              onClick={() => {
-                if (row?.original?.status !== 'Approved') {
-                  handleStatusChange(row?.original?.schoolAdminId, row?.original?.groupId)
-                }
-              }}
-              // disabled={row?.original?.status === 'Approved'}
-            >
-              {row?.original?.status}
-            </Button>
+            <>
+              {row?.original?.status === 'Pending' ? (
+                <Button
+                  variant='contained'
+                  onClick={() => {
+                    handleStatusChange(row?.original?.schoolAdminId, row?.original?.groupId)
+                  }}
+                >
+                  {row?.original?.status}
+                </Button>
+              ) : (
+                ''
+              )}
+            </>
           )
-        },
-        size: 10,
-        minSize: 20,
-        enableSorting: false
+        }
       })
     ],
     [dictionary, data]

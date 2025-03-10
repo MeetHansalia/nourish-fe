@@ -58,18 +58,10 @@ import { USER_PANELS } from '@/utils/constants'
  * Page
  */
 
-const DisputeForm = ({ dictionary, kidData, staticIssues, refreshData, role }) => {
-  const router = useRouter()
-  const dispatch = useDispatch()
-  const pageFormRef = useRef(null)
-
+const DisputeForm = ({ dictionary, role }) => {
   // states
   const [isFormSubmitLoading, setIsFormSubmitLoading] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
-
-  const [selectedDate, setSelectedDate] = useState('')
-
-  console.log('role', role)
 
   /**
    * Form Validation Schema

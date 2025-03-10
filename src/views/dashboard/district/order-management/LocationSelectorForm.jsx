@@ -140,9 +140,15 @@ const LocationSelectorForm = ({
     <Card sx={{ fontFamily: 'Mulish, sans-serif' }}>
       {showButton && (
         <CardHeader
+          className='common-block-title p-0'
           title={dictionary?.page?.meal_details?.meal_monitoring}
           action={
-            <Button variant='contained' sx={{ bgcolor: 'green', color: 'white' }} onClick={() => handleClick()}>
+            <Button
+              className='theme-common-btn theme-btn-color'
+              variant='contained'
+              sx={{ bgcolor: 'green', color: 'white' }}
+              onClick={() => handleClick()}
+            >
               {dictionary?.form?.button?.submit}
             </Button>
           }
@@ -151,48 +157,50 @@ const LocationSelectorForm = ({
       <CardContent>
         <Grid container spacing={spacing}>
           <Grid item lg={lg} md={6} sm={12}>
-            <Typography variant='subtitle1' sx={{ mb: 2 }}>
-              {dictionary?.form?.label?.school}
-            </Typography>
-            <CustomAutocomplete
-              fullWidth
-              options={schools}
-              value={selectedData?.school}
-              getOptionLabel={option => option?.schoolName || ''}
-              renderInput={params => (
-                <CustomTextField
-                  {...params}
-                  placeholder={t(`Select school`)}
-                  InputProps={{
-                    ...params.InputProps,
-                    endAdornment: (
-                      <>
-                        {isGetSchoolListLoading ? <CircularProgress color='inherit' size={20} /> : null}
-                        {params.InputProps.endAdornment}
-                      </>
-                    )
-                  }}
-                />
-              )}
-              onChange={(_, data) => {
-                console.log(data?._id)
+            <div className='form-group'>
+              <Typography variant='subtitle1' sx={{ mb: 2 }}>
+                {dictionary?.form?.label?.school}
+              </Typography>
+              <CustomAutocomplete
+                fullWidth
+                options={schools}
+                value={selectedData?.school}
+                getOptionLabel={option => option?.schoolName || ''}
+                renderInput={params => (
+                  <CustomTextField
+                    {...params}
+                    placeholder={t(`Select school`)}
+                    InputProps={{
+                      ...params.InputProps,
+                      endAdornment: (
+                        <>
+                          {isGetSchoolListLoading ? <CircularProgress color='inherit' size={20} /> : null}
+                          {params.InputProps.endAdornment}
+                        </>
+                      )
+                    }}
+                  />
+                )}
+                onChange={(_, data) => {
+                  console.log(data?._id)
 
-                if (data?._id) {
-                  if (selectedParamData) {
-                    onSchoolSelect(data?._id)
+                  if (data?._id) {
+                    if (selectedParamData) {
+                      onSchoolSelect(data?._id)
+                    }
+
+                    setSelectedData(prev => ({
+                      ...prev,
+                      school: data || null,
+                      kidName: null
+                    }))
                   }
-
-                  setSelectedData(prev => ({
-                    ...prev,
-                    school: data || null,
-                    kidName: null
-                  }))
-                }
-              }}
-              isOptionEqualToValue={(option, value) => option?._id === value?._id}
-              noOptionsText={t('form.placeholder.no_options')}
-              loading={isGetSchoolListLoading}
-            />
+                }}
+                isOptionEqualToValue={(option, value) => option?._id === value?._id}
+                noOptionsText={t('form.placeholder.no_options')}
+                loading={isGetSchoolListLoading}
+              />
+            </div>
           </Grid>
           {selectedData?.school && (
             <Grid item lg={lg} md={6} sm={12}>

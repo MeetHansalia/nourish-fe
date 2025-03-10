@@ -158,14 +158,12 @@ const DocumentVerificationTable = ({ dictionary }) => {
     manualSorting: true
   })
 
-  //  Get Document verification requests api call
   const getDocumentData = async () => {
     if (abortController.current) {
       abortController.current.abort()
     }
 
     setIsLoading(true)
-    // Create a new AbortController for the new request
     abortController.current = new AbortController()
 
     const orderBy = sorting.reduce((acc, { id, desc }) => {
@@ -214,11 +212,6 @@ const DocumentVerificationTable = ({ dictionary }) => {
 
   const handlePageChange = (_, newPage) => {
     setPage(newPage)
-  }
-
-  const handleItemsPerPageChange = event => {
-    setItemsPerPage(event.target.value)
-    setPage(1)
   }
 
   /*
@@ -282,7 +275,7 @@ const DocumentVerificationTable = ({ dictionary }) => {
             ))}
             {isDataTableServerLoading && (
               <tr>
-                <td colSpan={columns?.length}>
+                <td colSpan={columns?.length} className='no-pad-td'>
                   <LinearProgress color='primary' sx={{ height: '2px' }} />
                 </td>
               </tr>

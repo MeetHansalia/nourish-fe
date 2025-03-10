@@ -25,7 +25,7 @@ import axiosApiCall from '@/utils/axiosApiCall'
 import { API_ROUTER } from '@/utils/apiRoutes'
 import { apiResponseErrorHandling, isVariableAnObject, setFormFieldsErrors, toastError } from '@/utils/globalFunctions'
 
-const ProfileViewDialog = ({ open, setOpen, dictionary }) => {
+const ProfileViewDialog = ({ open, setOpen, dictionary, suspendStart, suspendEnd }) => {
   const [alertDetails, setAlertDetails] = useState([])
   const [isLoading, setIsLoading] = useState(false)
 
@@ -100,6 +100,11 @@ const ProfileViewDialog = ({ open, setOpen, dictionary }) => {
         </DialogTitle>
         <DialogContent>
           <Typography>{alertDetails && alertDetails[0]?.reason}</Typography>
+          {suspendStart && suspendEnd && (
+            <Typography className='flex items-center justify-center'>
+              from {suspendStart} to {suspendEnd}
+            </Typography>
+          )}
           <Box display='flex' justifyContent='center' mt={2}>
             <Button
               variant={!isLoading ? 'contained' : 'customLight'}

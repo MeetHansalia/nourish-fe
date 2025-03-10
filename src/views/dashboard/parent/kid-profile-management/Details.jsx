@@ -158,14 +158,14 @@ const Details = ({ dictionary, kidData, setProfileUploadedFile }) => {
                 <Typography className='disc-common-custom font-medium'>{dictionary?.form?.label?.age}:</Typography>
                 <Typography className='disc-common-custom-small'>{kidData?.age || <i>N/A</i>}</Typography>
               </div>
-              <div className='flex items-center flex-wrap gap-2'>
+              {/* <div className='flex items-center flex-wrap gap-2'>
                 <Typography className='disc-common-custom font-medium'>{dictionary?.form?.label?.grade}:</Typography>
                 <Typography className='disc-common-custom-small'>{kidData?.grade || <i>N/A</i>}</Typography>
               </div>
               <div className='flex items-center flex-wrap gap-2'>
                 <Typography className='disc-common-custom font-medium'>{dictionary?.form?.label?.class}:</Typography>
                 <Typography className='disc-common-custom-small'>{kidData?.class || <i>N/A</i>}</Typography>
-              </div>
+              </div> */}
               <div className='flex items-center flex-wrap gap-2'>
                 <Typography className='disc-common-custom font-medium'>{dictionary?.form?.label?.gender}:</Typography>
                 <Typography className='capitalize'>{kidData?.gender || <i>N/A</i>}</Typography>

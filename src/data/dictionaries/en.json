@@ -81,8 +81,10 @@
       "gender": "Sex",
       "weight": "Weight",
       "height": "Height",
-      "verification_status": "VerificationStatus",
-      "allergies_dietary_description": "Allergies and/or Dietary Restrictions: Description",
+      "weight_units": "Weight In",
+      "height_units": "Height In",
+      "verification_status": "Status",
+      "allergies_dietary_description": "Allergies and/or Dietary Restrictions",
       "name": "Name",
       "start_date": "Start Date",
       "end_date": "End Date",
@@ -160,7 +162,14 @@
       "parent_registration_requests": "Parent Registration Requests",
       "reject": "Reject",
       "food_chart": "Food Chart",
-      "nutrition_suggestion": "Nutrition Suggestion"
+      "nutrition_suggestion": "Nutrition Suggestion",
+      "sedentary": "Sedentary – (little to no physical activity)",
+      "moderate": "Moderate (30-60 mins per day)",
+      "active1": "Active (> 1 hour per day)",
+      "done": "Done",
+      "review": "Review",
+      "vendor_schedule_requests": "Vendor Schedule Requests",
+      "combo_meal": "Combo Meal"
     },
     "placeholder": {
       "name": "Enter Name",
@@ -195,8 +204,10 @@
       "replace_cart_item": "Replace cart item",
       "gender": "Select Sex",
       "class": "Enter Class",
-      "weight": "Enter Weight in Kg",
-      "height": "Enter Height in cm",
+      "weight": "Enter Weight",
+      "height": "Enter Height",
+      "weight_units": "Select Weight In",
+      "height_units": "Select Height In",
       "reason": "Reason",
       "allergies_dietary_description": "Enter Allergies and/or Dietary Restrictions: Description",
       "category_name": "Enter Category Name",
@@ -319,7 +330,9 @@
       "send": "Send",
       "ok": "OK",
       "accept": "Accept",
-      "view": "View Request"
+      "view": "View Request",
+      "deliverd": "Delivered",
+      "not_deliverd": "Not Delivered"
     },
     "dropdown": {
       "genders": [
@@ -334,6 +347,22 @@
         {
           "id": "prefer_not_to_say",
           "name": "Prefer not to say"
+        }
+      ],
+      "height_units": [
+        {
+          "id": "cm",
+          "name": "Cm"
+        },
+        {
+          "id": "in",
+          "name": "Inch"
+        }
+      ],
+      "weight_units": [
+        {
+          "id": "kg",
+          "name": "Kg"
         }
       ]
     }
@@ -353,7 +382,7 @@
     "issue_description": "Issue Description",
     "response_Detail": "Response Details",
     "warning": "Warning",
-    "response": "Responseswd",
+    "response": "Response",
     "issue_name": "Issue Name",
     "type_here": "Type here...",
     "vendor_response": "Vendor Response",
@@ -402,10 +431,12 @@
     "optional": "Optional",
     "upload_img": "Upload Image",
     "saving": "Saving...",
+    "uploading": "uploading...",
     "select_placeholder": "Select an option",
     "your": "Your",
     "all": "All",
     "completed": "Completed",
+    "pending": "Pending",
     "ongoing": "Ongoing",
     "processing": "Processing...",
     "food_chart_creation": "+ Food Chart Creation",
@@ -417,17 +448,18 @@
     "exit_access": "Exit Access",
     "my_profile": "My Profile",
     "selected_dishes": "Selected Dishes",
-    "change_password": "Change Password"
+    "change_password": "Change Password",
+    "upload_from_pc": "Upload From PC"
   },
   "meal": {
     "ingredients": "Ingredients",
     "per_100g": "Per 100g",
     "calories": "Calories",
     "protein": "Protein",
-    "total_sugar": "Total Sugar",
-    "total_fat": "Total Fat",
+    "total_sugar": "Sugar",
+    "total_fat": "Fat",
     "sodium": "Sodium",
-    "cholesterol": "Cholesterol",
+    "carbohydrate": "Carbohydrate",
     "cal": "Cal",
     "g": "g",
     "mg": "mg",
@@ -626,7 +658,11 @@
     },
     "food_chart_creation": {
       "vendor_near_by": "Vendor Near by",
-      "vendor_nearby": "Vendors Nearby"
+      "vendor_nearby": "Vendors Nearby",
+      "vendor_menu": "View Vendor Details",
+      "minimum_order_threshhold": "Minimum Order Threshold",
+      "total_review": "Total Review",
+      "see_more": "See More"
     },
     "issue_reporting": {
       "issue_report": "Issue Reporting",
@@ -813,6 +849,9 @@
       "vendor_name": "Vendor Name",
       "order_date": "Order Date",
       "order_type": "Order Type",
+      "select_order_type": "Select Order Type",
+      "single_day_ordering": "Single Day Ordering",
+      "multiple_day_ordering": "Multiple Day Ordering",
       "meal_type": "Meal Type",
       "kid_name": "Kid Name",
       "request_date": "Request Date",
@@ -825,6 +864,7 @@
       "message": "Message",
       "status": "Status",
       "vendor_status": "Vendor Status",
+      "view_details": "View Details",
       "created_at": "Created At",
       "number_of_venue": "Number of Venues",
       "actions": "Action",
@@ -851,7 +891,7 @@
       "view": "View",
       "school_name": "School  Name",
       "country_name": "Country Address",
-      "expected_delivery_date": "Expected Delivery Date",
+      "expected_delivery_date": "Expected Delivery Time",
       "total_no_of_orders": "Total No of Orders",
       "order_file": "Order File",
       "city": "City",

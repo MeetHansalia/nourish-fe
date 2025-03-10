@@ -21,9 +21,14 @@ const Layout = async ({ children, params }) => {
 export async function CheckUserProfileStatus({ children, locale }) {
   const session = await getServerSession(authOptions)
 
-  const redirectUrl = `/${locale}/${USER_PANELS?.vendor}/profile-management`
+  const redirectUrl = `/${locale}/${USER_PANELS?.vendor}/profile`
 
-  if (session && (session?.user?.verificationStatus !== 'approved' || session?.user?.thresHoldApprove !== 'approved')) {
+  if (
+    session &&
+    (session?.user?.verificationStatus !== 'approved' ||
+      session?.user?.thresHoldApprove !== 'approved' ||
+      session?.user?.status === 'suspended')
+  ) {
     redirect(redirectUrl)
   }
 

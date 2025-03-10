@@ -28,6 +28,8 @@ const DisputeReporting = props => {
   // Props
   const { dictionary = null } = props
   const [disputeCounts, setDisputeCount] = useState(0)
+  const [isLoadingStatistic, setIsLoadingStatistic] = useState(false)
+
   const [role, setRole] = useState('')
 
   const router = useRouter()
@@ -42,12 +44,16 @@ const DisputeReporting = props => {
   const getDisputeCounts = async () => {
     const apiUrl = `${API_ROUTER?.ADMIN?.GET_DISPUTE_COUNT}?status=Ongoing`
 
+    setIsLoadingStatistic(true)
+
     await axiosApiCall
       .get(apiUrl)
       .then(response => {
+        setIsLoadingStatistic(false)
         setDisputeCount(response?.data?.response?.countIssues)
       })
       .catch(error => {
+        setIsLoadingStatistic(false)
         toastError(error?.response?.message)
       })
   }
@@ -77,7 +83,14 @@ const DisputeReporting = props => {
     <div>
       <Grid container spacing={6}>
         <Grid item xs={12}>
-          <Reports dictionary={dictionary} isDispute={true} issueCounts={disputeCounts} role={role} disabled />
+          <Reports
+            dictionary={dictionary}
+            isDispute={true}
+            issueCounts={disputeCounts}
+            role={role}
+            disabled
+            isLoadingStatistic={isLoadingStatistic}
+          />
         </Grid>
         <Grid item xs={12} className='pt-0'>
           <DisputeListManagement dictionary={dictionary} refreshCounts={getDisputeCounts} />

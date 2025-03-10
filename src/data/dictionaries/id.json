@@ -80,7 +80,9 @@
       "gender": "Jenis kelamin",
       "weight": "Berat",
       "height": "Tinggi",
-      "allergies_dietary_description": "Alergi atau Diet: Deskripsi",
+      "weight_units": "Berat Dalam",
+      "height_units": "Tinggi Dalam",
+      "allergies_dietary_description": "Alergi dan/atau Pembatasan Diet",
       "name": "Nama",
       "start_date": "Tanggal Mulai",
       "end_date": "Tanggal Selesai",
@@ -156,7 +158,14 @@
       "parent_registration_requests": "Permintaan Pendaftaran Orang Tua",
       "reject": "Tolak",
       "food_chart": "Diagram Makanan",
-      "nutrition_suggestion": "Saran Nutrisi"
+      "nutrition_suggestion": "Saran Nutrisi",
+      "sedentary": "Sedenter – (sedikit atau tidak ada aktivitas fisik)",
+      "moderate": "Sedang (30-60 menit per hari)",
+      "active1": "Aktif (> 1 jam per hari)",
+      "done": "Selesai",
+      "review": "Tinjau",
+      "vendor_schedule_requests": "Permintaan Jadwal Vendor",
+      "combo_meal": "Paket Makanan"
     },
     "placeholder": {
       "name": "Masukkan Nama",
@@ -192,6 +201,8 @@
       "class": "Masuk Kelas",
       "weight": "Masukkan Berat dalam Kg",
       "height": "Masukkan Tinggi dalam cm",
+      "weight_units": "Pilih Berat Dalam",
+      "height_units": "Pilih Tinggi Dalam",
       "reason": "Alasan",
       "category_name": "Masukkan Nama Kategori",
       "category_image": "Masukkan Gambar Kategori",
@@ -312,7 +323,9 @@
       "send": "Kirim",
       "ok": "OK",
       "accept": "Terima",
-      "view": "Lihat Permintaan"
+      "view": "Lihat Permintaan",
+      "deliverd": "Dikirim",
+      "not_deliverd": "Belum Dikirim"
     },
     "dropdown": {
       "genders": [
@@ -323,6 +336,22 @@
         {
           "id": "female",
           "name": "Perempuan"
+        }
+      ],
+      "height_units": [
+        {
+          "id": "cm",
+          "name": "Cm"
+        },
+        {
+          "id": "in",
+          "name": "Inch"
+        }
+      ],
+      "weight_units": [
+        {
+          "id": "kg",
+          "name": "Kg"
         }
       ]
     }
@@ -370,7 +399,10 @@
     "no_more_data_to_load": "Tidak ada lagi data untuk dimuat",
     "exit_access": "Akses Keluar",
     "my_profile": "Profil Saya",
-    "change_password": "Ubah Kata Sandi"
+    "change_password": "Ubah Kata Sandi",
+    "pending": "Tertunda",
+    "upload_from_pc": "Unggah Dari PC",
+    "uploading": "sedang mengunggah..."
   },
   "dialog": {
     "delete_category_confirmation": "Apakah Anda yakin ingin menghapus kategori ini?",
@@ -611,7 +643,11 @@
     },
     "food_chart_creation": {
       "vendor_near_by": "Vendor Terdekat",
-      "vendor_nearby": "Penjual Terdekat"
+      "vendor_nearby": "Penjual Terdekat",
+      "vendor_menu": "Lihat Menu",
+      "minimum_order_threshhold": "Ambang Pesanan Minimum",
+      "total_review": "Total Ulasan",
+      "see_more": "Lihat Lebih Banyak"
     },
     "issue_reporting": {
       "issue_report": "Laporkan Masalah",
@@ -774,13 +810,16 @@
       "delivery_date": "Tanggal Pengiriman",
       "min_threshold_qty": "Jumlah Ambang Minimum",
       "serial_number": "No. Seri",
-      "verification_status": "Status Verifikasi",
+      "verification_status": "Status ",
       "first_name": "Nama Depan",
       "last_name": "Nama Belakang",
       "vendor_name": "Nama Vendor",
       "kid_name": "Nama Anak",
       "order_date": "Tanggal Pesanan",
       "order_type": "Jenis Pesanan",
+      "select_order_type": "Pilih Jenis Pesanan",
+      "single_day_ordering": "Pemesanan Satu Hari",
+      "multiple_day_ordering": "Pemesanan Beberapa Hari",
       "meal_type": "Jenis Makanan",
       "parent_name": "Nama Orang Tua",
       "request_date": "Tanggal Permintaan",
@@ -792,6 +831,7 @@
       "message": "Pesan",
       "status": "Status",
       "vendor_status": "Status Vendor",
+      "view_details": "Lihat Detail",
       "created_at": "Dibuat Pada",
       "number_of_venue": "Jumlah Tempat",
       "actions": "Aksi",

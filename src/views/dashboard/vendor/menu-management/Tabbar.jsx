@@ -38,7 +38,7 @@ function TabBar({ tabValue, onTabChange, dictionary, getId }) {
   }
 
   return (
-    <Box sx={{ width: '100%' }}>
+    <Box className="table-block-menu">
       <Tabs
         value={tabValue}
         onChange={onTabChange}

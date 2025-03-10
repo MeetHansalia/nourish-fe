@@ -28,7 +28,6 @@ import {
 } from '@mui/material'
 import { tooltipClasses } from '@mui/material/Tooltip'
 import { styled } from '@mui/material/styles'
-
 // Third-party Imports
 import classnames from 'classnames'
 import { rankItem } from '@tanstack/match-sorter-utils'
@@ -89,6 +88,7 @@ const OrdersTableComponent = ({ mode, dictionary, setUpdateData, updateData }) =
   const [isLoading, setIsLoading] = useState(false)
   const [selectedSchoolId, setSelectedSchoolId] = useState(null)
   const [selectedOrders, setSelectedOrders] = useState(null)
+  const [isFormSubmitLoading, setIsFormSubmitLoading] = useState(false)
 
   const abortController = useRef(null)
 
@@ -235,14 +235,22 @@ const OrdersTableComponent = ({ mode, dictionary, setUpdateData, updateData }) =
           </Typography>
         )
       }),
+
       columnHelper.accessor('orderDate', {
         header: `${dictionary?.datatable?.column?.order_date}`,
-        cell: ({ row }) => (
-          <Typography sx={{ fontFamily: 'inherit', fontSize: 'inherit', color: 'inherit' }}>
-            {`${row?.original?.orders[0]?.orderDate}`}
-          </Typography>
-        )
+        cell: ({ row }) => {
+          const createdAt = row?.original?.orders?.[0]?.createdAt
+
+          const formattedDate = createdAt ? moment(createdAt).format('YYYY-MM-DD') : 'N/A'
+
+          return (
+            <Typography sx={{ fontFamily: 'inherit', fontSize: 'inherit', color: 'inherit' }}>
+              {formattedDate}
+            </Typography>
+          )
+        }
       }),
+
       columnHelper.accessor('orderType', {
         header: `${dictionary?.datatable?.column?.order_type}`,
         // cell: info => info.getValue()
@@ -252,11 +260,27 @@ const OrdersTableComponent = ({ mode, dictionary, setUpdateData, updateData }) =
           </Typography>
         )
       }),
+      columnHelper.accessor('delivery_date', {
+        header: `${dictionary?.datatable?.column?.delivery_date}`,
+        cell: ({ row }) => {
+          // Move the console.log outside JSX
+          console.log('test', row?.original?.orders?.[0])
+
+          const deliveryDate = row?.original?.orders?.[0]?.orderDate
+
+          return (
+            <Typography sx={{ fontFamily: 'inherit', fontSize: 'inherit', color: 'inherit' }}>
+              {deliveryDate ? deliveryDate : 'N/A'}
+            </Typography>
+          )
+        }
+      }),
+
       columnHelper.accessor('expectedDeliveryDate', {
         header: `${dictionary?.datatable?.column?.expected_delivery_date}`,
         cell: ({ row }) => (
           <Typography sx={{ fontFamily: 'inherit', fontSize: 'inherit', color: 'inherit' }}>
-            {`${row?.original?.orders[0]?.orderType}`}
+            {`${row?.original?.orders[0]?.schoolInfo?.expectedDeliveryTime}`}
           </Typography>
         )
       }),

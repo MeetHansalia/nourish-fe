@@ -207,7 +207,7 @@ const NearByVendorDialog = props => {
     }
 
     axiosApiCall
-      .get(API_ROUTER.STATE.GET_NEAR_BY_VENDOR, {
+      .get(API_ROUTER.STATE.GET_STATE_VENDOR_LIST, {
         signal: getNearByVendorsListController?.current?.signal
       })
       .then(response => {
@@ -216,7 +216,7 @@ const NearByVendorDialog = props => {
 
         // console.log('responseBodyData: ', responseBodyData)
 
-        const vendorsData = responseBodyData?.vendors
+        const vendorsData = responseBodyData?.users
 
         if (vendorsData?.length > 0) {
           setVendorsListApiInput(prevPagination => ({

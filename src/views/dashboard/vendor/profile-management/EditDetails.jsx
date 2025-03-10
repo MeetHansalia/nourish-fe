@@ -51,7 +51,7 @@ import { PHONE_NUMBER_DEFAULT_COUNTRY_CODE } from '@/utils/constants'
 /**
  * Page
  */
-const EditDetails = ({ dictionary, userData, setUserData }) => {
+const EditDetails = ({ dictionary, userData, setUserData, selectedAvatar }) => {
   const router = useRouter()
   const { lang: locale } = useParams()
   const pathname = usePathname()
@@ -304,7 +304,8 @@ const EditDetails = ({ dictionary, userData, setUserData }) => {
       ...locationData,
       no_of_venue: undefined,
       venues: formattedVenue,
-      google_address: undefined
+      google_address: undefined,
+      avtar: selectedAvatar
     }
 
     setIsFormSubmitLoading(true)

@@ -2,7 +2,7 @@
 import { getDictionary } from '@/utils/getDictionary'
 
 // View Imports
-import ParentProfile from '@/views/dashboard/parent/parent-profile'
+import ParentProfile from '@/views/dashboard/parent/profile'
 
 // Meta data
 export const metadata = {

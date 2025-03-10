@@ -1,5 +1,7 @@
 import { getServerSession } from 'next-auth'
 
+import { Toaster } from 'react-hot-toast'
+
 import { authOptions } from '@/libs/auth'
 
 // HOC Imports
@@ -20,6 +22,8 @@ import GlobalReviewDialog from '@/views/dashboard/parent/reviews-for-meals/Globa
 const Layout = async ({ children, params }) => {
   return (
     <RoleAuthGuard locale={params.lang} allowedUserRoles={['parent_role']}>
+      <Toaster position='top-right' />
+
       <SocketHandler />
       <GlobalReviewDialog />
 
@@ -35,7 +39,7 @@ export async function CheckParentProfileStatus({ children, locale }) {
   const session = await getServerSession(authOptions)
   const pathnameWithoutPanel = await getPathnameWithoutPanel()
 
-  const allowedRoutesForInvalidProfile = ['/parent-profile', '/kid-profile-management'] //TODO: Remove "/reviews-for-meals" route from here
+  const allowedRoutesForInvalidProfile = ['/profile', '/kid-profile-management'] //TODO: Remove "/reviews-for-meals" route from here
 
   const redirectUrl = `/${locale}/${USER_PANELS?.parent}/kid-profile-management`
 

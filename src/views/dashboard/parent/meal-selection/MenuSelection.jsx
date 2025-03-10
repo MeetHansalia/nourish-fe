@@ -50,6 +50,8 @@ import { getLocalizedUrl } from '@/utils/i18n'
 import { getPanelName } from '@/utils/globalFunctions'
 import TruncatedTextWithModal from '@/components/TruncatedTextWithModal'
 import FullPageLoader from '@/components/FullPageLoader'
+import MealNutritionTable from '../../common/MealNutritionTable'
+import IngredientsTable from '../../common/IngredientsTable'
 
 const Menu = ({ dictionary, kidId, vendorId }) => {
   const router = useRouter()
@@ -74,6 +76,7 @@ const Menu = ({ dictionary, kidId, vendorId }) => {
   const [cartData, setCartData] = useState([])
   const [dishData, setDishData] = useState([])
   const [activeId, setActiveId] = useState(null)
+  const [kidNutrition, setKidNutrition] = useState({})
 
   const validationSchema = selectedDish =>
     yup.object().shape({
@@ -182,6 +185,33 @@ const Menu = ({ dictionary, kidId, vendorId }) => {
   useEffect(() => {
     if (kidId) {
       fetchLatestCartDetails(kidId)
+
+      const fetchData = async () => {
+        try {
+          const kidResponse = await axiosApiCall.get(API_ROUTER.PARENT.GET_KID_DASHBOARD(kidId))
+
+          setIsDataLoaded(true)
+          setKidNutrition(
+            kidResponse?.data?.response?.userData?.nutrition
+              ? kidResponse?.data?.response?.userData.nutrition
+              : {
+                  fat: 0,
+                  sugar: 0,
+                  protein: 0,
+                  sodium: 0,
+                  carbohydrate: 0
+                }
+          )
+        } catch (error) {
+          const errorMessage = apiResponseErrorHandling(error)
+
+          toastError(errorMessage)
+        } finally {
+          setIsDataLoaded(false)
+        }
+      }
+
+      fetchData()
     }
   }, [kidId])
 
@@ -245,11 +275,14 @@ const Menu = ({ dictionary, kidId, vendorId }) => {
   }
 
   const handleDialogOpen = dish => {
+    console.log('dish', dish)
     setSelectedDish(dish)
     setTotalPrice(dish?.pricing)
     setValidationError(false)
     setDialogOpen(true)
   }
+
+  console.log('selectedDish', selectedDish)
 
   const handleDialogOpenFromDialog = dishFromDialog => {
     const matchedDish = filteredDishes.find(dish => dish._id === dishFromDialog.dishId._id)
@@ -386,6 +419,9 @@ const Menu = ({ dictionary, kidId, vendorId }) => {
           <div className='common-block-dashboard p-0'>
             <div className='common-form-dashboard flex justify-between items-center'>
               <Typography variant='h5' className='font-medium'>
+                <Button variant='contained' onClick={() => router.back()}>
+                  {dictionary?.form?.button?.back}
+                </Button>
                 {dictionary?.common?.menu}
               </Typography>
               <div className='flex items-center gap-4'>
@@ -463,7 +499,11 @@ const Menu = ({ dictionary, kidId, vendorId }) => {
                     return (
                       <Grid item xs={12} sm={6} md={6} key={`${dish._id}-${totalQty}`}>
                         <div className='menu-selection-block-inner flex gap-2 relative cursor-pointer'>
-                          <div className='menu-selection-block-inner-content'>
+                          {/* Entire Card click */}
+                          <div
+                            className='menu-selection-block-inner-content'
+                            onClick={() => handleDialogOpen(dish)} // Trigger popup on card click
+                          >
                             <Typography className='title-medium-custom'>{dish.name}</Typography>
 
                             <TruncatedTextWithModal
@@ -487,8 +527,15 @@ const Menu = ({ dictionary, kidId, vendorId }) => {
                             </Tooltip>
 
                             <div className='menu-selection-block-inner-p-l flex justify-between items-center'>
-                              <Button variant='outlined' onClick={() => handleDialogOpen(dish)}>
-                                <i className='tabler-plus' />
+                              {/* + Button: Trigger popup without opening card */}
+                              <Button
+                                variant='outlined'
+                                onClick={e => {
+                                  e.stopPropagation() // Prevent the click event from reaching the card
+                                  handleDecreaseDialogOpen(dish) // Open decrease popup for the specific dish
+                                }}
+                              >
+                                <i className='tabler-minus' />
                               </Button>
 
                               <TextField
@@ -498,12 +545,16 @@ const Menu = ({ dictionary, kidId, vendorId }) => {
                                 size='small'
                               />
 
+                              {/* - Button: Trigger decrease dialog */}
                               <Button
-                                className='border-radius-block'
                                 variant='outlined'
-                                onClick={() => handleDecreaseDialogOpen(dish)}
+                                className='border-radius-block'
+                                onClick={e => {
+                                  e.stopPropagation() // Prevent the click event from reaching the card
+                                  handleDialogOpen(dish) // Open popup for the specific dish
+                                }}
                               >
-                                <i className='tabler-minus' />
+                                <i className='tabler-plus' />
                               </Button>
                             </div>
                           </div>
@@ -602,10 +653,19 @@ const Menu = ({ dictionary, kidId, vendorId }) => {
 
                     <div className='block-chart-common flex align-center justify-between'>
                       <div className='block-chart-inner' style={{ width: 200, height: 200 }}>
-                        <SpeedometerChart />
+                        <SpeedometerChart
+                          totalNutrition={selectedDish?.calculatedNutrition}
+                          kidNutrition={kidNutrition}
+                        />
                       </div>
                     </div>
-
+                    <div className='block-chart-table-in'>
+                      <IngredientsTable
+                        ingredientsData={selectedDish?.ingredients}
+                        selectedDish={selectedDish}
+                        dictionary={dictionary}
+                      />
+                    </div>
                     <div className='modal-footer'>
                       <Typography variant='h6' color='textSecondary' className='title-small-medium-custom'>
                         {dictionary?.meal?.total_price}: ${totalPrice.toFixed(2)}
@@ -626,6 +686,93 @@ const Menu = ({ dictionary, kidId, vendorId }) => {
               </DialogActions>
             </Dialog>
           )}
+
+          <Dialog
+            open={dishDialogOpen}
+            onClose={(event, reason) => {
+              if (reason !== 'backdropClick' && reason !== 'escapeKeyDown') {
+                handleDialogClose()
+              }
+            }}
+            fullWidth
+          >
+            <DialogTitle>
+              {dictionary?.common?.selected_dishes}
+              <IconButton
+                edge='end'
+                color='inherit'
+                onClick={handleDialogClose}
+                aria-label='close'
+                sx={{ position: 'absolute', right: 8, top: 8 }}
+              >
+                <CloseIcon />
+              </IconButton>
+            </DialogTitle>
+
+            <DialogContent>
+              {dishData.length === 0 ? (
+                <Typography>{dictionary?.meal?.no_dishes_found}</Typography>
+              ) : (
+                dishData.map((item, index) => {
+                  const dish = item.dishId
+
+                  return (
+                    <div key={index} className='mb-4 flex items-center justify-between'>
+                      {/* Dish Image & Name */}
+                      <div className='flex items-center gap-4'>
+                        {dish.image && (
+                          <Box
+                            sx={{
+                              width: 64,
+                              height: 64,
+                              ml: 2,
+                              backgroundImage: `url(${dish.image || '/default-image.jpg'})`,
+                              backgroundSize: 'cover',
+                              borderRadius: 1
+                            }}
+                          />
+                        )}
+                        <div>
+                          <Typography variant='h6'>{dish.name}</Typography>
+                          {/* <Typography variant='body2' color='textSecondary'>
+                                  Ingredients: {dish.ingredients?.map(ing => ing.name).join(', ') || 'N/A'}
+                                </Typography> */}
+                          {item.modifiers.length > 0 && (
+                            <Typography variant='body2' color='textSecondary'>
+                              {dictionary?.form?.placeholder?.modifiers}:{' '}
+                              {item.modifiers.map(mod => mod?.dishId?.name).join(', ') || 'None'}
+                            </Typography>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Quantity Controls */}
+                      <div className='flex items-center'>
+                        <Button variant='outlined' onClick={() => handleDialogOpenFromDialog(item)}>
+                          +
+                        </Button>
+
+                        {/* Qty field placed between + and - */}
+                        <Typography variant='h6' className='mx-2'>
+                          {item.quantity}
+                        </Typography>
+
+                        <Button variant='outlined' onClick={() => handleDecrease(dish._id, kidId, item)}>
+                          -
+                        </Button>
+                      </div>
+                    </div>
+                  )
+                })
+              )}
+            </DialogContent>
+
+            <DialogActions>
+              <Button onClick={handleDialogClose} color='error'>
+                {dictionary?.form?.placeholder?.close}
+              </Button>
+            </DialogActions>
+          </Dialog>
         </div>
       )}
     </>

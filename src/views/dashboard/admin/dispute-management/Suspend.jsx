@@ -95,7 +95,6 @@ const Suspend = ({ dictionary }) => {
   })
 
   const onSubmit = data => {
-    console.log('Submitted Data:', data)
     setIsFormSubmitLoading(true)
 
     const apiFormData = {
@@ -133,8 +132,6 @@ const Suspend = ({ dictionary }) => {
 
   useEffect(() => {
     const param = localStorage.getItem('disputeParam')
-
-    console.log('param', param)
 
     setVendorData(JSON.parse(param))
   }, [])

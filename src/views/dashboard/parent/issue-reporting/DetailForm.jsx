@@ -1,17 +1,13 @@
 'use client'
 
 // React Imports
-import { useEffect, useMemo, useRef, useState } from 'react'
-
-// Next Imports
-import { useRouter } from 'next/navigation'
+import { useEffect, useRef, useState } from 'react'
 
 // Third-party Imports
 
 import { yupResolver } from '@hookform/resolvers/yup'
 import { isCancel } from 'axios'
 import { Controller, useForm } from 'react-hook-form'
-import { useDispatch } from 'react-redux'
 import * as yup from 'yup'
 
 // MUI Imports
@@ -23,15 +19,8 @@ import { Button, Card, CardHeader, CircularProgress, Grid, MenuItem, TextareaAut
 // MUI Imports
 
 // Component Imports
-import { apiBaseUrl } from 'next-auth/client/_utils'
-
-import { getServerSession } from 'next-auth'
-
-import { set } from 'date-fns'
 
 import CustomTextField from '@/@core/components/mui/TextField'
-
-import { authOptions } from '@/libs/auth'
 
 // Util Imports
 
@@ -49,9 +38,7 @@ import AppReactDatepicker from '@/libs/styles/AppReactDatepicker'
 
 import primaryColorConfig from '@/configs/primaryColorConfig'
 
-import theme from '@/@core/theme'
 import { API_ROUTER } from '@/utils/apiRoutes'
-import { USER_PANELS } from '@/utils/constants'
 
 //redux
 /**
@@ -59,17 +46,10 @@ import { USER_PANELS } from '@/utils/constants'
  */
 
 const DetailForm = ({ dictionary, kidData, staticIssues, refreshData, role }) => {
-  const router = useRouter()
-  const dispatch = useDispatch()
-  const pageFormRef = useRef(null)
-
   // states
   const [isFormSubmitLoading, setIsFormSubmitLoading] = useState(false)
 
   const [selectedDate, setSelectedDate] = useState('')
-
-  console.log('role', role)
-  const normalizeRole = role => (Array.isArray(role) ? role[0] : role || '')
 
   /**
    * Form Validation Schema
@@ -140,9 +120,6 @@ const DetailForm = ({ dictionary, kidData, staticIssues, refreshData, role }) =>
 
     const isoDate = utcDate.toISOString()
 
-    // data.childId = selectedChild
-    console.log('orderData', orderData)
-
     const selectedOrder = await orderData.find(item => {
       // Extract only the date part (YYYY-MM-DD) from the item date
       const itemDateOnly = new Date(item?.orderDate).toISOString().split('T')[0]
@@ -153,11 +130,7 @@ const DetailForm = ({ dictionary, kidData, staticIssues, refreshData, role }) =>
       return itemDateOnly === isoDateOnly
     })
 
-    console.log('selectedOrder', selectedOrder)
-
     const issueSlug = staticIssues.find((item, index) => item?.name === data?.issue_name)?.slug
-
-    console.log('issueSlug', issueSlug)
 
     const apiFormData = {
       issue_topic: data?.issue_name,
@@ -172,13 +145,10 @@ const DetailForm = ({ dictionary, kidData, staticIssues, refreshData, role }) =>
       apiFormData.kidId = data.childId
     }
 
-    console.log('selectedChild: ', data, apiFormData)
-
     axiosApiCall
       .post(API_ROUTER?.PARENT?.ISSUE_CREATE, apiFormData)
       .then(response => {
         const responseBody = response?.data
-        const responseBodyData = responseBody?.response
 
         toastSuccess(responseBody?.message)
         refreshData()
@@ -186,8 +156,6 @@ const DetailForm = ({ dictionary, kidData, staticIssues, refreshData, role }) =>
         setSelectedDate(formDefaultValues.date)
       })
       .catch(error => {
-        console.log('error: ', error)
-
         if (!isCancel(error)) {
           setIsFormSubmitLoading(false)
           const apiResponseErrorHandlingData = apiResponseErrorHandling(error)
@@ -206,13 +174,6 @@ const DetailForm = ({ dictionary, kidData, staticIssues, refreshData, role }) =>
       getStaffAvailableDates()
     }
   }, [role])
-
-  /**
-   * Fetch school: Start
-   */
-  const [isGetSchoolListLoading, setIsGetSchoolListLoading] = useState(false)
-
-  /** Fetch school: End */
 
   /** Fetch Available Dates */
   const [isGetAvailableDatesLoading, setIsGetAvailableDatesLoading] = useState(false)
@@ -240,14 +201,10 @@ const DetailForm = ({ dictionary, kidData, staticIssues, refreshData, role }) =>
 
         const responseBody = response?.data
 
-        console.log('responseBody: ', responseBody)
-
         const responseBodyData = responseBody?.response?.orderData
 
         setOrderData(responseBodyData)
         const dateArray = responseBodyData?.map(item => item?.orderDate)
-
-        console.log('dateArray: ', dateArray)
 
         setAvailableDates(dateArray)
       })
@@ -295,14 +252,10 @@ const DetailForm = ({ dictionary, kidData, staticIssues, refreshData, role }) =>
 
         const responseBody = response?.data
 
-        console.log('responseBody: ', responseBody)
-
         const responseBodyData = responseBody?.response?.orderData
 
         setOrderData(responseBodyData)
         const dateArray = responseBodyData?.map(item => item?.orderDate)
-
-        console.log('dateArray: ', dateArray)
 
         setAvailableDates(dateArray)
       })
@@ -324,13 +277,7 @@ const DetailForm = ({ dictionary, kidData, staticIssues, refreshData, role }) =>
 
   /** Fetch Available Dates: End */
 
-  const handleSchoolChange = event => {
-    setValue('schoolId', event?.target?.value)
-    setSelectedSchool(event?.target?.value)
-  }
-
   const handleKidChange = event => {
-    console.log('event: ', event?.target?.value)
     setSelectedDate('')
     setValue('date', '')
     getAvailableDates(event?.target?.value)
@@ -488,7 +435,7 @@ const DetailForm = ({ dictionary, kidData, staticIssues, refreshData, role }) =>
               <TextareaAutosize
                 aria-label='minimum height'
                 minRows={3}
-                placeholder={dictionary?.form?.placeholder?.delivery_issue}
+                placeholder={dictionary?.form?.label?.delivery_issue}
                 // style={{
                 //   width: '100%',
                 //   border: errors.description ? '1px solid red' : '1px solid #ccc',

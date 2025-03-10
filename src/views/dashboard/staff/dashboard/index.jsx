@@ -3,9 +3,12 @@
 // Mui Imports
 import { useEffect, useState } from 'react'
 
+import { useParams } from 'next/navigation'
+
 import { Grid } from '@mui/material'
 
-// Component Importimport { useParams } from 'next/navigation'
+// Component Import
+
 import { useTranslation } from '@/utils/getDictionaryClient'
 
 import Statistics from './StatisticsCard'

@@ -83,7 +83,9 @@
       "gender": "เพศ",
       "weight": "น้ำหนัก",
       "height": "ความสูง",
-      "allergies_dietary_description": "อาการแพ้หรืออาหารพิเศษ: คำอธิบาย",
+      "weight_units": "น้ำหนักใน",
+      "height_units": "ความสูงใน",
+      "allergies_dietary_description": "อาการแพ้และ/หรือข้อจำกัดด้านอาหาร",
       "name": "ชื่อ",
       "start_date": "วันที่เริ่มต้น",
       "end_date": "วันที่สิ้นสุด",
@@ -160,7 +162,16 @@
       "parent_registration_requests": "คำขอลงทะเบียนผู้ปกครอง",
       "reject": "ปฏิเสธ",
       "food_chart": "แผนภูมิอาหาร",
-      "nutrition_suggestion": "คำแนะนำด้านโภชนาการ"
+      "nutrition_suggestion": "คำแนะนำด้านโภชนาการ",
+      "sedentary": "ใช้ชีวิตแบบอยู่กับที่ – (มีกิจกรรมทางกายน้อยหรือไม่มีเลย)",
+      "moderate": "ปานกลาง (30-60 นาทีต่อวัน)",
+      "active1": "กระฉับกระเฉง (> 1 ชั่วโมงต่อวัน)",
+      "done": "Selesai",
+      "review": "Tinjau",
+      "vendor_schedule_requests": "คำขอตารางเวลาของผู้ขาย",
+      "deliverd": "จัดส่งแล้ว",
+      "not_deliverd": "ยังไม่ได้จัดส่ง",
+      "combo_meal": "ชุดอาหาร"
     },
     "placeholder": {
       "name": "กรอกชื่อ",
@@ -196,6 +207,8 @@
       "class": "เข้าสู่ชั้นเรียน",
       "weight": "ป้อนน้ำหนักเป็นกิโลกรัม",
       "height": "ป้อนความสูงเป็นเซนติเมตร",
+      "weight_units": "เลือกน้ำหนักใน",
+      "height_units": "เลือกความสูงใน",
       "reason": "เหตุผล",
       "category_name": "ป้อนชื่อหมวดหมู่",
       "category_image": "ป้อนรูปภาพหมวดหมู่",
@@ -317,7 +330,9 @@
       "send": "ส่ง",
       "ok": "โอเค",
       "accept": "ยอมรับ",
-      "view": "ดูคำขอ"
+      "view": "ดูคำขอ",
+      "deliverd": "Dikirim",
+      "not_deliverd": "Belum Dikirim"
     },
     "dropdown": {
       "genders": [
@@ -328,6 +343,22 @@
         {
           "id": "female",
           "name": "หญิง"
+        }
+      ],
+      "height_units": [
+        {
+          "id": "cm",
+          "name": "Cm"
+        },
+        {
+          "id": "in",
+          "name": "Inch"
+        }
+      ],
+      "weight_units": [
+        {
+          "id": "kg",
+          "name": "Kg"
         }
       ]
     }
@@ -375,7 +406,10 @@
     "no_more_data_to_load": "ไม่มีข้อมูลเพิ่มเติมให้โหลด",
     "exit_access": "ทางออกการเข้าถึง",
     "my_profile": "โปรไฟล์ของฉัน",
-    "change_password": "เปลี่ยนรหัสผ่าน"
+    "change_password": "เปลี่ยนรหัสผ่าน",
+    "pending": "รอดำเนินการ",
+    "upload_from_pc": "อัปโหลดจากคอมพิวเตอร์",
+    "uploading": "กำลังอัปโหลด..."
   },
   "dialog": {
     "delete_category_confirmation": "คุณแน่ใจหรือไม่ว่าต้องการลบหมวดหมู่นี้?",
@@ -616,7 +650,11 @@
     },
     "food_chart_creation": {
       "vendor_near_by": "ผู้ขายใกล้เคียง",
-      "vendor_nearby": "ผู้ขายที่อยู่ใกล้เคียง"
+      "vendor_nearby": "ผู้ขายที่อยู่ใกล้เคียง",
+      "vendor_menu": "ดูเมนู",
+      "minimum_order_threshhold": "เกณฑ์การสั่งซื้อขั้นต่ำ",
+      "total_review": "รีวิวทั้งหมด",
+      "see_more": "ดูเพิ่มเติม"
     },
     "issue_reporting": {
       "issue_report": "รายงานปัญหา",
@@ -779,13 +817,16 @@
       "delivery_date": "วันที่จัดส่ง",
       "min_threshold_qty": "ปริมาณขั้นต่ำ",
       "serial_number": "หมายเลขลำดับ",
-      "verification_status": "สถานะการตรวจสอบ",
+      "verification_status": "สถานะ",
       "first_name": "ชื่อ",
       "last_name": "นามสกุล",
       "vendor_name": "ชื่อผู้ขาย",
       "kid_name": "ชื่อเด็ก",
       "order_date": "วันที่สั่งซื้อ",
       "order_type": "ประเภทการสั่งซื้อ",
+      "select_order_type": "เลือกประเภทการสั่งซื้อ",
+      "single_day_ordering": "สั่งซื้อสำหรับวันเดียว",
+      "multiple_day_ordering": "สั่งซื้อหลายวัน",
       "meal_type": "ประเภทมื้ออาหาร",
       "parent_name": "ชื่อผู้ปกครอง",
       "request_date": "วันที่ขอ",
@@ -797,6 +838,7 @@
       "message": "ข้อความ",
       "status": "สถานะ",
       "vendor_status": "สถานะผู้ขาย",
+      "view_details": "ดูรายละเอียด",
       "created_at": "สร้างเมื่อ",
       "number_of_venue": "จำนวนสถานที่",
       "actions": "การดำเนินการ",

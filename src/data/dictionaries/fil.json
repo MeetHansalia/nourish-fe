@@ -80,7 +80,9 @@
       "gender": "Kasarian",
       "weight": "Timbang",
       "height": "taas",
-      "allergies_dietary_description": "Alerhiya o Diyeta: Paglalarawan",
+      "weight_units": "Timbang Sa",
+      "height_units": "Taas Sa",
+      "allergies_dietary_description": "Mga Alerhiya at/o Mga Paghihigpit sa Pagkain",
       "name": "Pangalan",
       "start_date": "Petsa ng Simula",
       "end_date": "Petsa ng Pagtatapos",
@@ -155,7 +157,14 @@
       "parent_registration_requests": "Mga Kahilingan sa Pagpaparehistro ng Magulang",
       "reject": "Tanggihan",
       "food_chart": "Tsart ng Pagkain",
-      "nutrition_suggestion": "Mungkahi sa Nutrisyon"
+      "nutrition_suggestion": "Mungkahi sa Nutrisyon",
+      "sedentary": "Hindi aktibo – (kaunti o walang pisikal na aktibidad)",
+      "moderate": "Katamtaman (30-60 minuto bawat araw)",
+      "active1": "Aktibo (> 1 oras bawat araw)",
+      "done": "Tapos",
+      "review": "Suriin",
+      "vendor_schedule_requests": "Mga Kahilingan sa Iskedyul ng Vendor",
+      "combo_meal": "Pagkaing Pinagsama"
     },
     "placeholder": {
       "name": "Ilagay ang Pangalan",
@@ -191,6 +200,8 @@
       "class": "Pumasok sa Klase",
       "weight": "Ipasok ang Timbang",
       "height": "Ipasok ang Taas",
+      "weight_units": "Piliin ang Timbang Sa",
+      "height_units": "Piliin ang Taas Sa",
       "reason": "Dahilan",
       "allergies_dietary_description": "Alerhiya o Diyeta: Paglalarawan",
       "category_name": "Ilagay ang Pangalan ng Kategorya",
@@ -308,7 +319,9 @@
       "send": "Ipadala",
       "ok": "OK",
       "accept": "Tanggapin",
-      "view": "Tingnan ang Kahilingan"
+      "view": "Tingnan ang Kahilingan",
+      "deliverd": "Ipinadala",
+      "not_deliverd": "Hindi Ipinadala"
     },
     "dropdown": {
       "genders": [
@@ -319,6 +332,22 @@
         {
           "id": "female",
           "name": "Babae"
+        }
+      ],
+      "height_units": [
+        {
+          "id": "cm",
+          "name": "Cm"
+        },
+        {
+          "id": "in",
+          "name": "Inch"
+        }
+      ],
+      "weight_units": [
+        {
+          "id": "kg",
+          "name": "Kg"
         }
       ]
     }
@@ -356,6 +385,7 @@
     "your": "Iyong",
     "all": "Lahat",
     "completed": "Tapos Na",
+    "pending": "Nakabinbin",
     "ongoing": "Patuloy",
     "processing": "Pinoproseso...",
     "food_chart_creation": "+ Paglikha ng Talahanayan ng Pagkain",
@@ -366,7 +396,9 @@
     "no_more_data_to_load": "Wala nang karagdagang datos na maaaring i-load",
     "exit_access": "Paglabas ng Access",
     "my_profile": "Aking Profile",
-    "change_password": "Palitan ang Password"
+    "change_password": "Palitan ang Password",
+    "upload_from_pc": "I-upload Mula sa PC",
+    "uploading": "naglo-upload..."
   },
   "dialog": {
     "delete_category_confirmation": "Sigurado ka bang gusto mong tanggalin ang kategoryang ito?",
@@ -606,7 +638,11 @@
     },
     "food_chart_creation": {
       "vendor_near_by": "Malapit na Vendor",
-      "vendor_nearby": "Mga Vendor na Malapit"
+      "vendor_nearby": "Mga Vendor na Malapit",
+      "vendor_menu": "Tingnan ang Menu",
+      "minimum_order_threshhold": "Pinakamababang Halaga ng Order",
+      "total_review": "Kabuuang Pagsusuri",
+      "see_more": "Tingnan Pa"
     },
     "issue_reporting": {
       "issue_report": "Pag-uulat ng Isyu",
@@ -769,11 +805,14 @@
       "delivery_date": "Petsa ng Paghatid",
       "min_threshold_qty": "Minimum na Dami ng Threshold",
       "serial_number": "Serial No.",
-      "verification_status": "Katayuan ng Pag-verify",
+      "verification_status": "Katayuan ",
       "first_name": "Pangalan",
       "last_name": "Apelyido",
       "order_date": "Petsa ng Order",
       "order_type": "Uri ng Order",
+      "select_order_type": "Piliin ang Uri ng Order",
+      "single_day_ordering": "Pang-isang Araw na Pag-order",
+      "multiple_day_ordering": "Maramihang Araw na Pag-order",
       "meal_type": "Uri ng Pagkain",
       "kid_name": "Pangalan ng Bata",
       "request_date": "Petsa ng Kahilingan",
@@ -786,6 +825,7 @@
       "message": "Mensahe",
       "status": "Status",
       "vendor_status": "Status ng Vendor",
+      "view_details": "Tingnan ang Detalye",
       "created_at": "Nilikha Noong",
       "number_of_venue": "Bilang ng Mga Venue",
       "actions": "Aksyon",

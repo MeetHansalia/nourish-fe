@@ -225,14 +225,23 @@ const OrdersTableComponent = ({ mode, dictionary }) => {
           </Typography>
         )
       }),
+      columnHelper.accessor('delivery_date', {
+        header: `${dictionary?.datatable?.column?.delivery_date}`,
+        cell: ({ row }) => (
+          <Typography sx={{ fontFamily: 'inherit', fontSize: 'inherit', color: 'inherit' }}>
+            {`${row?.original?.orders?.[0]?.deliveryDate}`}
+          </Typography>
+        )
+      }),
       columnHelper.accessor('expectedDeliveryDate', {
         header: `${dictionary?.datatable?.column?.expected_delivery_date}`,
         cell: ({ row }) => (
           <Typography sx={{ fontFamily: 'inherit', fontSize: 'inherit', color: 'inherit' }}>
-            {`${row?.original?.orders[0]?.orderType}`}
+            {`${row?.original?.orders?.[0]?.schoolInfo?.expectedDeliveryTime}`}
           </Typography>
         )
       }),
+
       columnHelper.accessor('totalOrders', {
         header: `${dictionary?.datatable?.column?.total_no_of_orders}`,
         cell: ({ row }) => (
@@ -294,7 +303,6 @@ const OrdersTableComponent = ({ mode, dictionary }) => {
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
     manualPagination: true,
     manualSorting: true
   })

@@ -2,6 +2,8 @@
 import { getServerSession } from 'next-auth'
 
 // Lib Imports
+import { Toaster } from 'react-hot-toast'
+
 import { authOptions } from '@/libs/auth'
 
 // HOC Imports
@@ -21,6 +23,7 @@ import SocketHandler from '@/socket/SocketHandler'
 const Layout = async ({ children, params }) => {
   return (
     <RoleAuthGuard locale={params.lang} allowedUserRoles={['vendor_role']}>
+      <Toaster position='top-right' />
       <SocketHandler />
       {children}
       {/* <CheckUserProfileStatus locale={params.lang}>{children}</CheckUserProfileStatus> */}
@@ -32,12 +35,9 @@ export async function CheckUserProfileStatus({ children, locale }) {
   const session = await getServerSession(authOptions)
   const pathnameWithoutPanel = await getPathnameWithoutPanel()
 
-  const allowedRoutesForInvalidProfile = [
-    '/profile-management'
-    // '/profile'
-  ]
+  const allowedRoutesForInvalidProfile = ['/profile']
 
-  const redirectUrl = `/${locale}/${USER_PANELS?.vendor}/profile-management`
+  const redirectUrl = `/${locale}/${USER_PANELS?.vendor}/profile`
 
   let isValidRoute = true
 
@@ -45,7 +45,9 @@ export async function CheckUserProfileStatus({ children, locale }) {
 
   if (
     session &&
-    (session?.user?.verificationStatus !== 'approved' || session?.user?.thresHoldApprove !== 'approved') &&
+    (session?.user?.verificationStatus !== 'approved' ||
+      session?.user?.thresHoldApprove !== 'approved' ||
+      session?.user?.status === 'suspended') &&
     !allowedRoutesForInvalidProfile?.includes(pathnameWithoutPanel)
   ) {
     isValidRoute = false

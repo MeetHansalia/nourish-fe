@@ -99,17 +99,18 @@ const DisputeHistory = props => {
   const [openDisputeDialog, setOpenDisputeDialog] = useState(false) // Control dispute dialog visibility
   const [openAlert, setOpenAlert] = useState(false) // Control dialog visibility
   const [isConfirming, setIsConfirming] = useState(false) // Control dialog visibility
-  const [selectedFilter, setSelectedFilter] = useState(dictionary?.datatable?.column?.all)
   const [selectedDate, setSelectedDate] = useState(null)
 
   // doc verification count store
   const [verificationRequestCount, setVerificationRequestCount] = useState()
 
   const filterData = [
-    { id: 1, name: dictionary?.common?.all },
-    { id: 2, name: dictionary?.common?.completed },
-    { id: 3, name: dictionary?.common?.ongoing }
+    { id: 1, name: dictionary?.common?.all, value: 'All' },
+    { id: 2, name: dictionary?.common?.completed, value: true },
+    { id: 3, name: dictionary?.common?.ongoing, value: false }
   ]
+
+  const [selectedFilter, setSelectedFilter] = useState(filterData[0]?.value)
 
   const CheckboxInput = styled(Checkbox, {
     name: 'MuiCustomInputHorizontal',
@@ -445,8 +446,8 @@ const DisputeHistory = props => {
                 sx={{ minWidth: 150, height: 40 }}
               >
                 {filterData?.map(item => (
-                  <MenuItem value={item?.name} key={item?.id}>
-                    {`${item?.name}`}
+                  <MenuItem value={item?.value} key={item?.id}>
+                    {dictionary?.common?.[item?.name] || item?.name} {/* Language-specific name */}
                   </MenuItem>
                 ))}
               </CustomTextField>

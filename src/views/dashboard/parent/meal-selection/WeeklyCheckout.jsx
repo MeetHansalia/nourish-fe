@@ -33,7 +33,8 @@ import {
   Checkbox,
   Select,
   MenuItem,
-  InputLabel
+  InputLabel,
+  TextField
 } from '@mui/material'
 
 import { useForm, Controller } from 'react-hook-form'
@@ -50,6 +51,7 @@ import { getLocalizedUrl } from '@/utils/i18n'
 
 import SpeedometerChart from '@/components/nourishubs/GaugeChart'
 import { useTranslation } from '@/utils/getDictionaryClient'
+import IngredientsTable from '../../common/IngredientsTable'
 
 export default function CheckoutPage({ dictionary, kidId, vendorId }) {
   const router = useRouter()
@@ -66,6 +68,8 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
   const { t } = useTranslation(locale)
   const [totalPrice, setTotalPrice] = useState(0)
 
+  console.log('totalPrice', totalPrice)
+
   const [selectedModifierIds, setSelectedModifierIds] = useState([])
 
   const [dateSelected, setDateSelected] = useState(null)
@@ -77,6 +81,9 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
   const [itemTotal, setItemTotal] = useState(0)
 
   const [selectedDate, setSelectedDate] = useState('')
+
+  const [nutrition, setNutrition] = useState({})
+  const [kidNutrition, setKidNutrition] = useState({})
 
   const selectedDates = useSelector(state => state.date.singleDate)
 
@@ -215,6 +222,12 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
     setIsDataLoaded(false)
   }
 
+  const [notes, setNote] = useState('') // State to store the notes
+
+  const handleNoteChange = event => {
+    setNote(event.target.value) // Update state when the user types
+  }
+
   const dishTotal = (isSelected, dishPrice, selectedDish) => {
     setTotalPrice(prevTotal => {
       const priceToUse = dishPrice + (selectedDish?.pricing || 0)
@@ -246,7 +259,8 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
   const handlePayNow = async () => {
     try {
       const response = await axiosApiCall.post(API_ROUTER.PARENT.PAY_NOW_WEEKLY, {
-        kidId
+        kidId,
+        notes
       })
 
       const { status, message } = response?.data || {}
@@ -259,7 +273,7 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
   }
 
   const emptyCart = () => {
-    router.push(getLocalizedUrl(`${getPanelName(pathname)}/order-traking`, locale))
+    router.push(getLocalizedUrl(`${getPanelName(pathname)}/meal-selection`, locale))
 
     return
   }
@@ -277,6 +291,18 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
 
       // Extract unique order dates
       const uniqueOrderDates = [...new Set(cartData.map(cart => cart.orderDate))]
+
+      setKidNutrition(
+        cartData?.length > 0 && cartData[0]?.kidId?.nutrition
+          ? cartData[0].kidId.nutrition
+          : {
+              fat: 0,
+              sugar: 0,
+              protein: 0,
+              sodium: 0,
+              carbohydrate: 0
+            }
+      )
 
       setCartData(cartData)
       setOrderDates(uniqueOrderDates)
@@ -423,6 +449,9 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
         <Grid item xs={12} md={6} lg={6}>
           <Card className='common-block-dashboard'>
             <CardContent className='p-0'>
+              <Button variant='contained' onClick={() => router.back()}>
+                {dictionary?.form?.button?.back}
+              </Button>
               <Typography variant='h6' className='title-small-medium-custom'>
                 {cartData[0]?.kidId?.first_name} {cartData[0]?.kidId?.last_name}
               </Typography>
@@ -431,6 +460,22 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
               </Typography>
             </CardContent>
           </Card>
+          <Card className='common-block-dashboard'>
+            <CardContent className='p-0'>
+              <TextField
+                className='mt-2'
+                label={dictionary?.form?.label?.notes || 'Notes'}
+                variant='outlined'
+                multiline
+                fullWidth
+                rows={4}
+                placeholder={dictionary?.form?.placeholder?.notes || 'Enter your notes here...'}
+                value={notes} // Controlled input
+                onChange={handleNoteChange} // Update state on change
+              />
+            </CardContent>
+          </Card>
+
           <Card className='common-block-dashboard'>
             <CardContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div className='block-chart-common'>
@@ -444,12 +489,17 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
                     justifyContent: 'center'
                   }}
                 >
-                  <SpeedometerChart />
+                  <SpeedometerChart totalNutrition={nutrition} kidNutrition={kidNutrition} />
                 </Box>
               </div>
               <div className='block-chart-table-in'>
                 {Object.keys(cartData).length > 0 && (
-                  <MealNutritionTable key={JSON.stringify(cartData)} dictionary={dictionary} cartData={cartData} />
+                  <MealNutritionTable
+                    key={JSON.stringify(cartData)}
+                    dictionary={dictionary}
+                    cartData={cartData}
+                    setNutrition={setNutrition}
+                  />
                 )}
               </div>
             </CardContent>
@@ -509,16 +559,8 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
                 <Typography className='title-small-medium-custom' variant='h6'>
                   {dictionary?.common?.checkout}
                 </Typography>
-                <Button
-                  className='theme-common-btn theme-btn-color'
-                  variant='contained'
-                  color='success'
-                  onClick={handlePayNow}
-                >
-                  {dictionary?.form?.button?.pay_now}
-                </Button>
               </Box>
-              <Grid item xs={12} sm={12}>
+              {/* <Grid item xs={12} sm={12}>
                 <div className='form-group'>
                   <Controller
                     name='select'
@@ -543,108 +585,104 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
                     )}
                   />
                 </div>
-              </Grid>
+              </Grid> */}
             </CardContent>
           </Card>
 
           <Box>
-            {cartData
-              .filter(cart => (selectedDate ? cart.orderDate === selectedDate : true))
-              .map((cart, cartIndex) => (
-                <Box key={cartIndex}>
-                  {cart.cartItems?.map((dish, index) => {
-                    const modifiersTotal =
-                      dish.modifiers?.reduce((sum, modifier) => sum + (modifier.price || 0), 0) || 0
+            {cartData.map((cart, cartIndex) => (
+              <Box key={cartIndex}>
+                {cart.cartItems?.map((dish, index) => {
+                  const modifiersTotal = dish.modifiers?.reduce((sum, modifier) => sum + (modifier.price || 0), 0) || 0
 
-                    const dishTotal = (dish.price + modifiersTotal) * dish.quantity
+                  const dishTotal = (dish.price + modifiersTotal) * dish.quantity
 
-                    return (
-                      <Card key={index} sx={{ mb: 2 }} className='common-block-dashboard border-none-card'>
-                        <CardContent className='p-0'>
-                          <Box display='flex' justifyContent='space-between' alignItems='center' mb={2}>
-                            <Box flex='1'>
-                              <Typography className='title-small-medium-custom' variant='subtitle1'>
-                                {format(new Date(cart.orderDate), 'dd-MMM-EEE')} - {dish.dishId.name}
-                              </Typography>
+                  return (
+                    <Card key={index} sx={{ mb: 2 }} className='common-block-dashboard border-none-card'>
+                      <CardContent className='p-0'>
+                        <Box display='flex' justifyContent='space-between' alignItems='center' mb={2}>
+                          <Box flex='1'>
+                            <Typography className='title-small-medium-custom' variant='subtitle1' fontWeight='bold'>
+                              {format(new Date(cart.orderDate), 'dd-MMM-EEE')}
+                            </Typography>
+                            <Typography className='title-small-medium-custom' variant='subtitle1'>
+                              {dish.dishId.name}
+                            </Typography>
 
-                              {dish.modifiers && dish.modifiers.length > 0 && (
-                                <Box>
-                                  <Typography
-                                    className='disc-common-custom-small'
-                                    variant='body2'
-                                    color='text.secondary'
-                                  >
-                                    {dictionary?.form?.placeholder?.modifiers}:
-                                  </Typography>
-                                  <ul>
-                                    {dish.modifiers.map((modifier, modIndex) => (
-                                      <li key={modIndex}>
-                                        {modifier.dishId?.name && (
-                                          <Typography
-                                            className='disc-common-custom-small'
-                                            variant='body2'
-                                            color='text.secondary'
-                                          >
-                                            {`${modifier.dishId.name} - $${modifier.price}`}
-                                          </Typography>
-                                        )}
-                                      </li>
-                                    ))}
-                                  </ul>
-                                </Box>
-                              )}
+                            {dish.modifiers && dish.modifiers.length > 0 && (
+                              <Box>
+                                <Typography className='disc-common-custom-small' variant='body2' color='text.secondary'>
+                                  {dictionary?.form?.placeholder?.modifiers}:
+                                </Typography>
+                                <ul>
+                                  {dish.modifiers.map((modifier, modIndex) => (
+                                    <li key={modIndex}>
+                                      {modifier.dishId?.name && (
+                                        <Typography
+                                          className='disc-common-custom-small'
+                                          variant='body2'
+                                          color='text.secondary'
+                                        >
+                                          {`${modifier.dishId.name} - $${modifier.price}`}
+                                        </Typography>
+                                      )}
+                                    </li>
+                                  ))}
+                                </ul>
+                              </Box>
+                            )}
 
-                              <Typography className='disc-common-custom-small' variant='body2' sx={{ mt: 1 }}>
-                                {dictionary?.form?.label?.quantity}: {dish.quantity}
-                              </Typography>
-                              <Typography
-                                className='title-small-medium-custom theme-color mt-2'
-                                variant='subtitle1'
-                                sx={{ mt: 1 }}
-                              >
-                                ${dishTotal.toFixed(2)}
-                              </Typography>
-                            </Box>
-
-                            <div className='menu-pl-block'>
-                              <div className='menu-selection-block-inner-p-l checkout-flex flex justify-between items-center'>
-                                <IconButton
-                                  color='primary'
-                                  disabled={isDataLoaded}
-                                  onClick={() => handleDecrease(dish.dishId._id, kidId, dish, cart._id)}
-                                >
-                                  <Remove />
-                                </IconButton>
-                                <Typography className='input-block-p text-center'>{dish.quantity}</Typography>
-                                <IconButton
-                                  className='border-radius-block'
-                                  color='primary'
-                                  disabled={isDataLoaded}
-                                  onClick={() => handleIncrease(dish.dishId._id, kidId, dish, cart.orderDate)}
-                                >
-                                  <Add />
-                                </IconButton>
-                              </div>
-
-                              <Box
-                                className='block-img-box'
-                                sx={{
-                                  width: 64,
-                                  height: 64,
-                                  ml: 2,
-                                  backgroundImage: `url(${dish.dishId.image || '/default-image.jpg'})`,
-                                  backgroundSize: 'cover',
-                                  borderRadius: 1
-                                }}
-                              />
-                            </div>
+                            <Typography className='disc-common-custom-small' variant='body2' sx={{ mt: 1 }}>
+                              {dictionary?.form?.label?.quantity}: {dish.quantity}
+                            </Typography>
+                            <Typography
+                              className='title-small-medium-custom theme-color mt-2'
+                              variant='subtitle1'
+                              sx={{ mt: 1 }}
+                            >
+                              ${dishTotal.toFixed(0)}
+                            </Typography>
                           </Box>
-                        </CardContent>
-                      </Card>
-                    )
-                  })}
-                </Box>
-              ))}
+
+                          <div className='menu-pl-block'>
+                            <div className='menu-selection-block-inner-p-l checkout-flex flex justify-between items-center'>
+                              <IconButton
+                                color='primary'
+                                disabled={isDataLoaded}
+                                onClick={() => handleDecrease(dish.dishId._id, kidId, dish, cart._id)}
+                              >
+                                <Remove />
+                              </IconButton>
+                              <Typography className='input-block-p text-center'>{dish.quantity}</Typography>
+                              <IconButton
+                                className='border-radius-block'
+                                color='primary'
+                                disabled={isDataLoaded}
+                                onClick={() => handleIncrease(dish.dishId._id, kidId, dish, cart.orderDate)}
+                              >
+                                <Add />
+                              </IconButton>
+                            </div>
+
+                            <Box
+                              className='block-img-box'
+                              sx={{
+                                width: 64,
+                                height: 64,
+                                ml: 2,
+                                backgroundImage: `url(${dish.dishId.image || '/default-image.jpg'})`,
+                                backgroundSize: 'cover',
+                                borderRadius: 1
+                              }}
+                            />
+                          </div>
+                        </Box>
+                      </CardContent>
+                    </Card>
+                  )
+                })}
+              </Box>
+            ))}
           </Box>
 
           <Card className='common-block-dashboard'>
@@ -659,7 +697,7 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
                 {/* Item Total Calculation */}
                 <Box display='flex' justifyContent='space-between' mt={2}>
                   <Typography className='disc-common-custom-small'>{dictionary?.common?.item_total}</Typography>
-                  <Typography className='disc-common-custom-small'>${itemTotal.toFixed(2)}</Typography>
+                  <Typography className='disc-common-custom-small'>${itemTotal.toFixed(0)}</Typography>
                 </Box>
 
                 {/* Delivery Fees */}
@@ -682,8 +720,16 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
                     {dictionary?.common?.total_pay}
                   </Typography>
                   <Typography className='title-small-medium-custom theme-color' variant='subtitle1' fontWeight='bold'>
-                    ${itemTotal.toFixed(2) + deliveryPrice}
+                    ${(itemTotal + deliveryPrice).toFixed(0)}
                   </Typography>
+                  <Button
+                    className='theme-common-btn theme-btn-color'
+                    variant='contained'
+                    color='success'
+                    onClick={handlePayNow}
+                  >
+                    {dictionary?.form?.button?.pay_now}
+                  </Button>
                 </Box>
               </CardContent>
             )}
@@ -768,12 +814,22 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
                 ))}
                 <div className='block-chart-common flex align-center justify-between'>
                   <div className='block-chart-inner' style={{ width: 200, height: 200 }}>
-                    <SpeedometerChart />
+                    <SpeedometerChart
+                      totalNutrition={selectedDish?.dishId?.calculatedNutrition}
+                      kidNutrition={kidNutrition}
+                    />
                   </div>
+                </div>
+                <div className='block-chart-table-in'>
+                  <IngredientsTable
+                    ingredientsData={selectedDish?.dishId?.ingredients}
+                    selectedDish={selectedDish?.dishId}
+                    dictionary={dictionary}
+                  />
                 </div>
                 <div className='modal-footer'>
                   <Typography variant='h6' color='textSecondary' className='title-small-medium-custom'>
-                    {dictionary?.meal?.total_price}: ${totalPrice?.toFixed(2)}
+                    {dictionary?.meal?.total_price}: ${totalPrice?.toFixed(0)}
                   </Typography>
 
                   <div className='text-center'>

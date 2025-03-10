@@ -60,9 +60,13 @@ const Form = ({ dictionary, kidData, setKidData, profileUploadedFile }) => {
   // states
   const [isFormSubmitLoading, setIsFormSubmitLoading] = useState(false)
   const [selectedGender, setSelectedGender] = useState('')
+  const [selectedWeightUnit, setSelectedWeightUnit] = useState('')
+  const [selectedHeightUnit, setSelectedHeightUnit] = useState('')
   const [selectedSchool, setSelectedSchool] = useState('')
   const [selectedActivityLevel, setSelectedActivityLevel] = useState('')
   const genders = dictionary?.form?.dropdown.genders
+  const height_units = dictionary?.form?.dropdown.height_units
+  const weight_units = dictionary?.form?.dropdown.weight_units
 
   /**
    * Form Validation Schema
@@ -96,6 +100,14 @@ const Form = ({ dictionary, kidData, setKidData, profileUploadedFile }) => {
       .required(dictionary?.form?.validation?.required)
       .label(dictionary?.form?.label?.age),
     gender: yup.string().required(dictionary?.form?.validation?.required).label(dictionary?.form?.label?.gender),
+    // weight_unit: yup
+    //   .string()
+    //   .required(dictionary?.form?.validation?.required)
+    //   .label(dictionary?.form?.label?.weight_units),
+    height_in: yup
+      .string()
+      .required(dictionary?.form?.validation?.required)
+      .label(dictionary?.form?.label?.height_units),
     weight: yup
       .number()
       .typeError(dictionary?.form?.validation?.invalid_weight)
@@ -140,6 +152,8 @@ const Form = ({ dictionary, kidData, setKidData, profileUploadedFile }) => {
     gender: null,
     weight: '',
     height: '',
+    weight_unit: null,
+    height_in: null,
     allergiesOrDietaryDescription: '',
     google_address: null,
     schoolId: '',
@@ -198,6 +212,8 @@ const Form = ({ dictionary, kidData, setKidData, profileUploadedFile }) => {
     }
 
     data.gender = selectedGender
+    // data.weight_in = selectedWeightUnit
+    data.height_in = selectedHeightUnit
     data.schoolId = selectedSchool
     data.activityLevel = selectedActivityLevel
     data.age = parseInt(data.age)
@@ -307,6 +323,16 @@ const Form = ({ dictionary, kidData, setKidData, profileUploadedFile }) => {
     setSelectedGender(event?.target?.value)
   }
 
+  const handleWeightUnitChange = event => {
+    setValue('weight_unit', event?.target?.value)
+    setSelectedWeightUnit(event?.target?.value)
+  }
+
+  const handleHeightUnitChange = event => {
+    setValue('height_in', event?.target?.value)
+    setSelectedHeightUnit(event?.target?.value)
+  }
+
   const handleChangeAddress = locationObj => {
     if (locationObj?.latitude && locationObj?.longitude) {
       fetchSchoolList(locationObj?.latitude, locationObj?.longitude)
@@ -389,7 +415,7 @@ const Form = ({ dictionary, kidData, setKidData, profileUploadedFile }) => {
                 />
               </div>
             </Grid> */}
-            <Grid item xs={4}>
+            <Grid item xs={6}>
               <div className='form-group'>
                 <Controller
                   name='age'
@@ -458,6 +484,41 @@ const Form = ({ dictionary, kidData, setKidData, profileUploadedFile }) => {
               </div>
             </Grid>
             <Grid item xs={3}>
+              <div className='form-group address-fill-common'>
+                <Controller
+                  name='weight_unit'
+                  className='diff-select-block'
+                  control={control}
+                  defaultValue='kg'
+                  render={({ field }) => (
+                    <CustomTextField
+                      {...field}
+                      select
+                      fullWidth
+                      className='diff-select-block'
+                      value={field.value || 'kg'}
+                      label={dictionary?.form?.label?.weight_units}
+                      error={Boolean(errors.weight_unit)}
+                      helperText={errors?.weight_unit?.message || ''}
+                      SelectProps={{
+                        displayEmpty: true,
+                        onChange: handleWeightUnitChange
+                      }}
+                    >
+                      <MenuItem disabled value=''>
+                        <Typography color='text.disabled'>{dictionary?.form?.placeholder?.weight_units}</Typography>
+                      </MenuItem>
+                      {weight_units?.map(item => (
+                        <MenuItem value={item?.id} key={item?.id}>
+                          {item?.name}
+                        </MenuItem>
+                      ))}
+                    </CustomTextField>
+                  )}
+                />
+              </div>
+            </Grid>
+            <Grid item xs={3}>
               <div className='form-group'>
                 <Controller
                   name='height'
@@ -470,6 +531,41 @@ const Form = ({ dictionary, kidData, setKidData, profileUploadedFile }) => {
                       placeholder={dictionary?.form?.placeholder?.height}
                       {...(errors.height && { error: true, helperText: errors.height.message })}
                     />
+                  )}
+                />
+              </div>
+            </Grid>
+            <Grid item xs={3}>
+              <div className='form-group address-fill-common'>
+                <Controller
+                  name='height_in'
+                  className='diff-select-block'
+                  control={control}
+                  // defaultValue='Cm'
+                  render={({ field }) => (
+                    <CustomTextField
+                      {...field}
+                      select
+                      fullWidth
+                      className='diff-select-block'
+                      value={selectedHeightUnit}
+                      label={dictionary?.form?.label?.height_units}
+                      error={Boolean(errors.height_in)}
+                      helperText={errors?.height_in?.message || ''}
+                      SelectProps={{
+                        displayEmpty: true,
+                        onChange: handleHeightUnitChange
+                      }}
+                    >
+                      <MenuItem disabled value=''>
+                        <Typography color='text.disabled'>{dictionary?.form?.placeholder?.height_units}</Typography>
+                      </MenuItem>
+                      {height_units?.map(item => (
+                        <MenuItem value={item?.id} key={item?.id}>
+                          {item?.name}
+                        </MenuItem>
+                      ))}
+                    </CustomTextField>
                   )}
                 />
               </div>
@@ -591,9 +687,9 @@ const Form = ({ dictionary, kidData, setKidData, profileUploadedFile }) => {
                       <MenuItem value=''>
                         <Typography color='text.disabled'>{dictionary?.form?.placeholder?.activity_level}</Typography>
                       </MenuItem>
-                      <MenuItem value={1.2}>Sedentary (Little or no exercise)</MenuItem>
-                      <MenuItem value={1.55}>Moderate (Regular moderate exercise (3-5 days a week))</MenuItem>
-                      <MenuItem value={1.9}>Active (Intense exercise or sports (6-7 days a week))</MenuItem>
+                      <MenuItem value={1.2}>{dictionary?.form?.label?.sedentary} </MenuItem>
+                      <MenuItem value={1.55}>{dictionary?.form?.label?.moderate} </MenuItem>
+                      <MenuItem value={1.9}>{dictionary?.form?.label?.active1} </MenuItem>
                     </CustomTextField>
                   )}
                 />
