@@ -339,7 +339,6 @@ const MenuNutritionManagement = props => {
           </Button> */}
         </div>
       </div>
-      {users?.length}
 
       {/* <Grid container spacing={6}>
         <Grid item xs={12}>

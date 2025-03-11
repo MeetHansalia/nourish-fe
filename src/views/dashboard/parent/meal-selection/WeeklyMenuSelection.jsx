@@ -487,7 +487,7 @@ const WeeklyMenuSelection = ({ dictionary, kidId }) => {
       <div className='common-block-dashboard p-0'>
         <div className='common-form-dashboard  border-0 flex justify-between items-center'>
           <Typography variant='h5' className='font-medium'>
-            <Button variant='contained' onClick={() => router.back()}>
+            <Button className='theme-common-btn mr-4' variant='contained' onClick={() => router.back()}>
               {dictionary?.form?.button?.back}
             </Button>
             {dictionary?.common?.weekly_menu_selection}

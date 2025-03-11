@@ -97,7 +97,6 @@ export const API_ROUTER = {
     GET_CART_MODIFIER_DISH: id => `/v1/super-admin-order-management/cart-dish-details/${id}`,
     GET_SUPER_ADMIN_VENDOR_LIST: '/v1/super-admin-menu-suggestions/vendors',
     STATISTICS: '/v1/super-admin-order-management/statistics'
-
   },
 
   // school /dashboard
@@ -424,10 +423,12 @@ export const API_ROUTER = {
     GET_NEAR_BY_VENDORS: '/v1/area-executives-foodchart/nearby-vendors',
 
     GET_SCHOOLS: '/v1/area-executive-order-management/schools',
+    GET_KIDS: '/v1/area-executive-nutrition-suggestions/get-kids',
+    GET_SCHOOLS_NUTRITION: '/v1/area-executive-nutrition-suggestions/schools',
     GET_SCHOOL_ORDERS: id => `/v1/area-executive-order-management/get-school-orders/${id}`,
     GET_STATISTIC: '/v1/area-executive-dashboard/statistics',
     GET_AREA_VENDOR_LIST: '/v1/area-executive-menu-suggestions/vendors',
-
+    GET_SCHOOL_ORDER_MONTH: '/v1/area-executive-nutrition-suggestions/get-school-orders-by-month',
     GET_ALL_CANCEL_ORDER: `/v1/area-executive-order-management/all-cancle-orders`,
     GET_NEAR_BY_VENDOR: `/v1/area-executive-order-management/nearby-vendors`,
     APPROVE_REJECT_VENDOR_ORDER_REQUEST: id => `/v1/area-executive-order-management/cancle-order-request/${id}`,
@@ -439,8 +440,7 @@ export const API_ROUTER = {
     GET_CART_MODIFIER_DISH: id => `/v1/area-executive-order-management/cart-dish-details/${id}`,
     GET_ALL_CATEGORIES: `/v1/area-executive-order-management/get-all-categories`,
     REVIEW_LIST: '/v1/area-executive-review-list',
-    GET_STATISTICS: '/v1/area-executive-order-management/statistics',
-
+    GET_STATISTICS: '/v1/area-executive-order-management/statistics'
   },
 
   /**

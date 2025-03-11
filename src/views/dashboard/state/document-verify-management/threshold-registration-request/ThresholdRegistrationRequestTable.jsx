@@ -168,7 +168,8 @@ const VendorThresholdRegistrationRequests = props => {
               element={Button}
               elementProps={{
                 children: `${dictionary?.common?.reject}`,
-                variant: 'contained'
+                variant: 'contained',
+                className: 'theme-common-btn'
               }}
               dialog={RejectViewDialogBox}
               dialogProps={{
@@ -211,7 +212,6 @@ const VendorThresholdRegistrationRequests = props => {
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    // getFilteredRowModel: getFilteredRowModel(),
     manualPagination: true,
     manualSorting: true
   })
@@ -232,18 +232,22 @@ const VendorThresholdRegistrationRequests = props => {
   }, [page, itemsPerPage, globalFilter, sorting])
 
   return (
-    <Card>
+    <Card className='common-block-dashboard table-block-no-pad'>
       <CardHeader
+        className='common-block-title'
         title={dictionary?.page?.order_management?.vendor_minimum_thresholds_verfication_requests}
         action={
-          <DebouncedInput
-            value={globalFilter ?? ''}
-            onChange={value => setGlobalFilter(String(value))}
-            placeholder={dictionary?.datatable?.common?.search_placeholder}
-          />
+          <div className='form-group'>
+            <DebouncedInput
+              value={globalFilter ?? ''}
+              onChange={value => setGlobalFilter(String(value))}
+              placeholder={dictionary?.datatable?.common?.search_placeholder}
+            />
+          </div>
         }
       />
-      <div className='overflow-x-auto'>
+      {/* <div className='overflow-x-auto'> */}
+      <div className='table-common-block p-0 overflow-x-auto'>
         <table className={tableStyles.table}>
           <thead>
             {table.getHeaderGroups().map(headerGroup => (
@@ -271,7 +275,8 @@ const VendorThresholdRegistrationRequests = props => {
             ))}
             {isDataTableServerLoading && (
               <tr>
-                <td colSpan={columns?.length}>
+                {/* <td colSpan={columns?.length}> */}
+                <td className='no-pad-td' colSpan={columns?.length}>
                   <LinearProgress color='primary' sx={{ height: '2px' }} />
                 </td>
               </tr>

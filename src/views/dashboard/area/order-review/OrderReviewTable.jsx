@@ -36,7 +36,7 @@ import {
   Button,
   LinearProgress,
   TablePagination,
-  CardContent,
+  CardHeader,
   Grid,
   InputLabel,
   TextField
@@ -44,6 +44,8 @@ import {
 
 // Arrow SVG
 import { useSelector, useDispatch } from 'react-redux'
+
+import tableStyles from '@core/styles/table.module.css'
 
 import ChevronRight from '@menu/svg/ChevronRight'
 
@@ -70,7 +72,7 @@ const OrderReviewTable = props => {
   //** STATES */
   const [page, setPage] = useState(1)
   const [data, setData] = useState([])
-  const [sorting, setSorting] = useState([])
+  // const [sorting, setSorting] = useState([])
   const [totalCount, setTotalCount] = useState(0)
   const [totalPages, setTotalPages] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState(5)
@@ -98,13 +100,13 @@ const OrderReviewTable = props => {
 
     abortController.current = new AbortController()
 
-    const orderBy = sorting.reduce((acc, { id, desc }) => {
-      acc[id] = desc ? -1 : 1
+    // const orderBy = sorting.reduce((acc, { id, desc }) => {
+    //   acc[id] = desc ? -1 : 1
 
-      return acc
-    }, {})
+    //   return acc
+    // }, {})
 
-    const orderByString = Object.keys(orderBy).length > 0 ? JSON.stringify(orderBy) : null
+    // const orderByString = Object.keys(orderBy).length > 0 ? JSON.stringify(orderBy) : null
 
     setIsLoading(true)
 
@@ -115,8 +117,8 @@ const OrderReviewTable = props => {
           limit: itemsPerPage,
           kidId: selectedKid === 'all' ? null : selectedKid,
           vendorId: selectedVendor === 'all' ? null : selectedVendor,
-          orderDate: orderDate,
-          orderBy: orderByString
+          orderDate: orderDate
+          // orderBy: orderByString
         },
         signal: abortController.current.signal
       })
@@ -214,7 +216,8 @@ const OrderReviewTable = props => {
                 element={Button}
                 elementProps={{
                   children: `${dictionary?.page.common?.details}`,
-                  variant: 'contained'
+                  variant: 'contained',
+                  className: 'theme-common-btn'
                 }}
                 dialog={ReviewDialog}
                 dialogProps={{ dictionary, selectedRow: row.original }}
@@ -243,10 +246,10 @@ const OrderReviewTable = props => {
       pagination: {
         pageIndex: page - 1,
         pageSize: itemsPerPage
-      },
-      sorting
+      }
+      // sorting
     },
-    onSortingChange: setSorting,
+    // onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     manualPagination: true,
@@ -262,7 +265,7 @@ const OrderReviewTable = props => {
 
   useEffect(() => {
     getAllCompletedOrders()
-  }, [page, itemsPerPage, sorting, selectedKid, selectedVendor, orderDate])
+  }, [page, itemsPerPage, selectedKid, selectedVendor, orderDate])
 
   //** HANDLERS */
 
@@ -292,35 +295,37 @@ const OrderReviewTable = props => {
 
   return (
     <>
-      <Card>
-        <CardContent className='flex flex-col gap-4'>
-          <Grid container spacing={2} alignItems='center' justifyContent='space-between' sx={{ mb: 2 }}>
-            <Grid item xs={12} md={4}>
-              <Typography variant='h5'>{dictionary?.datatable?.all_review?.table_title}</Typography>
-            </Grid>
-            <Grid item xs={12} md={8} sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
-              <TextField
-                sx={{ minWidth: 150 }}
-                value={selectedVendor}
-                onChange={e => setSelectedVendor(e.target.value)}
-                select
-                label={dictionary?.page?.order_management?.select_vendor}
-                size='small'
-              >
-                <MenuItem value={'all'}>{dictionary?.form?.label?.all}</MenuItem>
-                {vendorList?.map(vendor => (
-                  <MenuItem value={vendor?._id} key={vendor?._id}>
-                    {`${vendor?.first_name} ${vendor?.last_name}`}
-                  </MenuItem>
-                ))}
-              </TextField>
-
-              <FormControl sx={{ minWidth: 150 }}>
-                <InputLabel id='demo-controlled-open-select-label'>{dictionary?.form?.label?.select_child}</InputLabel>
-                <Select
-                  labelId='demo-controlled-open-select-label'
+      <Card className='common-block-dashboard table-block-no-pad'>
+        <CardHeader
+          //  className='flex flex-col gap-4'
+          className='common-block-title'
+          title={dictionary?.datatable?.all_review?.table_title}
+          action={
+            <div className='flex gap-4'>
+              <div className='form-group address-fill-common'>
+                <CustomTextField
+                  sx={{ minWidth: 150 }}
+                  className='diff-select-block'
+                  value={selectedVendor}
+                  onChange={e => setSelectedVendor(e.target.value)}
+                  select
+                  label={dictionary?.page?.order_management?.select_vendor}
+                  size='small'
+                >
+                  <MenuItem value={'all'}>{dictionary?.form?.label?.all}</MenuItem>
+                  {vendorList?.map(vendor => (
+                    <MenuItem value={vendor?._id} key={vendor?._id}>
+                      {`${vendor?.first_name} ${vendor?.last_name}`}
+                    </MenuItem>
+                  ))}
+                </CustomTextField>
+              </div>
+              <div className='form-group address-fill-common'>
+                <CustomTextField
                   id='demo-controlled-open-select'
                   value={selectedKid}
+                  className='diff-select-block'
+                  select
                   label={dictionary?.form?.label?.select_child}
                   onChange={e => setSelectedKid(e.target.value)}
                   size='small'
@@ -331,109 +336,94 @@ const OrderReviewTable = props => {
                       {`${kid?.first_name} ${kid?.last_name}`}
                     </MenuItem>
                   ))}
-                </Select>
-              </FormControl>
-              <AppReactDatepicker
-                dateFormat='MM/dd/yyyy'
-                selected={orderDate}
-                onChange={date => handelDateChange(date)}
-                maxDate={new Date()}
-                customInput={<CustomTextField fullWidth />}
-                placeholderText={t('form.placeholder.date')}
-              />
-              {/* <FormControl sx={{ minWidth: 150 }}>
-                <InputLabel id='demo-controlled-open-select-label'>{dictionary?.form?.label?.status}</InputLabel>
-                <Select
-                  labelId='demo-controlled-open-select-label'
-                  id='demo-controlled-open-select'
-                  value={isReviewed}
-                  label={dictionary?.form?.label?.status}
-                  onChange={e => setIsReviewed(e.target.value)}
-                  size='small'
-                >
-                  <MenuItem value={'all'}>
-                    <em>{dictionary?.form?.label?.all}</em>
-                  </MenuItem>
-                  {[
-                    { value: 'true', label: dictionary?.form?.label?.true },
-                    { value: 'false', label: dictionary?.form?.label?.false }
-                  ].map(item => (
-                    <MenuItem value={item?.value} key={item?.value}>
-                      {item?.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl> */}
-            </Grid>
-          </Grid>
-        </CardContent>
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
+                </CustomTextField>
+              </div>
+              <div className='form-group'>
+                <AppReactDatepicker
+                  dateFormat='MM/dd/yyyy'
+                  selected={orderDate}
+                  onChange={date => handelDateChange(date)}
+                  maxDate={new Date()}
+                  customInput={
+                    <CustomTextField
+                      label={t('form.placeholder.date')}
+                      fullWidth
+                      InputProps={{
+                        readOnly: true
+                      }}
+                    />
+                  }
+                  // placeholderText={t('form.placeholder.date')}
+                />
+              </div>
+            </div>
+          }
+        />
+        <div className='table-common-block p-0 overflow-x-auto'>
+          <table className={tableStyles.table}>
+            <thead>
               {table.getHeaderGroups().map(headerGroup => (
-                <TableRow key={headerGroup.id}>
+                <tr key={headerGroup.id}>
                   {headerGroup.headers.map(header => (
-                    <TableCell key={header.id} onClick={header.column.getToggleSortingHandler()}>
-                      {flexRender(header.column.columnDef.header, header.getContext())}
-                      {header.column.getIsSorted() === 'asc' ? (
-                        <ChevronRight fontSize='1.25rem' className='-rotate-90' />
-                      ) : header.column.getIsSorted() === 'desc' ? (
-                        <ChevronRight fontSize='1.25rem' className='rotate-90' />
-                      ) : null}
-                    </TableCell>
+                    <th key={header.id}>
+                      {header.isPlaceholder ? null : (
+                        <>
+                          <div
+                            className={classnames({
+                              'flex items-center': header.column.getIsSorted(),
+                              ' select-none': header.column.getCanSort()
+                            })}
+                            onClick={header.column.getToggleSortingHandler()}
+                          >
+                            {flexRender(header.column.columnDef.header, header.getContext())}
+                            {/* {{
+                              asc: <i className='tabler-chevron-up text-xl' />,
+                              desc: <i className='tabler-chevron-down text-xl' />
+                            }[header.column.getIsSorted()] ?? null} */}
+                          </div>
+                        </>
+                      )}
+                    </th>
                   ))}
-                </TableRow>
+                </tr>
               ))}
               {isLoading && (
                 <tr>
-                  <td colSpan={columns?.length}>
+                  {/* <td colSpan={columns?.length}> */}
+                  <td className='no-pad-td' colSpan={columns?.length}>
                     <LinearProgress color='primary' sx={{ height: '2px' }} />
                   </td>
                 </tr>
               )}
-            </TableHead>
-            <TableBody>
-              {/* {table.getRowModel().rows.map(row => (
-              <TableRow key={row.id}>
-                {row.getVisibleCells().map(cell => (
-                  <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
-                ))}
-              </TableRow>
-            ))} */}
-              {/* isLoading ? (
-              <TableRow>
-                <TableCell colSpan={table.getVisibleFlatColumns().length} align='center'>
-                  <CircularProgress size={24} sx={{ color: 'primary.main' }} />
-                </TableCell>
-              </TableRow>
-            ) : */}
-              {table.getFilteredRowModel().rows.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={table.getVisibleFlatColumns().length} align='center'>
+            </thead>
+            <tbody>
+              {globalFilter.length > 0 && table.getFilteredRowModel().rows.length === 0 ? (
+                <tr>
+                  <td colSpan={table.getVisibleFlatColumns().length} className='text-center'>
                     {t('datatable.common.no_matching_data_found')}
-                  </TableCell>
-                </TableRow>
-              ) : table.getRowModel().rows.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={table.getVisibleFlatColumns().length} align='center'>
+                  </td>
+                </tr>
+              ) : table.getFilteredRowModel().rows.length === 0 ? (
+                <tr>
+                  <td colSpan={table.getVisibleFlatColumns().length} className='text-center'>
                     {t('datatable.common.no_data_available')}
-                  </TableCell>
-                </TableRow>
+                  </td>
+                </tr>
               ) : (
                 table
                   .getRowModel()
                   .rows.slice(0, table.getState().pagination.pageSize)
                   .map(row => (
-                    <TableRow key={row.id} className={classnames({ selected: row.getIsSelected() })}>
+                    <tr key={row.id} className={classnames({ selected: row.getIsSelected() })}>
                       {row.getVisibleCells().map(cell => (
-                        <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                        <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
                       ))}
-                    </TableRow>
+                    </tr>
                   ))
               )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+            </tbody>
+          </table>
+        </div>
         <TablePagination
           component={() => (
             <div className='flex justify-between items-center flex-wrap pli-6 border-bs bs-auto plb-[12.5px] gap-2'>

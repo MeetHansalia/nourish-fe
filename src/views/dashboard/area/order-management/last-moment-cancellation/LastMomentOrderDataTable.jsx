@@ -6,6 +6,8 @@ import { useState, useEffect, useMemo, useRef } from 'react'
 // Next Imports
 import { useParams } from 'next/navigation'
 
+import { useDispatch, useSelector } from 'react-redux'
+
 // React Table Imports
 import {
   useReactTable,
@@ -43,8 +45,6 @@ import moment from 'moment'
 
 import { isCancel } from 'axios'
 
-import { useDispatch } from 'react-redux'
-
 import axiosApiCall from '@/utils/axiosApiCall'
 import { useTranslation } from '@/utils/getDictionaryClient'
 import {
@@ -54,7 +54,8 @@ import {
   setFormFieldsErrors,
   successAlert,
   toastError,
-  toastSuccess
+  toastSuccess,
+  isUserHasPermission
 } from '@/utils/globalFunctions'
 import { API_ROUTER } from '@/utils/apiRoutes'
 
@@ -74,6 +75,8 @@ import DebouncedInput from '@/components/nourishubs/DebouncedInput'
 import { setOrderId } from '@/redux-store/slices/global'
 import StatusLabel from '@/components/theme/getStatusColours'
 
+import { profileState } from '@/redux-store/slices/profile'
+
 const LastMomentOrderDataTable = ({ dictionary }) => {
   const { lang: locale } = useParams()
   const { t } = useTranslation(locale)
@@ -88,12 +91,24 @@ const LastMomentOrderDataTable = ({ dictionary }) => {
   const [page, setPage] = useState(1)
   const [isDataTableServerLoading, setIsDataTableServerLoading] = useState(true)
   const [selectedRow, setSelectedRow] = useState(null)
-
+  const { user = null } = useSelector(profileState)
   const [isLoading, setIsLoading] = useState(false)
   const [isNearVendorDialogShow, setIsNearVendorDialogShow] = useState(false)
   // const [isLastMomentCancalationCount, setLastMomentCancelationCount] = useState(false)
 
   const abortController = useRef(null)
+
+  // Vars
+  const isUserHasPermissionSections = useMemo(
+    () => ({
+      approve_last_movement_cancellation: isUserHasPermission({
+        permissions: user?.permissions,
+        permissionToCheck: 'order_management',
+        subPermissionsToCheck: ['approve_last_movement_cancellation']
+      })
+    }),
+    [user?.permissions]
+  )
 
   // Fetch Data
   const getAllRequests = async () => {
@@ -190,53 +205,45 @@ const LastMomentOrderDataTable = ({ dictionary }) => {
 
   const columnHelper = createColumnHelper()
 
-  const columns = useMemo(
-    () => [
+  const columns = useMemo(() => {
+    const columnData = [
       columnHelper.accessor('serialNumber', {
-        header: `${dictionary?.datatable?.column?.serial_number}`,
+        id: 'serialNumber',
+        header: dictionary?.datatable?.column?.serial_number,
         cell: info => info.getValue(),
         enableSorting: false
       }),
       columnHelper.accessor(row => `${row.vendorId?.first_name ?? ''} ${row.vendorId?.last_name ?? ''}`.trim(), {
-        header: `${dictionary?.datatable?.column?.vendor_name}`,
+        id: 'vendorName',
+        header: dictionary?.datatable?.column?.vendor_name,
         cell: info => info.getValue() || <span className='italic text-gray-500'>N/A</span>
       }),
       columnHelper.accessor('schoolId.schoolName', {
-        header: `${dictionary?.datatable?.column?.school_name}`,
+        id: 'schoolName',
+        header: dictionary?.datatable?.column?.school_name,
         cell: info => info.getValue() || <span className='italic text-gray-500'>N/A</span>
       }),
       columnHelper.accessor(row => moment(row.deliveryDate).format('YYYY-MM-DD'), {
-        header: `${dictionary?.datatable?.column?.delivery_date}`,
+        id: 'deliveryDate',
+        header: dictionary?.datatable?.column?.delivery_date,
         cell: info => info.getValue() || <span className='italic text-gray-500'>N/A</span>
       }),
       columnHelper.accessor('cancelOrderDescription', {
-        header: `${dictionary?.page?.vendor_management?.cancellation_reason}`,
+        id: 'cancellationReason',
+        header: dictionary?.page?.vendor_management?.cancellation_reason,
         cell: info => info.getValue() || <span className='italic text-gray-500'>N/A</span>
       }),
       columnHelper.accessor('deliveryAddress', {
-        header: `${dictionary?.page?.vendor_management?.vendor_address}`,
+        id: 'vendorAddress',
+        header: dictionary?.page?.vendor_management?.vendor_address,
         cell: info => info.getValue() || <span className='italic text-gray-500'>N/A</span>
       }),
       columnHelper.accessor('Status', {
-        header: `${dictionary?.datatable?.column?.status}`,
+        id: 'status',
+        header: dictionary?.datatable?.column?.status,
         enableSorting: false,
         cell: ({ row }) => {
-          const cancelOrderRequestStatus = row?.original?.cancelorderRequestStatus // Get status
-
-          return (
-            <>
-              <div className='flex gap-2' onClick={e => e.stopPropagation()}>
-                <StatusLabel status={cancelOrderRequestStatus} />
-              </div>
-            </>
-          )
-        }
-      }),
-      columnHelper.display({
-        id: 'actions',
-        header: `${dictionary?.datatable?.column?.actions}`,
-        cell: ({ row }) => {
-          const cancelOrderRequestStatus = row?.original?.cancelorderRequestStatus // Get status
+          const cancelOrderRequestStatus = row?.original?.cancelorderRequestStatus
 
           return (
             <div className='flex gap-2' onClick={e => e.stopPropagation()}>
@@ -255,6 +262,7 @@ const LastMomentOrderDataTable = ({ dictionary }) => {
                         dispatch(setOrderId(row?.original._id))
                       }
                     }}
+                    className='theme-common-btn'
                   >
                     {cancelOrderRequestStatus === 'initiate' ? dictionary?.common?.approve : 'Reorder'}
                   </Button>
@@ -265,7 +273,8 @@ const LastMomentOrderDataTable = ({ dictionary }) => {
                       elementProps={{
                         variant: 'outlined',
                         children: dictionary?.common?.reject,
-                        onClick: e => e.stopPropagation()
+                        onClick: e => e.stopPropagation(),
+                        className: 'theme-common-btn'
                       }}
                       dialog={RejectConfirmationDialogBox}
                       dialogProps={{
@@ -283,9 +292,67 @@ const LastMomentOrderDataTable = ({ dictionary }) => {
           )
         }
       })
-    ],
-    [dictionary]
-  )
+    ]
+
+    // ✅ Add Actions column only if the user has permission
+    if (isUserHasPermissionSections?.approve_last_movement_cancellation) {
+      columnData.push(
+        columnHelper.display({
+          id: 'actions',
+          header: dictionary?.datatable?.column?.actions,
+          cell: ({ row }) => {
+            const cancelOrderRequestStatus = row?.original?.cancelorderRequestStatus
+
+            return (
+              <div className='flex gap-2' onClick={e => e.stopPropagation()}>
+                {cancelOrderRequestStatus !== 'reject' && (
+                  <>
+                    <Button
+                      variant='contained'
+                      onClick={e => {
+                        e.stopPropagation()
+                        setSelectedRow(row?.original)
+
+                        if (cancelOrderRequestStatus === 'initiate') {
+                          handleApprove(row?.original)
+                        } else if (cancelOrderRequestStatus === 'accepted') {
+                          setIsNearVendorDialogShow(true)
+                          dispatch(setOrderId(row?.original._id))
+                        }
+                      }}
+                    >
+                      {cancelOrderRequestStatus === 'initiate' ? dictionary?.common?.approve : 'Reorder'}
+                    </Button>
+
+                    {cancelOrderRequestStatus === 'initiate' && (
+                      <OpenDialogOnElementClick
+                        element={Button}
+                        elementProps={{
+                          variant: 'outlined',
+                          children: dictionary?.common?.reject,
+                          onClick: e => e.stopPropagation()
+                        }}
+                        dialog={RejectConfirmationDialogBox}
+                        dialogProps={{
+                          getAllRequests,
+                          dictionary,
+                          page,
+                          itemsPerPage,
+                          vendorData: row?.original
+                        }}
+                      />
+                    )}
+                  </>
+                )}
+              </div>
+            )
+          }
+        })
+      )
+    }
+
+    return columnData
+  }, [dictionary, isUserHasPermissionSections])
 
   const dataWithSerialNumber = useMemo(
     () =>
@@ -338,18 +405,22 @@ const LastMomentOrderDataTable = ({ dictionary }) => {
 
   return (
     <>
-      <Card>
+      <Card className='common-block-dashboard table-block-no-pad'>
         <CardHeader
+          className='common-block-title'
           title={dictionary?.page?.order_management?.last_moment_cancellation}
           action={
-            <DebouncedInput
-              value={globalFilter ?? ''}
-              onChange={value => setGlobalFilter(String(value))}
-              placeholder={dictionary?.datatable?.common?.search_placeholder}
-            />
+            <div className='form-group'>
+              <DebouncedInput
+                value={globalFilter ?? ''}
+                onChange={value => setGlobalFilter(String(value))}
+                placeholder={dictionary?.datatable?.common?.search_placeholder}
+              />
+            </div>
           }
         />
-        <div className='overflow-x-auto'>
+        {/* <div className='overflow-x-auto'> */}
+        <div className='table-common-block p-0 overflow-x-auto'>
           <table className={tableStyles.table}>
             <thead>
               {table.getHeaderGroups().map(headerGroup => (
@@ -375,7 +446,7 @@ const LastMomentOrderDataTable = ({ dictionary }) => {
               ))}
               {isDataTableServerLoading && (
                 <tr>
-                  <td colSpan={columns?.length}>
+                  <td colSpan={columns?.length} className='no-pad-td'>
                     <LinearProgress color='primary' sx={{ height: '2px' }} />
                   </td>
                 </tr>

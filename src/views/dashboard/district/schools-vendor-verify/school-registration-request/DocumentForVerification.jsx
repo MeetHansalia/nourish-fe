@@ -186,11 +186,18 @@ const DocumentsForVerification = props => {
         title={dictionary?.page?.vendor_management?.document_verification_requests?.document_list}
         action={
           <div className='flex gap-2'>
-            <Button variant='contained' color='primary' onClick={handleApprove} disabled={isLoading}>
+            <Button
+              variant='contained'
+              className='theme-common-btn'
+              color='primary'
+              onClick={handleApprove}
+              disabled={isLoading}
+            >
               {dictionary?.common?.approve}
             </Button>
             <Button
               variant='contained'
+              className='theme-common-btn'
               onClick={() => setIsDialogOpen(true)}
               style={{ backgroundColor: '#8bc34a' }}
               disabled={isLoading}
@@ -248,10 +255,16 @@ const DocumentsForVerification = props => {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setIsDialogOpen(false)} color='secondary'>
+          <Button onClick={() => setIsDialogOpen(false)} className='theme-common-btn'>
             {dictionary?.form?.button?.cancel}
           </Button>
-          <Button onClick={handleReject} variant='contained' color='primary' disabled={!reasonText.trim() || isLoading}>
+          <Button
+            onClick={handleReject}
+            variant='contained'
+            // color='primary'
+            className='theme-common-btn'
+            disabled={!reasonText.trim() || isLoading}
+          >
             {dictionary?.common?.reject}
             {isLoading && <CircularProgress className='ml-2' size={20} sx={{ color: 'white' }} />}
           </Button>

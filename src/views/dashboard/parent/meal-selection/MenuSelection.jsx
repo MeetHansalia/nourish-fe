@@ -418,8 +418,8 @@ const Menu = ({ dictionary, kidId, vendorId }) => {
         <div className='multi-order-custom'>
           <div className='common-block-dashboard p-0'>
             <div className='common-form-dashboard flex justify-between items-center'>
-              <Typography variant='h5' className='font-medium'>
-                <Button variant='contained' onClick={() => router.back()}>
+              <Typography variant='h5' className='font-medium '>
+                <Button className='theme-common-btn mr-4' variant='contained' onClick={() => router.back()}>
                   {dictionary?.form?.button?.back}
                 </Button>
                 {dictionary?.common?.menu}

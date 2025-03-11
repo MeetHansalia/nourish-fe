@@ -21,7 +21,7 @@ import { API_ROUTER } from '@/utils/apiRoutes'
 // View Imports
 
 import { toastError, actionConfirmWithLoaderAlert, successAlert } from '@/utils/globalFunctions'
-import DisputeForm from '@/views/dashboard/admin/dispute-management/DisputeForm'
+import DisputeForm from '@/views/dashboard/area/dispute-management/DisputeForm'
 
 /**
  * Page

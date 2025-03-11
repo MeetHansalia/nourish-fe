@@ -48,6 +48,8 @@ import { useTranslation } from '@/utils/getDictionaryClient'
 import { getLocalizedUrl } from '@/utils/i18n'
 import { getPanelName } from '@/utils/globalFunctions'
 
+import IngredientsTable from '../../common/IngredientsTable'
+
 // Validation Schema
 
 const WeeklyMenuSelection = ({ dictionary }) => {
@@ -73,9 +75,9 @@ const WeeklyMenuSelection = ({ dictionary }) => {
   const [fetchAllDishes, setFetchAllDishes] = useState({})
   const [vendorId, setVendorId] = useState(null)
   const [currentDate, setCurrentDate] = useState(null)
-
+  const [userData, setUserData] = useState()
   const [selectedDay, setSelectedDay] = useState(0)
-
+  const [kidNutrition, setKidNutrition] = useState({})
   const [cartData, setCartData] = useState([])
   const [dishData, setDishData] = useState([])
   const [currentCartId, setCurrentCartId] = useState(0)
@@ -154,6 +156,32 @@ const WeeklyMenuSelection = ({ dictionary }) => {
           return modifiers && modifiers.length > 0
         })
     })
+
+  useEffect(() => {
+    axiosApiCall
+      .get(API_ROUTER.GET_PROFILE)
+      .then(response => {
+        setKidNutrition(
+          response?.data?.response?.user?.nutrition
+            ? response?.data?.response?.user.nutrition
+            : {
+                fat: 0,
+                sugar: 0,
+                protein: 0,
+                sodium: 0,
+                carbohydrate: 0
+              }
+        )
+        setUserData(response?.data?.response?.user)
+      })
+      .catch(error => {
+        if (!isCancel(error)) {
+          const apiResponseErrorHandlingData = apiResponseErrorHandling(error)
+
+          toastError(apiResponseErrorHandlingData)
+        }
+      })
+  }, [])
 
   const handleChange = (event, newValue) => {
     let selectedDate = selectedDates[newValue]
@@ -708,8 +736,15 @@ const WeeklyMenuSelection = ({ dictionary }) => {
                 ))}
                 <div className='block-chart-common flex align-center justify-between'>
                   <div className='block-chart-inner' style={{ width: 200, height: 200 }}>
-                    <SpeedometerChart />
+                    <SpeedometerChart totalNutrition={selectedDish?.calculatedNutrition} kidNutrition={kidNutrition} />
                   </div>
+                </div>
+                <div className='block-chart-table-in'>
+                  <IngredientsTable
+                    ingredientsData={selectedDish?.ingredients}
+                    selectedDish={selectedDish}
+                    dictionary={dictionary}
+                  />
                 </div>
                 <div className='modal-footer'>
                   <Typography variant='h6' color='textSecondary' className='title-small-medium-custom'>

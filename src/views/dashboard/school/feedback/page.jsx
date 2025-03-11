@@ -5,11 +5,7 @@ import OrderDataTable from './OrderDataTable'
 const FeedbackComponent = props => {
   const { dictionary = null } = props
 
-  return (
-    <Stack spacing={5}>
-      <OrderDataTable dictionary={dictionary} />
-    </Stack>
-  )
+  return <OrderDataTable dictionary={dictionary} />
 }
 
 export default FeedbackComponent

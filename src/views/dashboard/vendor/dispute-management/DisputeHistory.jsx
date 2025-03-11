@@ -42,7 +42,8 @@ import {
   Grid,
   Box,
   Checkbox,
-  styled
+  styled,
+  IconButton
 } from '@mui/material'
 
 // View Imports
@@ -67,6 +68,7 @@ import { USER_PANELS } from '@/utils/constants'
 import AppReactDatepicker from '@/libs/styles/AppReactDatepicker'
 import CustomTextField from '@/@core/components/mui/TextField'
 import ConfirmationDialog from '../../admin/dispute-management/ConfirmationDialog'
+import DebouncedInput from '@/components/nourishubs/DebouncedInput'
 
 const DisputeHistory = props => {
   const { dictionary = null } = props
@@ -257,16 +259,23 @@ const DisputeHistory = props => {
       columnHelper.accessor('viewDetails', {
         header: `${dictionary?.datatable?.column?.view}`,
         cell: ({ row }) => (
-          <Box display='flex' alignItems='center' justifyContent='center' style={{ width: '50%', height: '40px' }}>
-            <img
+          // <Box display='flex' alignItems='center' justifyContent='center' style={{ width: '50%', height: '40px' }}>
+          <IconButton
+            onClick={() => {
+              handleIssueDetails(row.original)
+            }}
+          >
+            {/* <img
               src='/images/nourishubs/front/eye.png'
               alt='view-icon'
               style={{ width: '30px', height: '30px' }}
               onClick={() => {
                 handleIssueDetails(row.original)
               }}
-            />
-          </Box>
+            /> */}
+            <i className='tabler-eye' />
+          </IconButton>
+          // </Box>
         )
       }),
       columnHelper.accessor('view', {
@@ -277,12 +286,13 @@ const DisputeHistory = props => {
         ),
         cell: ({ row }) => (
           <Box display='flex' alignItems='center' justifyContent='center' style={{ width: '100%', height: '40px' }}>
-            <>
+            <div className='flex items-center gap-4'>
               {row.original.replies?.length > 0 && (
                 <Button
                   variant='contained'
                   color='primary'
-                  sx={{ px: 2, mx: 1 }}
+                  // sx={{ px: 2, mx: 1 }}
+                  className='theme-common-btn'
                   onClick={() => handleViewOpenDialog(row.original)} // Pass the row data to open the dialog
                 >
                   {dictionary?.datatable?.button?.details}
@@ -292,12 +302,13 @@ const DisputeHistory = props => {
               <Button
                 variant='contained'
                 color='primary'
-                sx={{ px: 2, mx: 1 }}
+                // sx={{ px: 2, mx: 1 }}
+                className='theme-common-btn'
                 onClick={() => handleOpenDialog(row.original)} // Pass the row data to open the dialog
               >
                 {dictionary?.datatable?.button?.response}
               </Button>
-            </>
+            </div>
           </Box>
         )
       })
@@ -331,7 +342,6 @@ const DisputeHistory = props => {
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
     manualPagination: true,
     manualSorting: true
   })
@@ -364,43 +374,47 @@ const DisputeHistory = props => {
   }
 
   return (
-    <div>
+    <>
       <Card class='common-block-dashboard p-0'>
         <CardHeader
           className='common-block-title mb-0'
           title={dictionary?.datatable?.dispute_history_table?.table_title}
           action={
-            <Box display='flex' alignItems='center' gap={2}>
-              {/* Date Selector */}
+            // <Box display='flex' alignItems='center' gap={2}>
 
-              <AppReactDatepicker
-                selected={selectedDate}
-                onChange={date => {
-                  setSelectedDate(date)
-                }}
-                customInput={
-                  <TextField
-                    label={dictionary?.form?.placeholder?.issue_date}
-                    variant='outlined'
-                    fullWidth
-                    sx={{ maxWidth: 150 }}
-                    size='small'
-                  />
-                }
-                placeholderText={dictionary?.form?.placeholder?.issue_date}
-              />
-
-              {/* Search Bar */}
-              <TextField
-                label={dictionary?.datatable?.common?.search_placeholder}
-                variant='outlined'
-                value={globalFilter}
-                onChange={e => setGlobalFilter(e.target.value)}
-                fullWidth
-                sx={{ maxWidth: 150 }}
-                size='small'
-              />
-            </Box>
+            <div className='flex gap-4'>
+              <div className='form-group address-fill-common'>
+                <AppReactDatepicker
+                  selected={selectedDate}
+                  onChange={date => {
+                    setSelectedDate(date)
+                  }}
+                  maxDate={new Date()}
+                  dateFormat='MM/dd/yyyy'
+                  customInput={
+                    <CustomTextField
+                      label={t('form.placeholder.date')}
+                      fullWidth
+                      InputProps={{
+                        readOnly: true
+                      }}
+                    />
+                  }
+                  // placeholderText={dictionary?.form?.placeholder?.issue_date}
+                />
+              </div>
+              <div className='form-group'>
+                <DebouncedInput
+                  label={dictionary?.datatable?.common?.search_placeholder}
+                  variant='outlined'
+                  value={globalFilter}
+                  onChange={value => setGlobalFilter(String(value))}
+                  fullWidth
+                  // sx={{ maxWidth: 150 }}
+                  // size='small'
+                />
+              </div>
+            </div>
           }
         />
 
@@ -532,7 +546,7 @@ const DisputeHistory = props => {
           isConfirmSubmiting={isConfirming}
         />
       )}
-    </div>
+    </>
   )
 }
 

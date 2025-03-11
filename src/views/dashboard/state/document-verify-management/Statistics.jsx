@@ -60,7 +60,7 @@ const Statistics = props => {
 
   return (
     <div className='top-block-card'>
-      <div className='card-block-inner two-block-card'>
+      <div className='card-block-inner'>
         <div className='card-block'>
           {/* <Link href={`/${locale}/${panelName}/document-verify/school-registration-request`}> */}
           <Card className='card-link-a'>

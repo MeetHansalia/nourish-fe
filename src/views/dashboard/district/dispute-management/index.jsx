@@ -1,7 +1,7 @@
 'use client'
 
 // React Imports
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 
 import { useParams, useRouter } from 'next/navigation'
 
@@ -84,11 +84,12 @@ const DisputeReporting = props => {
   /**
    * Page Life Cycle: Start
    */
+
   useEffect(() => {
     getRole()
 
-    {
-      isUserHasPermissionSections?.get_dispute_list && getDisputeCounts()
+    if (isUserHasPermissionSections?.get_dispute_list) {
+      getDisputeCounts()
     }
   }, [])
 

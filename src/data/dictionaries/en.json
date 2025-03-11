@@ -33,7 +33,8 @@
     "foodchart_creation_approval": "Foodchart creation & Approval",
     "order_traking": "Order Tracking",
     "menu_nutrition_manage": "Menu & Nutrition Manage",
-    "review": "Reviews"
+    "review": "Reviews",
+    "nutrition_management": "Nutrition Management"
   },
   "form": {
     "label": {
@@ -143,6 +144,7 @@
       "rejection_reason": "Rejection Reason",
       "expected_delivery_time": "Expected Delivery Time",
       "review_vendor_menu_and_add_suggestion": "review vendor menu's & Add Suggestion",
+      "nutrition_management": "Nutrition Management",
       "state": "Select State",
       "district": "Select District",
       "countries": "Select Country",
@@ -205,6 +207,7 @@
       "gender": "Select Sex",
       "class": "Enter Class",
       "weight": "Enter Weight",
+      "enter_quantity": "Enter Quantity",
       "height": "Enter Height",
       "weight_units": "Select Weight In",
       "height_units": "Select Height In",
@@ -214,11 +217,14 @@
       "category_image": "Enter Category Image",
       "enter_dish_name": "Enter Dish Name",
       "enter_description_name": "Enter Description ",
+      "enter_category_name": "Enter Category ",
+      "enter_modifier_name": "Enter Modifier ",
       "pricing": "Pricing",
       "tax_pricing": "Tax Pricing",
       "date": "Select Date",
       "event_name": "Enter Event Name",
       "select_kids": "Select Kids",
+      "select_unit": "Select Unit",
       "no_options": "No options",
       "select_start_date": "Start Date",
       "select_end_date": "End Date",
@@ -449,7 +455,8 @@
     "my_profile": "My Profile",
     "selected_dishes": "Selected Dishes",
     "change_password": "Change Password",
-    "upload_from_pc": "Upload From PC"
+    "upload_from_pc": "Upload From PC",
+    "quantity": "quantity"
   },
   "meal": {
     "ingredients": "Ingredients",
@@ -606,7 +613,7 @@
     "order_management": {
       "last_moment_cancellation": "Last Moment Cancellation",
       "vendor_minimum_thresholds_verfication_requests": "Vendor minimum thresholds verification requests",
-      "monitor_deliverd_order": "Moniter Delivered Order",
+      "monitor_deliverd_order": "Monitor Delivered Order",
       "event_orders_request": "Event orders request",
       "add_new_order": "Add New Order",
       "select_vendor": "Select Vendor",

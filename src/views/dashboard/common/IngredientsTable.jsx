@@ -7,46 +7,46 @@ export default function IngredientsTable({ ingredientsData, selectedDish, dictio
 
   return (
     <>
-      <Table size='small' sx={{ maxWidth: 280 }}>
-        <TableHead>
-          <TableRow>
-            <TableCell>{dictionary?.meal?.ingredients}</TableCell>
-            <TableCell>{dictionary?.meal?.per_100g}</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          <TableRow>
-            <TableCell>{dictionary?.meal?.carbohydrate}</TableCell>
-            <TableCell>
-              {selectedDish?.calculatedNutrition?.carbohydrate} {dictionary?.meal?.g}
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>{dictionary?.meal?.total_fat}</TableCell>
-            <TableCell>
-              {selectedDish?.calculatedNutrition?.fat} {dictionary?.meal?.g}
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>{dictionary?.meal?.protein}</TableCell>
-            <TableCell>
-              {selectedDish?.calculatedNutrition?.protein} {dictionary?.meal?.g}
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>{dictionary?.meal?.sodium}</TableCell>
-            <TableCell>
-              {selectedDish?.calculatedNutrition?.sodium} {dictionary?.meal?.mg}
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>{dictionary?.meal?.total_sugar}</TableCell>
-            <TableCell>
-              {selectedDish?.calculatedNutrition?.sugar} {dictionary?.meal?.g}
-            </TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
+     <Table size='small' sx={{ maxWidth: 280 }}>
+  <TableHead>
+    <TableRow>
+      <TableCell>{dictionary?.meal?.ingredients}</TableCell>
+      <TableCell>{dictionary?.meal?.per_100g}</TableCell>
+    </TableRow>
+  </TableHead>
+  <TableBody>
+    <TableRow>
+      <TableCell>{dictionary?.meal?.carbohydrate}</TableCell>
+      <TableCell>
+        {Number(selectedDish?.calculatedNutrition?.carbohydrate).toFixed(2)} {dictionary?.meal?.g}
+      </TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell>{dictionary?.meal?.total_fat}</TableCell>
+      <TableCell>
+        {Number(selectedDish?.calculatedNutrition?.fat).toFixed(2)} {dictionary?.meal?.g}
+      </TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell>{dictionary?.meal?.protein}</TableCell>
+      <TableCell>
+        {Number(selectedDish?.calculatedNutrition?.protein).toFixed(2)} {dictionary?.meal?.g}
+      </TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell>{dictionary?.meal?.sodium}</TableCell>
+      <TableCell>
+        {Number(selectedDish?.calculatedNutrition?.sodium).toFixed(2)} {dictionary?.meal?.mg}
+      </TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell>{dictionary?.meal?.total_sugar}</TableCell>
+      <TableCell>
+        {Number(selectedDish?.calculatedNutrition?.sugar).toFixed(2)} {dictionary?.meal?.g}
+      </TableCell>
+    </TableRow>
+  </TableBody>
+</Table>
 
       <TableContainer component={Paper}>
         <Table size='small'>

@@ -21,7 +21,11 @@ const StaffManagementComponent = ({ dictionary }) => {
   return (
     <Grid container spacing={6}>
       <Grid item xs={12}>
-        <Button variant='contained' onClick={() => router.push(`staff-management/add-staff`)}>
+        <Button
+          variant='contained'
+          onClick={() => router.push(`staff-management/add-staff`)}
+          className='theme-common-btn'
+        >
           {t('page.staff_management.add_staff')}
         </Button>
       </Grid>

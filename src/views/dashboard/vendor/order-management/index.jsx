@@ -15,6 +15,7 @@ import axiosApiCall from '@/utils/axiosApiCall'
 const VendorOrderManagementComponent = ({ dictionary }) => {
   const [totalCount, setTotalCount] = useState(null)
   const [updateData, setUpdateData] = useState(false)
+  const [statisticData, setStatisticData] = useState({})
 
   const getStatistics = async () => {
     try {
@@ -31,8 +32,20 @@ const VendorOrderManagementComponent = ({ dictionary }) => {
     }
   }
 
+  const getStatisticsMore = async () => {
+    await axiosApiCall
+      .get(API_ROUTER.VENDOR.GET_STATISTIC)
+      .then(response => {
+        setStatisticData(response?.data?.response)
+      })
+      .catch(error => {
+        toastError(error?.response?.message)
+      })
+  }
+
   useEffect(() => {
     getStatistics()
+    getStatisticsMore()
   }, [updateData])
 
   const CARD_TITLE_DATA = [
@@ -50,6 +63,11 @@ const VendorOrderManagementComponent = ({ dictionary }) => {
       title: 'Order Cancellation Request Status',
       link: 'order-management/cancle-order-status',
       count: totalCount?.cancellationRequestsStatus
+    },
+    {
+      title: 'Minimum Threshold Request',
+      // link: 'order-management/cancle-order-status',
+      count: String(statisticData?.totalOrders) + '/' + String(statisticData?.vendorThresholdRequests)
     }
   ]
 

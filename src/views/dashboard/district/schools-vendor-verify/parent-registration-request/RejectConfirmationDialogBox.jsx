@@ -84,7 +84,13 @@ const RejectConfirmationDialogBox = ({
           {dictionary?.form?.button?.cancel}
           {isLoading && <CircularProgress className='ml-2' size={20} sx={{ color: 'white' }} />}
         </Button>
-        <Button onClick={handleReject} color='primary' variant='contained' disabled={isLoading || reason.length < 1}>
+        <Button
+          onClick={handleReject}
+          color='primary'
+          variant='contained'
+          className='theme-common-btn'
+          disabled={isLoading || reason.length < 1}
+        >
           {dictionary?.common?.reject}
           {isLoading && <CircularProgress className='ml-2' size={20} sx={{ color: 'white' }} />}
         </Button>

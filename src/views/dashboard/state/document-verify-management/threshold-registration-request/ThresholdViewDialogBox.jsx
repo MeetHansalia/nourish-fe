@@ -41,7 +41,12 @@ const ThresholdViewDialogBox = ({ open, setOpen, dialogProps }) => {
     <Dialog
       fullWidth
       open={open}
-      onClose={() => setOpen(false)}
+      // onClose={() => setOpen(false)}
+      onClose={(event, reason) => {
+        if (!loading && reason !== 'backdropClick') {
+          setOpen(false)
+        }
+      }}
       maxWidth='sm'
       scroll='body'
       sx={{ '& .MuiDialog-paper': { overflow: 'visible' } }}

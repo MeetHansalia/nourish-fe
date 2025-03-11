@@ -26,7 +26,7 @@ import { USER_PANELS } from '@/utils/constants'
  */
 const Reports = props => {
   // Props
-  console.log('props: ', props)
+  // console.log('props: ', props)
 
   const {
     dictionary = null,
@@ -37,7 +37,7 @@ const Reports = props => {
     isLoadingStatistic
   } = props
 
-  console.log('dictionary: ', dictionary, issueCounts)
+  // console.log('dictionary: ', dictionary, issueCounts)
 
   // HOOKS
   const { lang: locale } = useParams()

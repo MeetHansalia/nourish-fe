@@ -70,6 +70,8 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
 
   const [itemTotal, setItemTotal] = useState(0)
 
+  const [speedValue, setSpeedValue] = useState(0)
+
   const [nutrition, setNutrition] = useState({})
   const [kidNutrition, setKidNutrition] = useState({})
 
@@ -241,7 +243,8 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
     try {
       const response = await axiosApiCall.post(API_ROUTER.PARENT.PAY_NOW, {
         kidId,
-        notes
+        notes,
+        speedometerValue: speedValue
       })
 
       const { status, message } = response?.data || {}
@@ -415,6 +418,10 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
     }
   }, [])
 
+  const handleCalculatedValue = value => {
+    setSpeedValue(value)
+  }
+
   return (
     <>
       {isCheckOutDataLoaded ? (
@@ -425,16 +432,18 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
             <Grid container spacing={6}>
               <Grid item xs={12} md={6} lg={6}>
                 <Card className='common-block-dashboard'>
-                  <CardContent className='p-0'>
-                    <Button variant='contained' onClick={() => router.back()}>
+                  <CardContent className='p-0 flex gap-4'>
+                    <Button className='theme-common-btn mr-2' variant='contained' onClick={() => router.back()}>
                       {dictionary?.form?.button?.back}
                     </Button>
-                    <Typography variant='h6' className='title-small-medium-custom'>
-                      {cartData?.kidId?.first_name} {cartData?.kidId?.last_name}
-                    </Typography>
-                    <Typography className='disc-common-custom-small' variant='body2' color='text.secondary'>
-                      {cartData?.schoolId?.schoolName}
-                    </Typography>
+                    <div>
+                      <Typography variant='h6' className='title-small-medium-custom'>
+                        {cartData?.kidId?.first_name} {cartData?.kidId?.last_name}
+                      </Typography>
+                      <Typography className='disc-common-custom-small' variant='body2' color='text.secondary'>
+                        {cartData?.schoolId?.schoolName}
+                      </Typography>
+                    </div>
                   </CardContent>
                 </Card>
                 <Card className='common-block-dashboard'>
@@ -470,7 +479,11 @@ export default function CheckoutPage({ dictionary, kidId, vendorId }) {
                           justifyContent: 'center'
                         }}
                       >
-                        <SpeedometerChart totalNutrition={nutrition} kidNutrition={kidNutrition} />
+                        <SpeedometerChart
+                          totalNutrition={nutrition}
+                          kidNutrition={kidNutrition}
+                          onCalculatedValue={handleCalculatedValue}
+                        />
                       </Box>
                     </div>
                     <div className='block-chart-table-in'>

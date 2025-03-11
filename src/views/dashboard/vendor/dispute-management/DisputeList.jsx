@@ -41,13 +41,18 @@ import {
   TablePagination,
   Grid,
   Box,
-  Checkbox
+  Checkbox,
+  IconButton
 } from '@mui/material'
+
+import { getSession } from 'next-auth/react'
+
+// Style Imports
+import tableStyles from '@core/styles/table.module.css'
 
 // View Imports
 
 // Util Imports
-import { getSession } from 'next-auth/react'
 
 import { API_ROUTER } from '@/utils/apiRoutes'
 import { useTranslation } from '@/utils/getDictionaryClient'
@@ -57,6 +62,7 @@ import OpenDialogOnElementClick from '@/components/layout/OpenDialogOnElementCli
 import DisputeDetailsDialog from '../../parent/issue-reporting/DisputeDialogue'
 import ReponseDialogue from '../../parent/issue-reporting/ResponseDialogue'
 import { USER_PANELS } from '@/utils/constants'
+import DebouncedInput from '@/components/nourishubs/DebouncedInput'
 
 const VendorDisputeList = props => {
   const { dictionary = null } = props
@@ -68,7 +74,7 @@ const VendorDisputeList = props => {
   const [data, setData] = useState([])
   const [columnFilters, setColumnFilters] = useState([])
   const [globalFilter, setGlobalFilter] = useState('')
-  const [sorting, setSorting] = useState([])
+  // const [sorting, setSorting] = useState([])
   const [itemsPerPage, setItemsPerPage] = useState(5)
   const [recordMetaData, setRecordMetaData] = useState(null)
   const [isDataTableServerLoading, setIsDataTableServerLoading] = useState(false)
@@ -218,16 +224,21 @@ const VendorDisputeList = props => {
       columnHelper.accessor('viewDetails', {
         header: `${dictionary?.datatable?.column?.view}`,
         cell: ({ row }) => (
-          <Box display='flex' alignItems='center' justifyContent='center' style={{ width: '50%', height: '40px' }}>
-            <img
+          <IconButton
+            onClick={() => {
+              handleIssueDetails(row.original)
+            }}
+          >
+            {/* <img
               src='/images/nourishubs/front/eye.png'
               alt='view-icon'
               style={{ width: '30px', height: '30px' }}
               onClick={() => {
                 handleIssueDetails(row.original)
               }}
-            />
-          </Box>
+            /> */}
+            <i className='tabler-eye' />
+          </IconButton>
         )
       }),
       columnHelper.accessor('view', {
@@ -244,7 +255,7 @@ const VendorDisputeList = props => {
                   variant='contained'
                   color='primary'
                   sx={{ px: 2, mx: 1 }}
-                  onClick={() => handleViewOpenDialog(row.original)} // Pass the row data to open the dialog
+                  onClick={() => handleViewOpenDialog(row?.original)} // Pass the row data to open the dialog
                 >
                   {dictionary?.datatable?.button?.details}
                 </Button>
@@ -253,8 +264,8 @@ const VendorDisputeList = props => {
               <Button
                 variant='contained'
                 color='primary'
-                sx={{ px: 2, mx: 1 }}
-                onClick={() => handleOpenDialog(row.original)} // Pass the row data to open the dialog
+                className='theme-common-btn'
+                onClick={() => handleOpenDialog(row?.original)} // Pass the row data to open the dialog
               >
                 {dictionary?.datatable?.button?.response}
               </Button>
@@ -284,15 +295,14 @@ const VendorDisputeList = props => {
         pageSize: itemsPerPage
       },
       columnFilters,
-      globalFilter,
-      sorting
+      globalFilter
+      // sorting
     },
     onColumnFiltersChange: setColumnFilters,
     onGlobalFilterChange: setGlobalFilter,
-    onSortingChange: setSorting,
+    // onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
     manualPagination: true,
     manualSorting: true
   })
@@ -310,11 +320,11 @@ const VendorDisputeList = props => {
         abortController.current.abort()
       }
     }
-  }, [page, itemsPerPage, globalFilter, sorting])
+  }, [page, itemsPerPage, globalFilter])
 
-  useEffect(() => {
-    console.log('openDisputeDialog: ', openDisputeDialog)
-  }, [openDisputeDialog])
+  // useEffect(() => {
+  //   console.log('openDisputeDialog: ', openDisputeDialog)
+  // }, [openDisputeDialog])
 
   const refreshData = () => {
     setPage(1)
@@ -328,35 +338,48 @@ const VendorDisputeList = props => {
   }
 
   return (
-    <div>
-      <Card class='common-block-dashboard p-0'>
+    <>
+      <Card className='common-block-dashboard table-block-no-pad'>
         <CardHeader
-          className='common-block-title mb-0'
+          className='common-block-title'
           title={dictionary?.datatable?.dispute_history_table?.table_title}
           action={
-            // <div className='form-group'>
-            <TextField
-              label={dictionary?.datatable?.common?.search_placeholder}
-              variant='outlined'
-              value={globalFilter}
-              onChange={e => setGlobalFilter(e.target.value)}
-              fullWidth
-              sx={{ maxWidth: 300 }}
-            />
-            // </div>
+            <div className='form-group'>
+              <DebouncedInput
+                value={globalFilter ?? ''}
+                onChange={value => setGlobalFilter(String(value))}
+                placeholder={dictionary?.datatable?.common?.search_placeholder}
+              />
+            </div>
           }
         />
-        <TableContainer className='table-common-block' component={Paper}>
-          <Table>
-            <TableHead>
+        <div className='table-common-block p-0 overflow-x-auto'>
+          <table className={tableStyles.table}>
+            <thead>
               {table.getHeaderGroups().map(headerGroup => (
-                <TableRow key={headerGroup.id}>
+                <tr key={headerGroup.id}>
                   {headerGroup.headers.map(header => (
-                    <TableCell key={header.id} onClick={header.column.getToggleSortingHandler()}>
-                      {flexRender(header.column.columnDef.header, header.getContext())}
-                    </TableCell>
+                    <th key={header.id}>
+                      {header.isPlaceholder ? null : (
+                        <>
+                          <div
+                            className={classnames({
+                              'flex items-center': header.column.getIsSorted(),
+                              'select-none': header.column.getCanSort()
+                            })}
+                            onClick={header.column.getToggleSortingHandler()}
+                          >
+                            {flexRender(header.column.columnDef.header, header.getContext())}
+                            {/* {{
+                                asc: <i className='tabler-chevron-up text-xl' />,
+                                desc: <i className='tabler-chevron-down text-xl' />
+                              }[header.column.getIsSorted()] ?? null} */}
+                          </div>
+                        </>
+                      )}
+                    </th>
                   ))}
-                </TableRow>
+                </tr>
               ))}
               {isDataTableServerLoading && (
                 <tr>
@@ -365,36 +388,36 @@ const VendorDisputeList = props => {
                   </td>
                 </tr>
               )}
-            </TableHead>
-            <TableBody>
+            </thead>
+            <tbody>
               {globalFilter.length > 0 && table.getFilteredRowModel().rows.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={table.getVisibleFlatColumns().length} align='center'>
+                <tr>
+                  <td colSpan={table.getVisibleFlatColumns().length} align='center'>
                     {t('datatable.common.no_matching_data_found')}
-                  </TableCell>
-                </TableRow>
+                  </td>
+                </tr>
               ) : table.getFilteredRowModel().rows.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={table.getVisibleFlatColumns().length} align='center'>
+                <tr>
+                  <td colSpan={table.getVisibleFlatColumns().length} align='center'>
                     {t('datatable.common.no_data_available')}
-                  </TableCell>
-                </TableRow>
+                  </td>
+                </tr>
               ) : (
                 table
                   .getRowModel()
                   .rows.slice(0, table.getState().pagination.pageSize)
                   .map(row => (
-                    <TableRow key={row.id} className={classnames({ selected: row.getIsSelected() })}>
+                    <tr key={row.id} className={classnames({ selected: row.getIsSelected() })}>
                       {row.getVisibleCells().map(cell => (
-                        <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                        <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
                       ))}
-                    </TableRow>
+                    </tr>
                   ))
               )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        {/* <Stack direction='row' justifyContent='space-between' sx={{ padding: 2 }}> */}
+            </tbody>
+          </table>
+        </div>
+
         <TablePagination
           component={() => (
             <div className='flex justify-between items-center flex-wrap pli-6 border-bs bs-auto plb-[12.5px] gap-2'>
@@ -429,7 +452,6 @@ const VendorDisputeList = props => {
                 color='primary'
                 variant='tonal'
               />
-              {/* </Stack> */}
             </div>
           )}
         />
@@ -459,7 +481,7 @@ const VendorDisputeList = props => {
           />
         )
       ) : null}
-    </div>
+    </>
   )
 }
 

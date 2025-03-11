@@ -120,7 +120,7 @@ const Details = ({ dictionary, kidData, setProfileUploadedFile }) => {
 
           <ListItem>
             <ListItemText
-              className='title-semi-medium-custom'
+              className='title-semi-medium-custom font-bold'
               style={{ textAlign: 'center' }}
               primary={getFullName({ first_name: kidData?.first_name, last_name: kidData?.last_name })}
             />

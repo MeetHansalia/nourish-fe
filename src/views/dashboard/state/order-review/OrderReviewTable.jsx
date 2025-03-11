@@ -36,7 +36,7 @@ import {
   Button,
   LinearProgress,
   TablePagination,
-  CardContent,
+  CardHeader,
   Grid,
   InputLabel,
   TextField
@@ -171,7 +171,8 @@ const OrderReviewTable = props => {
   const columns = useMemo(
     () => [
       columnHelper.accessor('serialNumber', {
-        header: `${dictionary?.datatable?.column?.sr_no}`
+        header: `${dictionary?.datatable?.column?.sr_no}`,
+        enableSorting: false
       }),
 
       columnHelper.accessor(row => `${row?.orderId?.vendorId?.first_name} ${row?.orderId?.vendorId?.last_name}`, {
@@ -292,16 +293,17 @@ const OrderReviewTable = props => {
   }, [])
 
   return (
-    <>
-      <Card>
-        <CardContent className='flex flex-col gap-4'>
-          <Grid container spacing={2} alignItems='center' justifyContent='space-between' sx={{ mb: 2 }}>
-            <Grid item xs={12} md={4}>
-              <Typography variant='h5'>{dictionary?.datatable?.all_review?.table_title}</Typography>
-            </Grid>
-            <Grid item xs={12} md={8} sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
-              <TextField
+    <Card className='common-block-dashboard table-block-no-pad'>
+      <CardHeader
+        //  className='flex flex-col gap-4'
+        className='common-block-title'
+        title={dictionary?.datatable?.all_review?.table_title}
+        action={
+          <div className='flex gap-4'>
+            <div className='form-group address-fill-common'>
+              <CustomTextField
                 sx={{ minWidth: 150 }}
+                className='diff-select-block'
                 value={selectedVendor}
                 onChange={e => setSelectedVendor(e.target.value)}
                 select
@@ -314,137 +316,148 @@ const OrderReviewTable = props => {
                     {`${vendor?.first_name} ${vendor?.last_name}`}
                   </MenuItem>
                 ))}
-              </TextField>
-
-              <FormControl sx={{ minWidth: 150 }}>
-                <InputLabel id='demo-controlled-open-select-label'>{dictionary?.form?.label?.select_child}</InputLabel>
-                <Select
-                  labelId='demo-controlled-open-select-label'
-                  id='demo-controlled-open-select'
-                  value={selectedKid}
-                  label={dictionary?.form?.label?.select_child}
-                  onChange={e => setSelectedKid(e.target.value)}
-                  size='small'
-                >
-                  <MenuItem value={'all'}>{dictionary?.form?.label?.all}</MenuItem>
-                  {kidsData?.map(kid => (
-                    <MenuItem value={kid?._id} key={kid?._id}>
-                      {`${kid?.first_name} ${kid?.last_name}`}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+              </CustomTextField>
+            </div>
+            <div className='form-group address-fill-common'>
+              <CustomTextField
+                id='demo-controlled-open-select'
+                value={selectedKid}
+                className='diff-select-block'
+                select
+                label={dictionary?.form?.label?.select_child}
+                onChange={e => setSelectedKid(e.target.value)}
+                size='small'
+              >
+                <MenuItem value={'all'}>{dictionary?.form?.label?.all}</MenuItem>
+                {kidsData?.map(kid => (
+                  <MenuItem value={kid?._id} key={kid?._id}>
+                    {`${kid?.first_name} ${kid?.last_name}`}
+                  </MenuItem>
+                ))}
+              </CustomTextField>
+            </div>
+            <div className='form-group'>
               <AppReactDatepicker
                 dateFormat='MM/dd/yyyy'
                 selected={orderDate}
                 onChange={date => handelDateChange(date)}
                 maxDate={new Date()}
-                customInput={<CustomTextField fullWidth />}
-                placeholderText={t('form.placeholder.date')}
-              />
-            </Grid>
-          </Grid>
-        </CardContent>
-        <div className='overflow-x-auto'>
-          <table className={tableStyles.table}>
-            <thead>
-              {table.getHeaderGroups().map(headerGroup => (
-                <tr key={headerGroup.id}>
-                  {headerGroup.headers.map(header => (
-                    <th key={header.id}>
-                      {header.isPlaceholder ? null : (
-                        <>
-                          <div
-                            className={classnames({
-                              'flex items-center': header.column.getIsSorted(),
-                              'cursor-pointer select-none': header.column.getCanSort()
-                            })}
-                            onClick={header.column.getToggleSortingHandler()}
-                          >
-                            {flexRender(header.column.columnDef.header, header.getContext())}
-                            {{
-                              asc: <i className='tabler-chevron-up text-xl' />,
-                              desc: <i className='tabler-chevron-down text-xl' />
-                            }[header.column.getIsSorted()] ?? null}
-                          </div>
-                        </>
-                      )}
-                    </th>
-                  ))}
-                </tr>
-              ))}
-              {isLoading && (
-                <tr>
-                  <td colSpan={columns?.length}>
-                    <LinearProgress color='primary' sx={{ height: '2px' }} />
-                  </td>
-                </tr>
-              )}
-            </thead>
-            <tbody>
-              {globalFilter.length > 0 && table.getFilteredRowModel().rows.length === 0 ? (
-                <tr>
-                  <td colSpan={table.getVisibleFlatColumns().length} className='text-center'>
-                    {t('datatable.common.no_matching_data_found')}
-                  </td>
-                </tr>
-              ) : table.getFilteredRowModel().rows.length === 0 ? (
-                <tr>
-                  <td colSpan={table.getVisibleFlatColumns().length} className='text-center'>
-                    {t('datatable.common.no_data_available')}
-                  </td>
-                </tr>
-              ) : (
-                table
-                  .getRowModel()
-                  .rows.slice(0, table.getState().pagination.pageSize)
-                  .map(row => (
-                    <tr key={row.id} className={classnames({ selected: row.getIsSelected() })}>
-                      {row.getVisibleCells().map(cell => (
-                        <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
-                      ))}
-                    </tr>
-                  ))
-              )}
-            </tbody>
-          </table>
-        </div>
-        <TablePagination
-          component={() => (
-            <div className='flex justify-between items-center flex-wrap pli-6 border-bs bs-auto plb-[12.5px] gap-2'>
-              <Typography color='text.disabled'>
-                {t('datatable.common.footer_showing_entries', {
-                  startIndex: totalCount > 0 ? (page - 1) * itemsPerPage + 1 : 0,
-                  endIndex: totalCount > 0 ? Math.min(page * itemsPerPage, totalCount) : 0,
-                  totalFiltered: totalCount || 0
-                })}
-              </Typography>
-              <FormControl variant='outlined' size='small'>
-                <div className='flex items-center gap-2 is-full sm:is-auto'>
-                  <Typography className='hidden sm:block'>{dictionary?.datatable?.common?.show}</Typography>
-                  <Select value={itemsPerPage} onChange={e => setItemsPerPage(e.target.value)}>
-                    <MenuItem value={5}>05</MenuItem>
-                    <MenuItem value={10}>10</MenuItem>
-                    <MenuItem value={15}>15</MenuItem>
-                    <MenuItem value={20}>20</MenuItem>
-                  </Select>
-                </div>
-              </FormControl>
-              <Pagination
-                showFirstButton
-                showLastButton
-                count={totalPages}
-                page={page}
-                onChange={handlePageChange}
-                shape='rounded'
-                color='primary'
-                variant='tonal'
+                customInput={
+                  <CustomTextField
+                    label={t('form.placeholder.date')}
+                    fullWidth
+                    InputProps={{
+                      readOnly: true
+                    }}
+                  />
+                }
+                // placeholderText={t('form.placeholder.date')}
               />
             </div>
-          )}
-        />
-      </Card>
-    </>
+          </div>
+        }
+      />
+      {/* <div className='overflow-x-auto'> */}
+      <div className='table-common-block p-0 overflow-x-auto'>
+        <table className={tableStyles.table}>
+          <thead>
+            {table.getHeaderGroups().map(headerGroup => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map(header => (
+                  <th key={header.id}>
+                    {header.isPlaceholder ? null : (
+                      <>
+                        <div
+                          className={classnames({
+                            'flex items-center': header.column.getIsSorted(),
+                            'cursor-pointer select-none': header.column.getCanSort()
+                          })}
+                          onClick={header.column.getToggleSortingHandler()}
+                        >
+                          {flexRender(header.column.columnDef.header, header.getContext())}
+                          {{
+                            asc: <i className='tabler-chevron-up text-xl' />,
+                            desc: <i className='tabler-chevron-down text-xl' />
+                          }[header.column.getIsSorted()] ?? null}
+                        </div>
+                      </>
+                    )}
+                  </th>
+                ))}
+              </tr>
+            ))}
+            {isLoading && (
+              <tr>
+                {/* <td colSpan={columns?.length}> */}
+                <td className='no-pad-td' colSpan={columns?.length}>
+                  <LinearProgress color='primary' sx={{ height: '2px' }} />
+                </td>
+              </tr>
+            )}
+          </thead>
+          <tbody>
+            {globalFilter.length > 0 && table.getFilteredRowModel().rows.length === 0 ? (
+              <tr>
+                <td colSpan={table.getVisibleFlatColumns().length} className='text-center'>
+                  {t('datatable.common.no_matching_data_found')}
+                </td>
+              </tr>
+            ) : table.getFilteredRowModel().rows.length === 0 ? (
+              <tr>
+                <td colSpan={table.getVisibleFlatColumns().length} className='text-center'>
+                  {t('datatable.common.no_data_available')}
+                </td>
+              </tr>
+            ) : (
+              table
+                .getRowModel()
+                .rows.slice(0, table.getState().pagination.pageSize)
+                .map(row => (
+                  <tr key={row.id} className={classnames({ selected: row.getIsSelected() })}>
+                    {row.getVisibleCells().map(cell => (
+                      <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
+                    ))}
+                  </tr>
+                ))
+            )}
+          </tbody>
+        </table>
+      </div>
+      <TablePagination
+        component={() => (
+          <div className='flex justify-between items-center flex-wrap pli-6 border-bs bs-auto plb-[12.5px] gap-2'>
+            <Typography color='text.disabled'>
+              {t('datatable.common.footer_showing_entries', {
+                startIndex: totalCount > 0 ? (page - 1) * itemsPerPage + 1 : 0,
+                endIndex: totalCount > 0 ? Math.min(page * itemsPerPage, totalCount) : 0,
+                totalFiltered: totalCount || 0
+              })}
+            </Typography>
+            <FormControl variant='outlined' size='small'>
+              <div className='flex items-center gap-2 is-full sm:is-auto'>
+                <Typography className='hidden sm:block'>{dictionary?.datatable?.common?.show}</Typography>
+                <Select value={itemsPerPage} onChange={e => setItemsPerPage(e.target.value)}>
+                  <MenuItem value={5}>05</MenuItem>
+                  <MenuItem value={10}>10</MenuItem>
+                  <MenuItem value={15}>15</MenuItem>
+                  <MenuItem value={20}>20</MenuItem>
+                </Select>
+              </div>
+            </FormControl>
+            <Pagination
+              showFirstButton
+              showLastButton
+              count={totalPages}
+              page={page}
+              onChange={handlePageChange}
+              shape='rounded'
+              color='primary'
+              variant='tonal'
+            />
+          </div>
+        )}
+      />
+    </Card>
   )
 }
 

@@ -68,6 +68,7 @@ const ParentRegistrationRequestsTable = ({ dictionary }) => {
   const [globalFilter, setGlobalFilter] = useState('')
   const [itemsPerPage, setItemsPerPage] = useState(10)
   const [recordMetaData, setRecordMetaData] = useState(null)
+  const [sorting, setSorting] = useState([])
   const [page, setPage] = useState(1)
   const [isDataTableServerLoading, setIsDataTableServerLoading] = useState(true)
   const [openKidsDetailDialog, setOpenKidsDetailDialog] = useState(false) // Control dialog visibility
@@ -85,6 +86,14 @@ const ParentRegistrationRequestsTable = ({ dictionary }) => {
     // Create a new AbortController for the new request
     abortController.current = new AbortController()
 
+    const orderBy = sorting.reduce((acc, { id, desc }) => {
+      acc[id] = desc ? -1 : 1
+
+      return acc
+    }, {})
+
+    const orderByString = JSON.stringify(orderBy)
+
     setIsDataTableServerLoading(true)
 
     try {
@@ -92,8 +101,8 @@ const ParentRegistrationRequestsTable = ({ dictionary }) => {
         params: {
           page,
           limit: itemsPerPage,
-          searchQuery: globalFilter
-          // orderBy: '{"_id" : "-1"}'
+          searchQuery: globalFilter,
+          orderBy: orderByString
         },
         signal: abortController.current.signal
       })
@@ -176,9 +185,11 @@ const ParentRegistrationRequestsTable = ({ dictionary }) => {
     () => [
       columnHelper.accessor('serialNumber', {
         header: `${dictionary?.datatable?.column?.serial_number}`,
-        cell: info => info.getValue()
+        cell: info => info.getValue(),
+        enableSorting: false
       }),
       columnHelper.accessor('parentDetails.name', {
+        id: 'parentName',
         header: `${dictionary?.datatable?.column?.parent_name}`,
         cell: info => info.getValue() || <span className='italic text-gray-500'>N/A</span>
       }),
@@ -187,18 +198,22 @@ const ParentRegistrationRequestsTable = ({ dictionary }) => {
         cell: info => info.getValue() || <span className='italic text-gray-500'>N/A</span>
       }),
       columnHelper.accessor('schoolDetails.schoolName', {
+        id: 'schoolName',
         header: `${dictionary?.datatable?.column?.school_name}`,
         cell: info => info.getValue() || <span className='italic text-gray-500'>N/A</span>
       }),
       columnHelper.accessor('parentDetails.email', {
+        id: 'email',
         header: `${dictionary?.datatable?.column?.email}`,
         cell: info => info.getValue() || <span className='italic text-gray-500'>N/A</span>
       }),
       columnHelper.accessor('parentDetails.phoneNo', {
+        id: 'phoneNo',
         header: `${dictionary?.datatable?.column?.contact}`,
         cell: info => info.getValue() || <span className='italic text-gray-500'>N/A</span>
       }),
       columnHelper.accessor('parentDetails.address', {
+        id: 'address',
         header: `${dictionary?.datatable?.column?.address}`,
         cell: info => info.getValue() || <span className='italic text-gray-500'>N/A</span>
       }),
@@ -215,6 +230,7 @@ const ParentRegistrationRequestsTable = ({ dictionary }) => {
             <div className='flex gap-2' onClick={e => e.stopPropagation()}>
               <Button
                 variant='contained'
+                className='theme-common-btn'
                 onClick={e => {
                   e.stopPropagation()
 
@@ -232,7 +248,8 @@ const ParentRegistrationRequestsTable = ({ dictionary }) => {
                   children: `${dictionary?.common?.reject}`,
                   onClick: e => {
                     e.stopPropagation()
-                  }
+                  },
+                  className: 'theme-common-btn-border'
                 }}
                 dialog={RejectConfirmationDialogBox}
                 dialogProps={{
@@ -246,7 +263,8 @@ const ParentRegistrationRequestsTable = ({ dictionary }) => {
               />
             </div>
           )
-        }
+        },
+        enableSorting: false
       })
     ],
     [dictionary]
@@ -273,13 +291,13 @@ const ParentRegistrationRequestsTable = ({ dictionary }) => {
         pageSize: itemsPerPage
       },
       // columnFilters,
-      globalFilter
-      // sorting
+      globalFilter,
+      sorting
     },
     onGlobalFilterChange: setGlobalFilter,
+    onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    // getFilteredRowModel: getFilteredRowModel(),
     manualPagination: true,
     manualSorting: true
   })
@@ -301,23 +319,27 @@ const ParentRegistrationRequestsTable = ({ dictionary }) => {
         abortController.current.abort()
       }
     }
-  }, [page, itemsPerPage, globalFilter])
+  }, [page, itemsPerPage, globalFilter, sorting])
 
   return (
     <>
-      <Card>
+      <Card className='common-block-dashboard table-block-no-pad'>
         <CardHeader
+          className='common-block-title'
           title={dictionary?.datatable?.parent_approve_reject_table?.table_title}
           action={
-            <DebouncedInput
-              value={globalFilter ?? ''}
-              onChange={value => setGlobalFilter(String(value))}
-              placeholder={dictionary?.datatable?.common?.search_placeholder}
-            />
+            <div className='form-group'>
+              <DebouncedInput
+                value={globalFilter ?? ''}
+                onChange={value => setGlobalFilter(String(value))}
+                placeholder={dictionary?.datatable?.common?.search_placeholder}
+              />
+            </div>
           }
-          className='flex-wrap gap-4'
+          // className='flex-wrap gap-4'
         />
-        <div className='overflow-x-auto'>
+        {/* <div className='overflow-x-auto'> */}
+        <div className='table-common-block p-0 overflow-x-auto'>
           <table className={tableStyles.table}>
             <thead>
               {table.getHeaderGroups().map(headerGroup => (
@@ -334,6 +356,10 @@ const ParentRegistrationRequestsTable = ({ dictionary }) => {
                             onClick={header.column.getToggleSortingHandler()}
                           >
                             {flexRender(header.column.columnDef.header, header.getContext())}
+                            {{
+                              asc: <i className='tabler-chevron-up text-xl' />,
+                              desc: <i className='tabler-chevron-down text-xl' />
+                            }[header.column.getIsSorted()] ?? null}
                           </div>
                         </>
                       )}
@@ -343,7 +369,8 @@ const ParentRegistrationRequestsTable = ({ dictionary }) => {
               ))}
               {isDataTableServerLoading && (
                 <tr>
-                  <td colSpan={columns?.length}>
+                  {/* <td colSpan={columns?.length}> */}
+                  <td className='no-pad-td' colSpan={columns?.length}>
                     <LinearProgress color='primary' sx={{ height: '2px' }} />
                   </td>
                 </tr>

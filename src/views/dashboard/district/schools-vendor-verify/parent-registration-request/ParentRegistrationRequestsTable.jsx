@@ -252,6 +252,7 @@ const ParentRegistrationRequestsTable = ({ dictionary }) => {
                   setSelectedRow(row?.original)
                   //handleApproveRequest(row?.original?.parentDetails?._id, row?.original?._id, null)
                 }}
+                className='theme-common-btn'
               >
                 {dictionary?.common?.approve}
               </Button>
@@ -259,10 +260,11 @@ const ParentRegistrationRequestsTable = ({ dictionary }) => {
                 element={Button}
                 elementProps={{
                   variant: 'outlined',
-                  children: `${dictionary?.common?.reject}`,
+                  children: dictionary?.common?.reject,
                   onClick: e => {
                     e.stopPropagation()
-                  }
+                  },
+                  className: 'theme-common-btn-border'
                 }}
                 dialog={RejectConfirmationDialogBox}
                 dialogProps={{
@@ -334,19 +336,23 @@ const ParentRegistrationRequestsTable = ({ dictionary }) => {
 
   return (
     <>
-      <Card>
+      <Card className='common-block-dashboard table-block-no-pad'>
         <CardHeader
+          className='common-block-title'
           title={dictionary?.datatable?.parent_approve_reject_table?.table_title}
           action={
-            <DebouncedInput
-              value={globalFilter ?? ''}
-              onChange={value => setGlobalFilter(String(value))}
-              placeholder={dictionary?.datatable?.common?.search_placeholder}
-            />
+            <div className='form-group'>
+              <DebouncedInput
+                value={globalFilter ?? ''}
+                onChange={value => setGlobalFilter(String(value))}
+                placeholder={dictionary?.datatable?.common?.search_placeholder}
+              />
+            </div>
           }
-          className='flex-wrap gap-4'
+          // className='flex-wrap gap-4'
         />
-        <div className='overflow-x-auto'>
+        {/* <div className='overflow-x-auto'> */}
+        <div className='table-common-block p-0 overflow-x-auto'>
           <table className={tableStyles.table}>
             <thead>
               {table.getHeaderGroups().map(headerGroup => (
@@ -376,7 +382,7 @@ const ParentRegistrationRequestsTable = ({ dictionary }) => {
               ))}
               {isDataTableServerLoading && (
                 <tr>
-                  <td colSpan={columns?.length}>
+                  <td className='no-pad-td' colSpan={columns?.length}>
                     <LinearProgress color='primary' sx={{ height: '2px' }} />
                   </td>
                 </tr>

@@ -69,7 +69,7 @@ const OrderDataTable = props => {
   //** STATES */
   const [page, setPage] = useState(1)
   const [data, setData] = useState([])
-  const [sorting, setSorting] = useState([])
+  // const [sorting, setSorting] = useState([])
   const [totalCount, setTotalCount] = useState(0)
   const [totalPages, setTotalPages] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState(5)
@@ -97,13 +97,13 @@ const OrderDataTable = props => {
 
     abortController.current = new AbortController()
 
-    const orderBy = sorting.reduce((acc, { id, desc }) => {
-      acc[id] = desc ? -1 : 1
+    // const orderBy = sorting.reduce((acc, { id, desc }) => {
+    //   acc[id] = desc ? -1 : 1
 
-      return acc
-    }, {})
+    //   return acc
+    // }, {})
 
-    const orderByString = Object.keys(orderBy).length > 0 ? JSON.stringify(orderBy) : null
+    // const orderByString = Object.keys(orderBy).length > 0 ? JSON.stringify(orderBy) : null
 
     setIsLoading(true)
 
@@ -115,8 +115,8 @@ const OrderDataTable = props => {
           kidId: selectedKid === 'all' ? null : selectedKid,
           vendorId: selectedVendor === 'all' ? null : selectedVendor,
           isReviewed: isReviewed === 'all' ? null : isReviewed,
-          orderDate: orderDate,
-          orderBy: orderByString
+          orderDate: orderDate
+          // orderBy: orderByString
         },
         signal: abortController.current.signal
       })
@@ -225,10 +225,10 @@ const OrderDataTable = props => {
       pagination: {
         pageIndex: page - 1,
         pageSize: itemsPerPage
-      },
-      sorting
+      }
+      // sorting
     },
-    onSortingChange: setSorting,
+    // onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     manualPagination: true,
@@ -257,7 +257,7 @@ const OrderDataTable = props => {
   }, [
     page,
     itemsPerPage,
-    sorting,
+    // sorting,
     selectedKid,
     isReviewed,
     selectedVendor,

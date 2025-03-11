@@ -458,17 +458,11 @@ const NearByVendorDialog = props => {
 
             <Grid item xs={12}>
               <div className='flex items-center gap-4'>
-                <Button type='submit' variant='contained'>
+                <Button type='submit' variant='contained' className='theme-common-btn'>
                   {t('form.button.confirm')}
                 </Button>
 
-                <Button
-                  variant='contained'
-                  color='secondary'
-                  type='button'
-                  onClick={handleSidebarClose}
-                  sx={{ backgroundColor: `var(--nh-primary-light-color)` }}
-                >
+                <Button variant='customLight' onClick={handleSidebarClose} className='theme-common-btn'>
                   {t('form.button.cancel')}
                 </Button>
               </div>

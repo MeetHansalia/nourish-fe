@@ -259,6 +259,7 @@ const Details = ({ dictionary, userData, setSelectedAvatar, selectedAvatar }) =>
               <div className='flex items-center flex-wrap gap-2 justify-center'>
                 <OpenDialogOnElementClick
                   element={Button}
+                  className='theme-common-btn'
                   elementProps={{
                     children: `${dictionary?.common?.change_password}`,
                     variant: 'contained'

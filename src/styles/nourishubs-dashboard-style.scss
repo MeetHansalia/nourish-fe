@@ -619,13 +619,15 @@
       h4 {
         font-size: 20px;
         line-height: 24px;
+        // font-weight: 600;
         font-weight: 600;
         margin: 0px;
       }
       .MuiCardHeader-title {
         font-size: 20px;
         line-height: 24px;
-        font-weight: 600;
+        // font-weight: 600;
+        font-weight: 500;
         margin: 0px;
         color: var(--nh-title-color);
         font-family: 'Poppins', sans-serif;
@@ -1243,6 +1245,11 @@
       height: 33px;
       .MuiChip-label {
         color: var(--primary-color);
+      }
+    }
+    &.font-bold {
+      span {
+        font-weight: 700;
       }
     }
   }

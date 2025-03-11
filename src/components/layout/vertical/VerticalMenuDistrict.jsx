@@ -38,7 +38,13 @@ const VerticalMenuDistrict = ({ dictionary, userRole, userPanel }) => {
       user_management: isUserHasPermission({
         permissions: user?.permissions,
         permissionToCheck: 'user_management',
-        subPermissionsToCheck: ['get_users', 'create_user', 'get_suspend_users']
+        subPermissionsToCheck: [
+          'verification_requests',
+          'verify_user',
+          'get_suspend_users',
+          'create_user',
+          'update_user'
+        ]
       }),
       foodchart_management: isUserHasPermission({
         permissions: user?.permissions,
@@ -100,8 +106,9 @@ const VerticalMenuDistrict = ({ dictionary, userRole, userPanel }) => {
         // className={isUserHasPermissionNavigation?.schools_and_vendors_verify ? '' : 'hidden'}
         activeUrl={`/${locale}/${userPanel}/schools-vendors-verify`}
         exactMatch={false}
+        className={isUserHasPermissionNavigation?.user_management ? '' : 'hidden'}
       >
-        {dictionary['navigation'].document_verify}
+        {dictionary['navigation'].document_approval}
       </MenuItem>
 
       <MenuItem
@@ -117,6 +124,7 @@ const VerticalMenuDistrict = ({ dictionary, userRole, userPanel }) => {
         icon={<i className='tabler-tools-kitchen-3' />}
         activeUrl={`/${locale}/${userPanel}/vendor-selection-chart`}
         exactMatch={false}
+        className={isUserHasPermissionNavigation?.foodchart_management ? '' : 'hidden'}
       >
         {dictionary['navigation'].vendor_selection_chart}
       </MenuItem>

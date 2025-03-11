@@ -32,7 +32,8 @@ import {
   TableHead,
   TableRow,
   IconButton,
-  Box
+  Box,
+  Card
 } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete'
 
@@ -44,6 +45,7 @@ import axiosApiCall from '@/utils/axiosApiCall'
 import { toastError, toastSuccess } from '@/utils/globalFunctions'
 
 import { useTranslation } from '@/utils/getDictionaryClient'
+import CustomTextField from '@/@core/components/mui/TextField'
 
 const AddDishDialog = ({ open, setOpen, mode, data, setDishCreateData, dialogProps }) => {
   const { lang: locale } = useParams()
@@ -86,6 +88,7 @@ const AddDishDialog = ({ open, setOpen, mode, data, setDishCreateData, dialogPro
     control,
     handleSubmit,
     reset,
+    register,
     setValue,
     formState: { errors }
   } = useForm({
@@ -188,217 +191,313 @@ const AddDishDialog = ({ open, setOpen, mode, data, setDishCreateData, dialogPro
       scroll='body'
       sx={{ '& .MuiDialog-paper': { overflow: 'visible' } }}
     >
-      <DialogTitle>{mode === 'add' ? t('form.label.add_dish') : t('form.label.edit_dish')}</DialogTitle>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <DialogContent>
-          <Grid container spacing={2}>
-            {/* Name Field */}
-            <Grid item xs={12}>
-              <Controller
-                name='name'
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label={t('form.label.dish_name')}
-                    variant='outlined'
-                    fullWidth
-                    error={!!errors.name}
-                    helperText={errors.name?.message}
+      <Card className='common-block-dashboard'>
+        <DialogTitle>{mode === 'add' ? t('form.label.add_dish') : t('form.label.edit_dish')}</DialogTitle>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <DialogContent>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                {/* <Controller
+                  name='name'
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label={t('form.label.dish_name')}
+                      variant='outlined'
+                      fullWidth
+                      error={!!errors.name}
+                      helperText={errors.name?.message}
+                    />
+                  )}
+                /> */}
+                <div className='form-group'>
+                  <Controller
+                    name='name'
+                    control={control}
+                    render={({ field }) => (
+                      <CustomTextField
+                        fullWidth
+                        placeholder={t('form.placeholder.enter_dish_name')}
+                        variant='outlined'
+                        size='small'
+                        label={t('form.label.dish_name')}
+                        {...register('name')}
+                        error={!!errors.name}
+                        helperText={errors.name?.message}
+                      />
+                    )}
                   />
-                )}
-              />
-            </Grid>
+                </div>
+              </Grid>
 
-            {/* Description Field */}
-            <Grid item xs={12}>
-              <Controller
-                name='description'
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label={t('form.label.dish_description')}
-                    variant='outlined'
-                    fullWidth
-                    multiline
-                    rows={3}
-                    error={!!errors.description}
-                    helperText={errors.description?.message}
+              {/* Description Field */}
+              <Grid item xs={12}>
+                <div className='form-group'>
+                  <Controller
+                    name='description'
+                    control={control}
+                    render={({ field }) => (
+                      <CustomTextField
+                        fullWidth
+                        placeholder={t('form.placeholder.enter_description_name')}
+                        multiline
+                        rows={3}
+                        variant='outlined'
+                        size='small'
+                        label={t('form.label.dish_description')}
+                        {...register('description')}
+                        error={!!errors.description}
+                        helperText={errors.description?.message}
+                      />
+                    )}
                   />
-                )}
-              />
-            </Grid>
+                </div>
+                {/* <Controller
+                  name='description'
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label={t('form.label.dish_description')}
+                      variant='outlined'
+                      fullWidth
+                      multiline
+                      rows={3}
+                      error={!!errors.description}
+                      helperText={errors.description?.message}
+                    />
+                  )}
+                /> */}
+              </Grid>
 
-            {/* Pricing Fields */}
-            <Grid item xs={6}>
-              <Controller
-                name='pricing'
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label={t('form.label.price')}
-                    type='number'
-                    variant='outlined'
-                    fullWidth
-                    error={!!errors.pricing}
-                    helperText={errors.pricing?.message}
+              {/* Pricing Fields */}
+              <Grid item xs={6}>
+                <div className='form-group'>
+                  <Controller
+                    name='pricing'
+                    control={control}
+                    render={({ field }) => (
+                      <CustomTextField
+                        fullWidth
+                        placeholder={t('form.placeholder.pricing')}
+                        variant='outlined'
+                        size='small'
+                        label={t('form.label.price')}
+                        {...register('pricing')}
+                        error={!!errors.pricing}
+                        helperText={errors.pricing?.message}
+                      />
+                    )}
                   />
-                )}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <Controller
-                name='tax_pricing'
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label={t('form.label.tax_pricing')}
-                    type='number'
-                    variant='outlined'
-                    fullWidth
-                    error={!!errors.tax_pricing}
-                    helperText={errors.tax_pricing?.message}
+                </div>
+                {/* <Controller
+                  name='pricing'
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label={t('form.label.price')}
+                      type='number'
+                      variant='outlined'
+                      fullWidth
+                      error={!!errors.pricing}
+                      helperText={errors.pricing?.message}
+                    />
+                  )}
+                /> */}
+              </Grid>
+              <Grid item xs={6}>
+                <div className='form-group address-fill-common'>
+                  <Controller
+                    name='tax_pricing'
+                    control={control}
+                    render={({ field }) => (
+                      <CustomTextField
+                        fullWidth
+                        placeholder={t('form.placeholder.tax_pricing')}
+                        variant='outlined'
+                        size='small'
+                        label={t('form.label.tax_pricing')}
+                        {...register('tax_pricing')}
+                        error={!!errors.tax_pricing}
+                        helperText={errors.tax_pricing?.message}
+                      />
+                    )}
                   />
-                )}
-              />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <Box display='flex' alignItems='center' gap={2}>
-                <label htmlFor='image-upload'>
-                  <input
-                    accept='image/*'
-                    style={{ display: 'none' }}
-                    id='image-upload'
-                    type='file'
-                    onChange={handleImageChange}
-                  />
-                  <Button variant='outlined' component='span'>
-                    {t('common.upload_img')}
-                  </Button>
-                </label>
-                {imageURL && (
-                  <img
-                    src={imageURL}
-                    alt='Uploaded'
-                    style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 8 }}
-                  />
-                )}
-                {errors.file && (
-                  <Typography variant='caption' color='error'>
-                    {errors.file.message}
-                  </Typography>
-                )}
-              </Box>
-            </Grid>
-            {/* Ingredients */}
-            <Grid item xs={12}>
-              <Typography mb={2}>{t('form.label.add_ingredient')}</Typography>
-              <TableContainer>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>{t('form.label.name')}</TableCell>
-                      <TableCell>{t('form.label.quantity')}</TableCell>
-                      <TableCell>{t('form.label.unit')}</TableCell>
-                      <TableCell>{t('datatable.column.actions')}</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {fields.map((ingredient, index) => (
-                      <TableRow key={ingredient.id}>
-                        <TableCell>
-                          <Controller
-                            name={`ingredients.${index}.name`}
-                            control={control}
-                            render={({ field }) => (
-                              <TextField
-                                {...field}
-                                variant='outlined'
-                                fullWidth
-                                error={!!errors.ingredients?.[index]?.name}
-                                helperText={errors.ingredients?.[index]?.name?.message}
-                              />
-                            )}
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <Controller
-                            name={`ingredients.${index}.quantity`}
-                            control={control}
-                            render={({ field }) => (
-                              <TextField
-                                {...field}
-                                variant='outlined'
-                                fullWidth
-                                error={!!errors.ingredients?.[index]?.quantity}
-                                helperText={errors.ingredients?.[index]?.quantity?.message}
-                              />
-                            )}
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <Controller
-                            fullWidth
-                            name={`ingredients.${index}.unit`}
-                            control={control}
-                            render={({ field }) => (
-                              <FormControl
-                                variant='outlined'
-                                fullWidth
-                                size='small'
-                                error={!!errors.ingredients?.[index]?.unit}
-                              >
-                                <InputLabel>Unit</InputLabel>
-                                <Select
-                                  {...field}
-                                  value={field.value || ''}
-                                  onChange={e => field.onChange(e.target.value)}
-                                >
-                                  <MenuItem value='kilogram'>{t('form.label.kilogram')}</MenuItem>
-                                  <MenuItem value='g'>{t('form.label.gram')}</MenuItem>
-                                  <MenuItem value='l'>{t('form.label.liter')}</MenuItem>
-                                  <MenuItem value='ml'>{t('form.label.milliliter')}</MenuItem>
-                                  <MenuItem value='pcs'>{t('form.label.pieces')}</MenuItem>
-                                </Select>
-                                <FormHelperText>{errors.ingredients?.[index]?.unit?.message}</FormHelperText>
-                              </FormControl>
-                            )}
-                          />
-                        </TableCell>
-
-                        <TableCell>
-                          <IconButton color='error' onClick={() => remove(index)}>
-                            <DeleteIcon />
-                          </IconButton>
-                        </TableCell>
+                </div>
+                {/* <Controller
+                  name='tax_pricing'
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label={t('form.label.tax_pricing')}
+                      type='number'
+                      variant='outlined'
+                      fullWidth
+                      error={!!errors.tax_pricing}
+                      helperText={errors.tax_pricing?.message}
+                    />
+                  )}
+                /> */}
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Box display='flex' alignItems='center' gap={2}>
+                  <label htmlFor='image-upload'>
+                    <input
+                      accept='image/*'
+                      style={{ display: 'none' }}
+                      id='image-upload'
+                      type='file'
+                      onChange={handleImageChange}
+                    />
+                    <Button variant='outlined' component='span'>
+                      {t('common.upload_img')}
+                    </Button>
+                  </label>
+                  {imageURL && (
+                    <img
+                      src={imageURL}
+                      alt='Uploaded'
+                      style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 8 }}
+                    />
+                  )}
+                  {errors.file && (
+                    <Typography variant='caption' color='error'>
+                      {errors.file.message}
+                    </Typography>
+                  )}
+                </Box>
+              </Grid>
+              {/* Ingredients */}
+              <Grid item xs={12}>
+                <Typography mb={2}>{t('form.label.add_ingredient')}</Typography>
+                <TableContainer>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>{t('form.label.name')}</TableCell>
+                        <TableCell>{t('form.label.quantity')}</TableCell>
+                        <TableCell>{t('form.label.unit')}</TableCell>
+                        <TableCell>{t('datatable.column.actions')}</TableCell>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              <Button
-                variant='contained'
-                color='primary'
-                onClick={() => append({ name: '', quantity: '', unit: '' })}
-                sx={{ mt: 2 }}
-              >
-                {t('form.label.add_ingredient')}
-              </Button>
+                    </TableHead>
+                    <TableBody>
+                      {fields.map((ingredient, index) => (
+                        <TableRow key={ingredient.id}>
+                          <TableCell>
+                            <Controller
+                              name={`ingredients.${index}.name`}
+                              control={control}
+                              render={({ field }) => (
+                                <TextField
+                                  {...field}
+                                  variant='outlined'
+                                  fullWidth
+                                  placeholder={t('form.placeholder.name')}
+                                  error={!!errors.ingredients?.[index]?.name}
+                                  helperText={errors.ingredients?.[index]?.name?.message}
+                                />
+                              )}
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <Controller
+                              name={`ingredients.${index}.quantity`}
+                              control={control}
+                              render={({ field }) => (
+                                <TextField
+                                  {...field}
+                                  placeholder={t('form.placeholder.enter_quantity')}
+                                  variant='outlined'
+                                  fullWidth
+                                  error={!!errors.ingredients?.[index]?.quantity}
+                                  helperText={errors.ingredients?.[index]?.quantity?.message}
+                                />
+                              )}
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <div className='form-group address-fill-common'>
+                              <InputLabel>{t('form.label.unit')}</InputLabel>
+                              <Controller
+                                name={`ingredients.${index}.unit`}
+                                control={control}
+                                rules={{ required: t('form.validation.required') }}
+                                render={({ field, fieldState: { error } }) => (
+                                  <>
+                                    <FormControl fullWidth>
+                                      <Select
+                                        {...field}
+                                        value={field.value || ''}
+                                        onChange={e => field.onChange(e.target.value)}
+                                        displayEmpty
+                                        renderValue={selected =>
+                                          selected ? (
+                                            t(`form.label.${selected}`)
+                                          ) : (
+                                            <Typography sx={{ color: 'gray' }}>
+                                              {t('form.placeholder.select_unit')}
+                                            </Typography>
+                                          )
+                                        }
+                                      >
+                                        <MenuItem disabled value=''>
+                                          {t('form.placeholder.select_unit')}
+                                        </MenuItem>
+
+                                        <MenuItem value='kilogram'>{t('form.label.kilogram')}</MenuItem>
+                                        <MenuItem value='g'>{t('form.label.gram')}</MenuItem>
+                                        <MenuItem value='l'>{t('form.label.liter')}</MenuItem>
+                                        <MenuItem value='ml'>{t('form.label.milliliter')}</MenuItem>
+                                        <MenuItem value='pcs'>{t('form.label.pieces')}</MenuItem>
+                                      </Select>
+                                    </FormControl>
+
+                                    {/* Show error message separately, without red border */}
+                                    {error && (
+                                      <Typography color='error' variant='caption'>
+                                        {error.message}
+                                      </Typography>
+                                    )}
+                                  </>
+                                )}
+                              />
+                            </div>
+                          </TableCell>
+
+                          <TableCell>
+                            <IconButton color='error' onClick={() => remove(index)}>
+                              <DeleteIcon />
+                            </IconButton>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+                <Button
+                  variant='contained'
+                  color='primary'
+                  onClick={() => append({ name: '', quantity: '', unit: '' })}
+                  sx={{ mt: 2 }}
+                >
+                  {t('form.label.add_ingredient')}
+                </Button>
+              </Grid>
             </Grid>
-          </Grid>
-        </DialogContent>
-        <DialogActions>
-          <Button variant='contained' type='submit'>
-            {mode === 'add' ? t('form.button.save') : t('form.common.update')}
-          </Button>
-          <Button variant='outlined' onClick={handleClose}>
-            {t('form.button.cancel')}
-          </Button>
-        </DialogActions>
-      </form>
+          </DialogContent>
+          <DialogActions>
+            <Button variant='contained' type='submit'>
+              {mode === 'add' ? t('form.button.save') : t('form.common.update')}
+            </Button>
+            <Button variant='outlined' onClick={handleClose}>
+              {t('form.button.cancel')}
+            </Button>
+          </DialogActions>
+        </form>
+      </Card>
     </Dialog>
   )
 }

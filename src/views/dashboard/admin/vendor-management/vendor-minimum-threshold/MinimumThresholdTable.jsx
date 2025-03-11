@@ -205,7 +205,8 @@ const OrderDataTable = props => {
                 element={Button}
                 elementProps={{
                   children: `${dictionary?.common?.reject}`,
-                  variant: 'contained'
+                  variant: 'contained',
+                  className: 'theme-common-btn'
                 }}
                 dialog={RejectViewDialogBox}
                 dialogProps={{

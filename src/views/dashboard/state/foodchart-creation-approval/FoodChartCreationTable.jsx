@@ -236,6 +236,7 @@ const FoodChartCreationTable = ({ dictionary }) => {
                   handleStatusChange(row?.original?.schoolAdminId, row?.original?.groupId)
                 }
               }}
+              className='theme-common-btn'
               // disabled={row?.original?.status === 'Approved'}
             >
               {row?.original?.status}
@@ -338,28 +339,33 @@ const FoodChartCreationTable = ({ dictionary }) => {
 
   return (
     <>
-      <Card>
+      <Card className='common-block-dashboard table-block-no-pad '>
         {userOperationPermissions?.create_foodchart && (
           <CardHeader
+            className='common-block-title'
             title={dictionary?.navigation?.food_chart_creation}
             action={
               <div className='flex max-sm:flex-col max-sm:is-full sm:items-center gap-4'>
                 <Link
                   href={getLocalizedUrl(`/${panelName}/foodchart-creation-approval/new-food-chart-creation`, locale)}
                 >
-                  <Button variant='contained'>{dictionary?.common?.food_chart_creation}</Button>
+                  <Button className='theme-common-btn min-width-auto' variant='contained'>
+                    {dictionary?.common?.food_chart_creation}
+                  </Button>
                 </Link>
-                <DebouncedInput
-                  value={globalFilter ?? ''}
-                  onChange={value => setGlobalFilter(String(value))}
-                  placeholder={dictionary?.datatable?.common?.search_placeholder}
-                />
+                <div className='form-group'>
+                  <DebouncedInput
+                    value={globalFilter ?? ''}
+                    onChange={value => setGlobalFilter(String(value))}
+                    placeholder={dictionary?.datatable?.common?.search_placeholder}
+                  />
+                </div>
               </div>
             }
-            className='flex-wrap gap-4'
+            // className='flex-wrap gap-4'
           />
         )}
-        <div className='overflow-x-auto'>
+        <div className='overflow-x-auto table-common-block p-0'>
           <table className={tableStyles.table}>
             <thead>
               {table.getHeaderGroups().map(headerGroup => (
@@ -389,7 +395,7 @@ const FoodChartCreationTable = ({ dictionary }) => {
               ))}
               {isDataTableServerLoading && (
                 <tr>
-                  <td colSpan={columns?.length}>
+                  <td className='no-pad-td' colSpan={columns?.length}>
                     <LinearProgress color='primary' sx={{ height: '2px' }} />
                   </td>
                 </tr>

@@ -35,7 +35,10 @@ import {
   DialogTitle,
   DialogContent,
   DialogContentText,
-  DialogActions
+  DialogActions,
+  Card,
+  CardHeader,
+  CardContent
 } from '@mui/material'
 
 import { isCancel } from 'axios'
@@ -51,6 +54,7 @@ import { API_ROUTER } from '@/utils/apiRoutes'
 import { apiResponseErrorHandling, toastError, toastSuccess } from '@/utils/globalFunctions'
 
 import axiosApiCall from '@/utils/axiosApiCall'
+import CustomTextField from '@/@core/components/mui/TextField'
 
 export default function ModifyGroupForm({ onDelete, handleBackToTabs, tabValue, editId }) {
   const { lang: locale } = useParams()
@@ -334,287 +338,349 @@ export default function ModifyGroupForm({ onDelete, handleBackToTabs, tabValue, 
   }
 
   return (
-    <Box
-      sx={{
-        maxWidth: 900,
-        margin: 'auto',
-        padding: 3,
-        backgroundColor: '#fff',
-        borderRadius: 2,
-        boxShadow: 2
-      }}
-    >
-      <Typography variant='h6' fontWeight='bold' mb={3}>
-        {editId ? t('form.label.edit_modify_group') : t('form.label.add_modify_group')}
-      </Typography>
-
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <Controller
-              name='name'
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label={t('form.label.name')}
-                  variant='outlined'
-                  fullWidth
-                  error={!!errors.name}
-                  helperText={errors.name?.message}
+    <Card className='common-block-dashboard'>
+      <div className='common-block-title'>
+        <CardHeader
+          className='p-0'
+          title={editId ? t('form.label.edit_modify_group') : t('form.label.add_modify_group')}
+        />
+      </div>
+      <CardContent className='p-0 common-form-dashboard'>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Grid container spacing={6}>
+            <Grid item xs={12} sm={6}>
+              <div className='form-group'>
+                <Controller
+                  name='name'
+                  control={control}
+                  render={({ field }) => (
+                    <CustomTextField
+                      fullWidth
+                      placeholder={t('form.placeholder.enter_dish_name')}
+                      variant='outlined'
+                      size='small'
+                      label={t('form.label.name')}
+                      {...register('dishName')}
+                      error={!!errors.name}
+                      helperText={errors.name?.message}
+                    />
+                  )}
                 />
-              )}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <FormControl fullWidth>
-              <InputLabel id='dish-select-label'> {t('form.label.select_dishes')}</InputLabel>
-              <Select
-                labelId='dish-select-label'
-                multiple
-                value={selectedDishIds.filter(id => dishes.some(d => d._id === id))}
-                onChange={handleChange}
-                input={<OutlinedInput label={t('form.label.select_dishes')} />}
-                renderValue={selected => (
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                    {selected
-                      .map(id => dishes.find(d => d._id === id))
-                      .filter(dish => dish && dish.name && dish.name.trim() !== '')
-                      .map(dish => (
-                        <Chip
-                          key={dish._id}
-                          label={dish.name}
-                          sx={{ display: 'flex', alignItems: 'center' }}
-                          // onMouseDown={e => e.stopPropagation()}
-                          // deleteIcon={
-                          // <EditIcon
-                          //   fontSize='small'
-                          //   onClick={e => {
-                          //     e.stopPropagation()
-                          //     openEditDishDialog(dish)
-                          //   }}
-                          // />
-                          // }
-                          onDelete
-                        />
-                      ))}
-                  </Box>
-                )}
-              >
-                {Array.isArray(dishes) && dishes.length > 0 ? (
-                  dishes
-                    .filter(dish => dish.name && dish.name.trim() !== '')
-                    .map(dish => (
-                      <MenuItem key={dish._id} value={dish._id}>
-                        {dish.name}
-                      </MenuItem>
-                    ))
-                ) : (
-                  <MenuItem disabled>No dishes available</MenuItem>
-                )}
-              </Select>
-              <Typography color='error' variant='caption'>
-                {errors.dishes?.message}
-              </Typography>
-            </FormControl>
-          </Grid>
-          <Grid item xs={12}>
-            <OpenDialogOnElementClick
-              element={Button}
-              elementProps={buttonProps}
-              dialog={AddDishDialog}
-              dialogProps={dialogProps}
-              setDishCreateData={setDishCreateData}
-              openFromParent={isDialogOpen}
-              setIsDialogOpen={setIsDialogOpen}
-            />
-          </Grid>
+              </div>
+            </Grid>
+            <Grid Grid item xs={12}>
+              <div className='form-group'>
+                <InputLabel id='dish-select-label'>{t('form.label.select_dishes')}</InputLabel>
+                <Controller
+                  name='select_dishes'
+                  control={control}
+                  rules={{ required: t('form.validation.required') }}
+                  render={({ field, fieldState: { error } }) => (
+                    <FormControl fullWidth error={!!error}>
+                      <Select
+                        {...field}
+                        multiple
+                        displayEmpty
+                        value={field.value || []} // Ensuring an empty array as default
+                        onChange={event => {
+                          const value = event.target.value
 
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <Typography variant='h6' gutterBottom>
-                {t('form.label.rules')}
-              </Typography>
+                          field.onChange(Array.isArray(value) ? value : [])
+                        }}
+                        renderValue={selected =>
+                          selected.length > 0 ? (
+                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                              {selected
+                                .map(id => dishes.find(d => d._id === id))
+                                .filter(dish => dish?.name?.trim())
+
+                                .map(dish => (
+                                  <Chip
+                                    key={dish._id}
+                                    label={dish.name}
+                                    sx={{ display: 'flex', alignItems: 'center' }}
+                                    onDelete={() => console.log(`Delete ${dish.name}`)} // Replace with actual delete handler
+                                  />
+                                ))}
+                            </Box>
+                          ) : (
+                            <Typography sx={{ color: 'gray' }}>{t('form.placeholder.enter_dish_name')}</Typography>
+                          )
+                        }
+                      >
+                        {dishes?.length > 0 ? (
+                          dishes
+                            .filter(dish => dish?.name?.trim())
+                            .map(dish => (
+                              <MenuItem key={dish._id} value={dish._id}>
+                                {dish.name}
+                              </MenuItem>
+                            ))
+                        ) : (
+                          <MenuItem disabled>No dishes available</MenuItem>
+                        )}
+                      </Select>
+                      {error && (
+                        <Typography color='error' variant='caption'>
+                          {error.message}
+                        </Typography>
+                      )}
+                    </FormControl>
+                  )}
+                />
+              </div>
             </Grid>
 
+            {/* <Grid item xs={12}>
+              <FormControl fullWidth>
+                <InputLabel id='dish-select-label'> {t('form.label.select_dishes')}</InputLabel>
+                <Select
+                  labelId='dish-select-label'
+                  multiple
+                  value={selectedDishIds.filter(id => dishes.some(d => d._id === id))}
+                  onChange={handleChange}
+                  input={<OutlinedInput label={t('form.label.select_dishes')} />}
+                  renderValue={selected => (
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                      {selected
+                        .map(id => dishes.find(d => d._id === id))
+                        .filter(dish => dish && dish.name && dish.name.trim() !== '')
+                        .map(dish => (
+                          <Chip
+                            key={dish._id}
+                            label={dish.name}
+                            sx={{ display: 'flex', alignItems: 'center' }}
+                            // onMouseDown={e => e.stopPropagation()}
+                            // deleteIcon={
+                            // <EditIcon
+                            //   fontSize='small'
+                            //   onClick={e => {
+                            //     e.stopPropagation()
+                            //     openEditDishDialog(dish)
+                            //   }}
+                            // />
+                            // }
+                            onDelete
+                          />
+                        ))}
+                    </Box>
+                  )}
+                >
+                  {Array.isArray(dishes) && dishes.length > 0 ? (
+                    dishes
+                      .filter(dish => dish.name && dish.name.trim() !== '')
+                      .map(dish => (
+                        <MenuItem key={dish._id} value={dish._id}>
+                          {dish.name}
+                        </MenuItem>
+                      ))
+                  ) : (
+                    <MenuItem disabled>No dishes available</MenuItem>
+                  )}
+                </Select>
+                <Typography color='error' variant='caption'>
+                  {errors.dishes?.message}
+                </Typography>
+              </FormControl>
+            </Grid> */}
             <Grid item xs={12}>
-              <Controller
-                name='requireSelection'
-                control={control}
-                render={({ field }) => (
-                  <FormControlLabel
-                    control={<Checkbox {...field} checked={field.value} />}
-                    label={t('form.label.require_customers_to_select_a_dish')}
-                  />
-                )}
+              <OpenDialogOnElementClick
+                element={Button}
+                elementProps={buttonProps}
+                dialog={AddDishDialog}
+                dialogProps={dialogProps}
+                setDishCreateData={setDishCreateData}
+                openFromParent={isDialogOpen}
+                setIsDialogOpen={setIsDialogOpen}
               />
             </Grid>
 
-            {requireSelection && (
-              <>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <Typography variant='h6' gutterBottom>
+                  {t('form.label.rules')}
+                </Typography>
+              </Grid>
+
+              <Grid item xs={12}>
+                <Controller
+                  name='requireSelection'
+                  control={control}
+                  render={({ field }) => (
+                    <FormControlLabel
+                      control={<Checkbox {...field} checked={field.value} />}
+                      label={t('form.label.require_customers_to_select_a_dish')}
+                    />
+                  )}
+                />
+              </Grid>
+
+              {requireSelection && (
+                <>
+                  <Grid item xs={6}>
+                    <Controller
+                      name='required_rule'
+                      control={control}
+                      render={({ field }) => (
+                        <Select {...field} fullWidth error={!!errors.required_rule}>
+                          <MenuItem value='exactly'>{t('form.label.exactly')}</MenuItem>
+                          <MenuItem value='atleast'>{t('form.label.at_least')}</MenuItem>
+                          <MenuItem value='maximum'>{t('form.label.maxi_mum')}</MenuItem>
+                        </Select>
+                      )}
+                    />
+                    {errors.required_rule && <Typography color='error'>{errors.required_rule.message}</Typography>}
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Controller
+                      name='quantity'
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          type='text'
+                          label={t('form.label.quantity')}
+                          variant='outlined'
+                          fullWidth
+                          error={!!errors.quantity}
+                          helperText={errors.quantity?.message}
+                        />
+                      )}
+                    />
+                  </Grid>
+                </>
+              )}
+
+              <Grid item xs={12}>
+                <Controller
+                  name='requireHowManySelection'
+                  control={control}
+                  render={({ field }) => (
+                    <FormControlLabel
+                      control={<Checkbox {...field} checked={field.value} />}
+                      label={t('form.label.what_is_the_maximum_number_of_dishes_customers_can_select?')}
+                    />
+                  )}
+                />
+              </Grid>
+
+              {requireHowManySelection && (
                 <Grid item xs={6}>
                   <Controller
-                    name='required_rule'
-                    control={control}
-                    render={({ field }) => (
-                      <Select {...field} fullWidth error={!!errors.required_rule}>
-                        <MenuItem value='exactly'>{t('form.label.exactly')}</MenuItem>
-                        <MenuItem value='atleast'>{t('form.label.at_least')}</MenuItem>
-                        <MenuItem value='maximum'>{t('form.label.maxi_mum')}</MenuItem>
-                      </Select>
-                    )}
-                  />
-                  {errors.required_rule && <Typography color='error'>{errors.required_rule.message}</Typography>}
-                </Grid>
-                <Grid item xs={6}>
-                  <Controller
-                    name='quantity'
+                    name='max_selection'
                     control={control}
                     render={({ field }) => (
                       <TextField
                         {...field}
                         type='text'
-                        label={t('form.label.quantity')}
+                        label={t('form.label.max_selection')}
                         variant='outlined'
                         fullWidth
-                        error={!!errors.quantity}
-                        helperText={errors.quantity?.message}
+                        error={!!errors.max_selection}
+                        helperText={errors.max_selection?.message}
                       />
                     )}
                   />
                 </Grid>
-              </>
-            )}
-
-            <Grid item xs={12}>
-              <Controller
-                name='requireHowManySelection'
-                control={control}
-                render={({ field }) => (
-                  <FormControlLabel
-                    control={<Checkbox {...field} checked={field.value} />}
-                    label={t('form.label.what_is_the_maximum_number_of_dishes_customers_can_select?')}
-                  />
-                )}
-              />
+              )}
             </Grid>
 
-            {requireHowManySelection && (
-              <Grid item xs={6}>
-                <Controller
-                  name='max_selection'
-                  control={control}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      type='text'
-                      label={t('form.label.max_selection')}
-                      variant='outlined'
-                      fullWidth
-                      error={!!errors.max_selection}
-                      helperText={errors.max_selection?.message}
-                    />
-                  )}
-                />
-              </Grid>
-            )}
-          </Grid>
+            <div>
+              <Typography variant='h5' component='h1' gutterBottom>
+                {t('form.label.ingredients')}
+              </Typography>
 
-          <div>
-            <Typography variant='h5' component='h1' gutterBottom>
-              {t('form.label.ingredients')}
-            </Typography>
-
-            {filteredDishes.length > 0 ? (
-              <TableContainer component={Paper} elevation={3} style={{ borderRadius: '10px' }}>
-                <Table>
-                  {/* Table Header */}
-                  <TableHead>
-                    <TableRow>
-                      <TableCell style={{ fontWeight: 'bold', fontSize: '16px' }}>{t('form.label.name')}</TableCell>
-                      <TableCell style={{ fontWeight: 'bold', fontSize: '16px' }}>
-                        {t('form.label.ingredients')}
-                      </TableCell>
-                    </TableRow>
-                  </TableHead>
-
-                  {/* Table Body */}
-                  <TableBody>
-                    {filteredDishes.map(dish => (
-                      <TableRow key={dish._id}>
-                        <TableCell>{dish.name}</TableCell>
-                        <TableCell>
-                          {/* Nested Table for Ingredients */}
-                          <TableContainer component={Paper} style={{ borderRadius: '5px', marginTop: '10px' }}>
-                            <Table size='small'>
-                              <TableHead>
-                                <TableRow>
-                                  <TableCell style={{ fontWeight: 'bold' }}>{t('form.label.ingredients')}</TableCell>
-                                  <TableCell style={{ fontWeight: 'bold' }}>{t('form.label.unit')}</TableCell>
-                                </TableRow>
-                              </TableHead>
-                              <TableBody>
-                                {dish.ingredients.map((ingredient, index) => (
-                                  <TableRow key={index}>
-                                    <TableCell>{ingredient.name}</TableCell>
-                                    <TableCell>
-                                      {ingredient.quantity}
-                                      {ingredient.unit}
-                                    </TableCell>
-                                  </TableRow>
-                                ))}
-                              </TableBody>
-                            </Table>
-                          </TableContainer>
+              {filteredDishes.length > 0 ? (
+                <TableContainer component={Paper} elevation={3} style={{ borderRadius: '10px' }}>
+                  <Table>
+                    {/* Table Header */}
+                    <TableHead>
+                      <TableRow>
+                        <TableCell style={{ fontWeight: 'bold', fontSize: '16px' }}>{t('form.label.name')}</TableCell>
+                        <TableCell style={{ fontWeight: 'bold', fontSize: '16px' }}>
+                          {t('form.label.ingredients')}
                         </TableCell>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            ) : (
-              <Typography variant='body1' color='textSecondary'>
-                {t('form.validation.no_dishes_selected.')}
-              </Typography>
-            )}
-          </div>
-        </Grid>
+                    </TableHead>
 
-        {/* Action Buttons */}
-        <Box mt={3} display='flex' justifyContent='flex-end' gap={2}>
-          <Button type='submit' variant='contained' color='success'>
-            {isSubmitting ? t('common.saving') : editId ? t('form.button.update') : t('form.button.save')}
-          </Button>
-          {editId && (
-            <div>
-              <Button variant='contained' color='error' onClick={handleClickOpen}>
-                {t('form.button.delete')}
-              </Button>
-              <Dialog
-                open={open}
-                onClose={handleClose}
-                aria-labelledby='alert-dialog-title'
-                aria-describedby='alert-dialog-description'
-              >
-                <DialogTitle id='alert-dialog-title'>{t('form.button.delete')}</DialogTitle>
-                <DialogContent>
-                  <DialogContentText id='alert-dialog-description'>
-                    {t('dialog.delete_category_confirmation')}
-                  </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                  <Button onClick={handleClose} color='primary'>
-                    {t('form.button.cancel')}
-                  </Button>
-                  <Button onClick={() => handleDelete(editId)} color='error' autoFocus>
-                    {t('form.button.delete')}
-                  </Button>
-                </DialogActions>
-              </Dialog>
+                    {/* Table Body */}
+                    <TableBody>
+                      {filteredDishes.map(dish => (
+                        <TableRow key={dish._id}>
+                          <TableCell>{dish.name}</TableCell>
+                          <TableCell>
+                            {/* Nested Table for Ingredients */}
+                            <TableContainer component={Paper} style={{ borderRadius: '5px', marginTop: '10px' }}>
+                              <Table size='small'>
+                                <TableHead>
+                                  <TableRow>
+                                    <TableCell style={{ fontWeight: 'bold' }}>{t('form.label.ingredients')}</TableCell>
+                                    <TableCell style={{ fontWeight: 'bold' }}>{t('form.label.unit')}</TableCell>
+                                  </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                  {dish.ingredients.map((ingredient, index) => (
+                                    <TableRow key={index}>
+                                      <TableCell>{ingredient.name}</TableCell>
+                                      <TableCell>
+                                        {ingredient.quantity}
+                                        {ingredient.unit}
+                                      </TableCell>
+                                    </TableRow>
+                                  ))}
+                                </TableBody>
+                              </Table>
+                            </TableContainer>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              ) : (
+                <Typography variant='body1' color='textSecondary'>
+                  {t('form.validation.no_dishes_selected.')}
+                </Typography>
+              )}
             </div>
-          )}
-        </Box>
-      </form>
-    </Box>
+          </Grid>
+
+          {/* Action Buttons */}
+          <Box mt={3} display='flex' justifyContent='flex-end' gap={2}>
+            <Button type='submit' variant='contained' color='success'>
+              {isSubmitting ? t('common.saving') : editId ? t('form.button.update') : t('form.button.save')}
+            </Button>
+            {editId && (
+              <div>
+                <Button variant='contained' color='error' onClick={handleClickOpen}>
+                  {t('form.button.delete')}
+                </Button>
+                <Dialog
+                  open={open}
+                  onClose={handleClose}
+                  aria-labelledby='alert-dialog-title'
+                  aria-describedby='alert-dialog-description'
+                >
+                  <DialogTitle id='alert-dialog-title'>{t('form.button.delete')}</DialogTitle>
+                  <DialogContent>
+                    <DialogContentText id='alert-dialog-description'>
+                      {t('dialog.delete_category_confirmation')}
+                    </DialogContentText>
+                  </DialogContent>
+                  <DialogActions>
+                    <Button onClick={handleClose} color='primary'>
+                      {t('form.button.cancel')}
+                    </Button>
+                    <Button onClick={() => handleDelete(editId)} color='error' autoFocus>
+                      {t('form.button.delete')}
+                    </Button>
+                  </DialogActions>
+                </Dialog>
+              </div>
+            )}
+          </Box>
+        </form>
+      </CardContent>
+    </Card>
   )
 }

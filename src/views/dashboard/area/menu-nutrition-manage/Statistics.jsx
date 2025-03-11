@@ -69,32 +69,36 @@ const Statistics = props => {
           </div>
         </div>
       </div>
-      {/* <Grid container spacing={6}>
-        <Grid item xs={12} sm={6} md={4}>
-          <Link href={`/${locale}/${panelName}/user-management/suspended-users`}>
-            <Card>
-              <CardContent className='flex flex-col gap-1'>
-                <div className='flex items-center gap-4'>
-                  <CustomAvatar className='custom-avatar' color={'primary'} skin='light' variant='rounded'>
-                    <i className='tabler-clipboard-check text-xl' />
-                  </CustomAvatar>
-                  <Typography variant='h4'>Suspended accounts</Typography>
-                  <Typography variant='body2' color='text.disabled'>
-                    Last Week
-                  </Typography>
-                </div>
-                <div className='flex flex-col gap-1'>
-                  <div className='flex items-center gap-2'>
-                    <Typography color='text.primary' className='font-bold text-3xl'>
-                      {numberFormat(suspendedAccountNumbers)}
-                    </Typography>
+      <div className='top-block-card'>
+        <div className='card-block-inner'>
+          <div className='card-block'>
+            <Link href={`/${locale}/${panelName}/menu-nutrition-manage/nutrition-management`}>
+              <Card>
+                <CardContent className='flex flex-col gap-1'>
+                  <div className='flex items-center gap-4'>
+                    <CustomAvatar className='custom-avatar' color={'primary'} skin='light' variant='rounded'>
+                      <i className='tabler-clipboard-check text-xl' />
+                    </CustomAvatar>
+                    <div className='card-text-top'>
+                      <Typography variant='h4'>{dictionary?.form?.label?.nutrition_management}</Typography>
+                      <Typography variant='body2' color='text.disabled'>
+                        {dictionary?.page?.menu_nutrition_manage}
+                      </Typography>
+                    </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
-        </Grid>
-      </Grid> */}
+                  <div className='flex flex-col gap-1 number-text-block'>
+                    <div className='flex items-center number-text-block-inner gap-2'>
+                      <Typography color='text.primary' className='font-bold text-3xl'>
+                        {isLoadingStatistic ? <CircularProgress size={20} /> : numberFormat(suspendedAccountNumbers)}
+                      </Typography>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

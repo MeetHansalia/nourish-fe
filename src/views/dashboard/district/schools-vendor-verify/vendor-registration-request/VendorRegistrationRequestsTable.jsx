@@ -51,25 +51,7 @@ import OpenDialogOnElementClick from '@/components/layout/OpenDialogOnElementCli
 import tableStyles from '@core/styles/table.module.css'
 import Link from '@/components/Link'
 import { getLocalizedUrl } from '@/utils/i18n'
-
-const DebouncedInput = ({ value: initialValue, onChange, debounce = 500, ...props }) => {
-  // States
-  const [value, setValue] = useState(initialValue)
-
-  useEffect(() => {
-    setValue(initialValue)
-  }, [initialValue])
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      onChange(value)
-    }, debounce)
-
-    return () => clearTimeout(timeout)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value])
-
-  return <CustomTextField {...props} value={value} onChange={e => setValue(e.target.value)} />
-}
+import DebouncedInput from '@/components/nourishubs/DebouncedInput'
 
 const VendorRegistrationRequestsTable = ({ dictionary }) => {
   const { lang: locale } = useParams()
@@ -211,7 +193,6 @@ const VendorRegistrationRequestsTable = ({ dictionary }) => {
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    // getFilteredRowModel: getFilteredRowModel(),
     manualPagination: true,
     manualSorting: true
   })
@@ -231,18 +212,22 @@ const VendorRegistrationRequestsTable = ({ dictionary }) => {
   }, [page, itemsPerPage, globalFilter, sorting])
 
   return (
-    <Card>
+    <Card className='common-block-dashboard table-block-no-pad'>
       <CardHeader
+        className='common-block-title'
         title={dictionary?.datatable?.verification_request_Table?.table_title}
         action={
-          <DebouncedInput
-            value={globalFilter ?? ''}
-            onChange={value => setGlobalFilter(String(value))}
-            placeholder={dictionary?.datatable?.common?.search_placeholder}
-          />
+          <div className='form-group'>
+            <DebouncedInput
+              value={globalFilter ?? ''}
+              onChange={value => setGlobalFilter(String(value))}
+              placeholder={dictionary?.datatable?.common?.search_placeholder}
+            />
+          </div>
         }
       />
-      <div className='overflow-x-auto'>
+      {/* <div className='overflow-x-auto'> */}
+      <div className='table-common-block p-0 overflow-x-auto'>
         <table className={tableStyles.table}>
           <thead>
             {table.getHeaderGroups().map(headerGroup => (
@@ -272,7 +257,7 @@ const VendorRegistrationRequestsTable = ({ dictionary }) => {
             ))}
             {isDataTableServerLoading && (
               <tr>
-                <td colSpan={columns?.length}>
+                <td colSpan={columns?.length} className='no-pad-td'>
                   <LinearProgress color='primary' sx={{ height: '2px' }} />
                 </td>
               </tr>

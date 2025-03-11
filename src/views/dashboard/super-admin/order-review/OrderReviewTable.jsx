@@ -36,7 +36,7 @@ import {
   Button,
   LinearProgress,
   TablePagination,
-  CardContent,
+  CardHeader,
   Grid,
   InputLabel,
   TextField
@@ -215,7 +215,8 @@ const OrderReviewTable = props => {
                 element={Button}
                 elementProps={{
                   children: `${dictionary?.page.common?.details}`,
-                  variant: 'contained'
+                  variant: 'contained',
+                  className: 'theme-common-btn'
                 }}
                 dialog={ReviewDialog}
                 dialogProps={{ dictionary, selectedRow: row.original }}
@@ -293,35 +294,37 @@ const OrderReviewTable = props => {
 
   return (
     <>
-      <Card>
-        <CardContent className='flex flex-col gap-4'>
-          <Grid container spacing={2} alignItems='center' justifyContent='space-between' sx={{ mb: 2 }}>
-            <Grid item xs={12} md={4}>
-              <Typography variant='h5'>{dictionary?.datatable?.all_review?.table_title}</Typography>
-            </Grid>
-            <Grid item xs={12} md={8} sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
-              <TextField
-                sx={{ minWidth: 150 }}
-                value={selectedVendor}
-                onChange={e => setSelectedVendor(e.target.value)}
-                select
-                label={dictionary?.page?.order_management?.select_vendor}
-                size='small'
-              >
-                <MenuItem value={'all'}>{dictionary?.form?.label?.all}</MenuItem>
-                {vendorList?.map(vendor => (
-                  <MenuItem value={vendor?._id} key={vendor?._id}>
-                    {`${vendor?.first_name} ${vendor?.last_name}`}
-                  </MenuItem>
-                ))}
-              </TextField>
-
-              <FormControl sx={{ minWidth: 150 }}>
-                <InputLabel id='demo-controlled-open-select-label'>{dictionary?.form?.label?.select_child}</InputLabel>
-                <Select
-                  labelId='demo-controlled-open-select-label'
+      <Card className='common-block-dashboard table-block-no-pad'>
+        <CardHeader
+          //  className='flex flex-col gap-4'
+          className='common-block-title'
+          title={dictionary?.datatable?.all_review?.table_title}
+          action={
+            <div className='flex gap-4'>
+              <div className='form-group address-fill-common'>
+                <CustomTextField
+                  sx={{ minWidth: 150 }}
+                  className='diff-select-block'
+                  value={selectedVendor}
+                  onChange={e => setSelectedVendor(e.target.value)}
+                  select
+                  label={dictionary?.page?.order_management?.select_vendor}
+                  size='small'
+                >
+                  <MenuItem value={'all'}>{dictionary?.form?.label?.all}</MenuItem>
+                  {vendorList?.map(vendor => (
+                    <MenuItem value={vendor?._id} key={vendor?._id}>
+                      {`${vendor?.first_name} ${vendor?.last_name}`}
+                    </MenuItem>
+                  ))}
+                </CustomTextField>
+              </div>
+              <div className='form-group address-fill-common'>
+                <CustomTextField
                   id='demo-controlled-open-select'
                   value={selectedKid}
+                  className='diff-select-block'
+                  select
                   label={dictionary?.form?.label?.select_child}
                   onChange={e => setSelectedKid(e.target.value)}
                   size='small'
@@ -332,20 +335,31 @@ const OrderReviewTable = props => {
                       {`${kid?.first_name} ${kid?.last_name}`}
                     </MenuItem>
                   ))}
-                </Select>
-              </FormControl>
-              <AppReactDatepicker
-                dateFormat='MM/dd/yyyy'
-                selected={orderDate}
-                onChange={date => handelDateChange(date)}
-                maxDate={new Date()}
-                customInput={<CustomTextField fullWidth />}
-                placeholderText={t('form.placeholder.date')}
-              />
-            </Grid>
-          </Grid>
-        </CardContent>
-        <div className='overflow-x-auto'>
+                </CustomTextField>
+              </div>
+              <div className='form-group'>
+                <AppReactDatepicker
+                  dateFormat='MM/dd/yyyy'
+                  selected={orderDate}
+                  onChange={date => handelDateChange(date)}
+                  maxDate={new Date()}
+                  customInput={
+                    <CustomTextField
+                      label={t('form.placeholder.date')}
+                      fullWidth
+                      InputProps={{
+                        readOnly: true
+                      }}
+                    />
+                  }
+                  // placeholderText={t('form.placeholder.date')}
+                />
+              </div>
+            </div>
+          }
+        />
+        {/* <div className='overflow-x-auto'> */}
+        <div className='table-common-block p-0 overflow-x-auto'>
           <table className={tableStyles.table}>
             <thead>
               {table.getHeaderGroups().map(headerGroup => (
@@ -375,7 +389,7 @@ const OrderReviewTable = props => {
               ))}
               {isLoading && (
                 <tr>
-                  <td colSpan={columns?.length}>
+                  <td colSpan={columns?.length} className='no-pad-td'>
                     <LinearProgress color='primary' sx={{ height: '2px' }} />
                   </td>
                 </tr>

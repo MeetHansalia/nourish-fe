@@ -26,7 +26,8 @@ import {
   Typography,
   Pagination,
   Chip,
-  Button
+  Button,
+  CardHeader
 } from '@mui/material'
 
 // Third-party Imports
@@ -46,25 +47,7 @@ import ProfileViewDialog from './RejectConfirmationDialogBox'
 
 // Style Imports
 import tableStyles from '@core/styles/table.module.css'
-
-const DebouncedInput = ({ value: initialValue, onChange, debounce = 500, ...props }) => {
-  // States
-  const [value, setValue] = useState(initialValue)
-
-  useEffect(() => {
-    setValue(initialValue)
-  }, [initialValue])
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      onChange(value)
-    }, debounce)
-
-    return () => clearTimeout(timeout)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value])
-
-  return <CustomTextField {...props} value={value} onChange={e => setValue(e.target.value)} />
-}
+import DebouncedInput from '@/components/nourishubs/DebouncedInput'
 
 const ParentRegistrationRequestsTable = ({ dictionary }) => {
   const { lang: locale } = useParams()
@@ -211,6 +194,7 @@ const ParentRegistrationRequestsTable = ({ dictionary }) => {
                   e.stopPropagation()
                   handleApproveRequest(row?.original?.parentDetails?._id, row?.original?._id, null)
                 }}
+                className='theme-common-btn'
               >
                 {dictionary?.common?.approve}
               </Button>
@@ -218,10 +202,11 @@ const ParentRegistrationRequestsTable = ({ dictionary }) => {
                 element={Button}
                 elementProps={{
                   variant: 'outlined',
-                  children: `${dictionary?.common?.reject}`,
+                  children: dictionary?.common?.reject,
                   onClick: e => {
                     e.stopPropagation()
-                  }
+                  },
+                  className: 'theme-common-btn-border'
                 }}
                 dialog={ProfileViewDialog}
                 dialogProps={{
@@ -268,7 +253,6 @@ const ParentRegistrationRequestsTable = ({ dictionary }) => {
     onGlobalFilterChange: setGlobalFilter,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
     manualPagination: true,
     manualSorting: true
   })
@@ -289,144 +273,129 @@ const ParentRegistrationRequestsTable = ({ dictionary }) => {
 
   return (
     <>
-      <div>
-        {/* <div className='about-title-block-bg'>
-          <div className='common-container'>
-            <h1 data-aos='fade-up' data-aos-easing='linear' data-aos-duration='800'>
-              {dictionary?.datatable?.contact_us_inquiry_table?.table_title}
-            </h1>
-          </div>
-        </div> */}
-        <div>
-          <div className='common-container'>
-            <div className='about-title-block-inner-block'>
-              <Card>
-                <CardContent className='flex justify-between flex-col items-start md:items-center md:flex-row gap-4'>
-                  <div className='flex flex-col sm:flex-row items-center justify-between gap-4 is-full sm:is-auto'>
-                    <Typography className='hidden sm:block'>
-                      {dictionary?.datatable?.parent_approve_reject_table?.table_title}
-                    </Typography>
-                    <div className='flex items-center gap-2 is-full sm:is-auto'>
-                      <Typography className='hidden sm:block'>{dictionary?.datatable?.common?.show}</Typography>
-                      <CustomTextField
-                        select
-                        value={itemsPerPage || 10}
-                        onChange={e => setItemsPerPage(e.target.value)}
-                        className='is-[70px] max-sm:is-full'
-                      >
-                        <MenuItem value='5'>05</MenuItem>
-                        <MenuItem value='10'>10</MenuItem>
-                        <MenuItem value='25'>25</MenuItem>
-                        <MenuItem value='50'>50</MenuItem>
-                      </CustomTextField>
-                    </div>
-                  </div>
-                  <div className='flex max-sm:flex-col max-sm:is-full sm:items-center gap-4'>
-                    <DebouncedInput
-                      value={globalFilter ?? ''}
-                      onChange={value => setGlobalFilter(String(value))}
-                      placeholder={dictionary?.datatable?.common?.search_placeholder}
-                      className='max-sm:is-full sm:is-[250px]'
-                    />
-                  </div>
-                </CardContent>
-                <div className='overflow-x-auto'>
-                  <table className={tableStyles.table}>
-                    <thead>
-                      {table.getHeaderGroups().map(headerGroup => (
-                        <tr key={headerGroup.id}>
-                          {headerGroup.headers.map(header => (
-                            <th key={header.id}>
-                              {header.isPlaceholder ? null : (
-                                <>
-                                  <div
-                                    className={classnames({
-                                      'flex items-center': header.column.getIsSorted(),
-                                      'select-none': header.column.getCanSort()
-                                    })}
-                                    onClick={header.column.getToggleSortingHandler()}
-                                  >
-                                    {flexRender(header.column.columnDef.header, header.getContext())}
-                                  </div>
-                                </>
-                              )}
-                            </th>
-                          ))}
-                        </tr>
-                      ))}
-                      {isDataTableServerLoading && (
-                        <tr>
-                          <td colSpan={columns?.length}>
-                            <LinearProgress color='primary' sx={{ height: '2px' }} />
-                          </td>
-                        </tr>
-                      )}
-                    </thead>
-                    {globalFilter.length > 0 && table.getFilteredRowModel().rows.length === 0 ? (
-                      <tbody>
-                        <tr>
-                          <td colSpan={table.getVisibleFlatColumns().length} className='text-center'>
-                            {t('datatable.common.no_matching_data_found')}
-                          </td>
-                        </tr>
-                      </tbody>
-                    ) : table.getFilteredRowModel().rows.length === 0 ? (
-                      <tbody>
-                        <tr>
-                          <td colSpan={table.getVisibleFlatColumns().length} className='text-center'>
-                            {t('datatable.common.no_data_available')}
-                          </td>
-                        </tr>
-                      </tbody>
-                    ) : (
-                      <tbody>
-                        {table
-                          .getRowModel()
-                          .rows.slice(0, table.getState().pagination.pageSize)
-                          .map(row => (
-                            <tr key={row.id} className={classnames({ selected: row.getIsSelected() })}>
-                              {row.getVisibleCells().map(cell => (
-                                <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
-                              ))}
-                            </tr>
-                          ))}
-                      </tbody>
-                    )}
-                  </table>
-                </div>
-                {recordMetaData?.total > 0 && (
-                  <TablePagination
-                    component={() => (
-                      <div className='flex justify-between items-center flex-wrap pli-6 border-bs bs-auto plb-[12.5px] gap-2'>
-                        <Typography color='text.disabled'>
-                          {t('datatable.common.footer_showing_entries', {
-                            startIndex: recordMetaData?.startIndex || 0,
-                            endIndex: recordMetaData?.endIndex || 0,
-                            totalFiltered: recordMetaData?.totalFiltered || 0
-                          })}
-                        </Typography>
-
-                        <Pagination
-                          shape='rounded'
-                          color='primary'
-                          variant='tonal'
-                          count={recordMetaData?.totalPage}
-                          page={page}
-                          onChange={handlePageChange}
-                          showFirstButton
-                          showLastButton
-                          //   onPageChange={handlePageChange}
-                          // rowsPerPageOptions={[10, 25, 50]}
-                        />
-                      </div>
-                    )}
-                  />
-                )}
-              </Card>
+      <Card className='common-block-dashboard table-block-no-pad'>
+        <CardHeader
+          className='common-block-title'
+          title={dictionary?.datatable?.parent_approve_reject_table?.table_title}
+          action={
+            <div className='form-group'>
+              <DebouncedInput
+                value={globalFilter ?? ''}
+                onChange={value => setGlobalFilter(String(value))}
+                placeholder={dictionary?.datatable?.common?.search_placeholder}
+              />
             </div>
-          </div>
+          }
+        />
+        {/* <div className='overflow-x-auto'> */}
+        <div className='table-common-block p-0 overflow-x-auto'>
+          <table className={tableStyles.table}>
+            <thead>
+              {table.getHeaderGroups().map(headerGroup => (
+                <tr key={headerGroup.id}>
+                  {headerGroup.headers.map(header => (
+                    <th key={header.id}>
+                      {header.isPlaceholder ? null : (
+                        <>
+                          <div
+                            className={classnames({
+                              'flex items-center': header.column.getIsSorted(),
+                              'select-none': header.column.getCanSort()
+                            })}
+                            onClick={header.column.getToggleSortingHandler()}
+                          >
+                            {flexRender(header.column.columnDef.header, header.getContext())}
+                          </div>
+                        </>
+                      )}
+                    </th>
+                  ))}
+                </tr>
+              ))}
+              {isDataTableServerLoading && (
+                <tr>
+                  <td colSpan={columns?.length} className='no-pad-td'>
+                    <LinearProgress color='primary' sx={{ height: '2px' }} />
+                  </td>
+                </tr>
+              )}
+            </thead>
+            {globalFilter.length > 0 && table.getFilteredRowModel().rows.length === 0 ? (
+              <tbody>
+                <tr>
+                  <td colSpan={table.getVisibleFlatColumns().length} className='text-center'>
+                    {t('datatable.common.no_matching_data_found')}
+                  </td>
+                </tr>
+              </tbody>
+            ) : table.getFilteredRowModel().rows.length === 0 ? (
+              <tbody>
+                <tr>
+                  <td colSpan={table.getVisibleFlatColumns().length} className='text-center'>
+                    {t('datatable.common.no_data_available')}
+                  </td>
+                </tr>
+              </tbody>
+            ) : (
+              <tbody>
+                {table
+                  .getRowModel()
+                  .rows.slice(0, table.getState().pagination.pageSize)
+                  .map(row => (
+                    <tr key={row.id} className={classnames({ selected: row.getIsSelected() })}>
+                      {row.getVisibleCells().map(cell => (
+                        <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
+                      ))}
+                    </tr>
+                  ))}
+              </tbody>
+            )}
+          </table>
         </div>
-      </div>
+
+        <TablePagination
+          component={() => (
+            <div className='flex justify-between items-center flex-wrap pli-6 border-bs bs-auto plb-[12.5px] gap-2'>
+              <Typography color='text.disabled'>
+                {t('datatable.common.footer_showing_entries', {
+                  startIndex: recordMetaData?.startIndex || 0,
+                  endIndex: recordMetaData?.endIndex || 0,
+                  totalFiltered: recordMetaData?.totalFiltered || 0
+                })}
+              </Typography>
+              <div className='flex flex-col sm:flex-row items-center justify-between gap-4 is-full sm:is-auto'>
+                <div className='flex items-center gap-2 is-full sm:is-auto'>
+                  <Typography className='hidden sm:block'>{dictionary?.datatable?.common?.show}</Typography>
+                  <CustomTextField
+                    select
+                    value={itemsPerPage}
+                    onChange={e => setItemsPerPage(e.target.value)}
+                    className='is-[70px] max-sm:is-full'
+                  >
+                    <MenuItem value={5}>05</MenuItem>
+                    <MenuItem value={10}>10</MenuItem>
+                    <MenuItem value={15}>15</MenuItem>
+                    <MenuItem value={20}>20</MenuItem>
+                  </CustomTextField>
+                </div>
+              </div>
+
+              <Pagination
+                shape='rounded'
+                color='primary'
+                variant='tonal'
+                count={recordMetaData?.totalPage}
+                page={page}
+                onChange={handlePageChange}
+                showFirstButton
+                showLastButton
+                //   onPageChange={handlePageChange}
+                // rowsPerPageOptions={[10, 25, 50]}
+              />
+            </div>
+          )}
+        />
+      </Card>
     </>
   )
 }

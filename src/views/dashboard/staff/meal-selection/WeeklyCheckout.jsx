@@ -52,6 +52,8 @@ import { getLocalizedUrl } from '@/utils/i18n'
 import SpeedometerChart from '@/components/nourishubs/GaugeChart'
 import { useTranslation } from '@/utils/getDictionaryClient'
 
+import IngredientsTable from '../../common/IngredientsTable'
+
 export default function CheckoutPage({ dictionary, vendorId }) {
   const router = useRouter()
 
@@ -78,11 +80,11 @@ export default function CheckoutPage({ dictionary, vendorId }) {
   const [itemTotal, setItemTotal] = useState(0)
 
   const [selectedDate, setSelectedDate] = useState('')
-
+  const [speedValue, setSpeedValue] = useState(0)
   const selectedDates = useSelector(state => state.date.singleDate)
-
-      const [nutrition, setNutrition] = useState({})
-      const [kidNutrition, setKidNutrition] = useState({})
+  const [userData, setUserData] = useState()
+  const [nutrition, setNutrition] = useState({})
+  const [kidNutrition, setKidNutrition] = useState({})
 
   const userId = useSelector(state => state.profile.user?._id)
 
@@ -210,6 +212,32 @@ export default function CheckoutPage({ dictionary, vendorId }) {
     }
   }, [selectedDish, reset])
 
+  useEffect(() => {
+    axiosApiCall
+      .get(API_ROUTER.GET_PROFILE)
+      .then(response => {
+        setKidNutrition(
+          response?.data?.response?.user?.nutrition
+            ? response?.data?.response?.user.nutrition
+            : {
+                fat: 0,
+                sugar: 0,
+                protein: 0,
+                sodium: 0,
+                carbohydrate: 0
+              }
+        )
+        setUserData(response?.data?.response?.user)
+      })
+      .catch(error => {
+        if (!isCancel(error)) {
+          const apiResponseErrorHandlingData = apiResponseErrorHandling(error)
+
+          toastError(apiResponseErrorHandlingData)
+        }
+      })
+  }, [])
+
   const handleDialogOpen = dish => {
     setSelectedDish(dish)
     setTotalPrice(dish?.price)
@@ -259,7 +287,8 @@ export default function CheckoutPage({ dictionary, vendorId }) {
     try {
       const response = await axiosApiCall.post(API_ROUTER.STAFF.PAY_NOW_WEEKLY, {
         userId,
-        notes
+        notes,
+        speedometerValue: speedValue
       })
 
       const { status, message } = response?.data || {}
@@ -439,6 +468,10 @@ export default function CheckoutPage({ dictionary, vendorId }) {
     }
   }, [])
 
+  const handleCalculatedValue = value => {
+    setSpeedValue(value)
+  }
+
   return (
     <Box className='checkout-main-custom'>
       <Grid container spacing={6}>
@@ -489,12 +522,21 @@ export default function CheckoutPage({ dictionary, vendorId }) {
                     justifyContent: 'center'
                   }}
                 >
-                  <SpeedometerChart totalNutrition={nutrition} kidNutrition={kidNutrition} />
+                  <SpeedometerChart
+                    totalNutrition={nutrition}
+                    kidNutrition={kidNutrition}
+                    onCalculatedValue={handleCalculatedValue}
+                  />
                 </Box>
               </div>
               <div className='block-chart-table-in'>
                 {Object.keys(cartData).length > 0 && (
-                  <MealNutritionTable key={JSON.stringify(cartData)} dictionary={dictionary} cartData={cartData} setNutrition={setNutrition}/>
+                  <MealNutritionTable
+                    key={JSON.stringify(cartData)}
+                    dictionary={dictionary}
+                    cartData={cartData}
+                    setNutrition={setNutrition}
+                  />
                 )}
               </div>
             </CardContent>
@@ -815,10 +857,19 @@ export default function CheckoutPage({ dictionary, vendorId }) {
                 ))}
                 <div className='block-chart-common flex align-center justify-between'>
                   <div className='block-chart-inner' style={{ width: 200, height: 200 }}>
-                    <SpeedometerChart />
+                    <SpeedometerChart
+                      totalNutrition={selectedDish?.dishId?.calculatedNutrition}
+                      kidNutrition={kidNutrition}
+                    />
                   </div>
                 </div>
-
+                <div className='block-chart-table-in'>
+                  <IngredientsTable
+                    ingredientsData={selectedDish?.dishId?.ingredients}
+                    selectedDish={selectedDish?.dishId}
+                    dictionary={dictionary}
+                  />
+                </div>
                 <div className='modal-footer'>
                   <Typography variant='h6' color='textSecondary' className='title-small-medium-custom'>
                     {dictionary?.meal?.total_price}: ${totalPrice?.toFixed(2)}

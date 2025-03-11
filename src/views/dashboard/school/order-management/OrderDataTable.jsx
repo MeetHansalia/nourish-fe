@@ -220,7 +220,6 @@ const EventOrderDataTable = props => {
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    // getFilteredRowModel: getFilteredRowModel(),
     manualPagination: true,
     manualSorting: true
   })
@@ -242,8 +241,9 @@ const EventOrderDataTable = props => {
   /** Datatable: End */
 
   return (
-    <Card>
+    <Card className='common-block-dashboard table-block-no-pad'>
       <CardHeader
+        className='common-block-title'
         title={dictionary?.datatable?.event_orders_requests?.table_title}
         action={
           <div className='flex max-sm:flex-col max-sm:is-full sm:items-center gap-4'>
@@ -297,7 +297,7 @@ const EventOrderDataTable = props => {
             />
           </div>
         }
-        className='flex-wrap gap-4'
+        // className='flex-wrap gap-4'
       />
       {/* <Button variant='contained' onClick={() => router.push(`order-management/add`)}>
         {dictionary?.page?.order_management?.add_new_order}

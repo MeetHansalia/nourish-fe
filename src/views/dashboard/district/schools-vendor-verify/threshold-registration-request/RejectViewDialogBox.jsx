@@ -118,10 +118,20 @@ const RejectViewDialogBox = ({ open, setOpen, dialogProps }) => {
           />
 
           <Box display='flex' gap={2} justifyContent='center' mt={2}>
-            <Button variant='contained' onClick={handleSubmit(onSubmit)} disabled={!isValid || loading}>
+            <Button
+              variant='contained'
+              className='theme-common-btn'
+              onClick={handleSubmit(onSubmit)}
+              disabled={!isValid || loading}
+            >
               {loading ? `${dictionary?.common?.processing}` : `${dictionary?.form?.button?.submit}`}
             </Button>
-            <Button variant='customLight' onClick={() => setOpen(false)} disabled={loading}>
+            <Button
+              variant='customLight'
+              className='theme-common-btn'
+              onClick={() => setOpen(false)}
+              disabled={loading}
+            >
               {dictionary?.form?.button?.cancel}
             </Button>
           </Box>

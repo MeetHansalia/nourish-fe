@@ -85,17 +85,22 @@ const VendorProfile = props => {
   return (
     <Card>
       <CardHeader
-  title={dictionary?.page?.vendor_profile?.title}
-  action={
-    userData?.status === 'active' ? (
-      <Button variant='contained' onClick={() => setIsDialogOpen(true)} disabled={isLoading}>
-        {dictionary?.page?.vendor_profile?.button_title}
-      </Button>
-    ) : (
-      dictionary?.page?.vendor_profile?.button_title // Just return the text directly
-    )
-  }
-/>
+        title={dictionary?.page?.vendor_profile?.title}
+        action={
+          userData?.status === 'active' ? (
+            <Button
+              variant='contained'
+              className='theme-common-btn'
+              onClick={() => setIsDialogOpen(true)}
+              disabled={isLoading}
+            >
+              {dictionary?.page?.vendor_profile?.button_title}
+            </Button>
+          ) : (
+            dictionary?.page?.vendor_profile?.button_title // Just return the text directly
+          )
+        }
+      />
       <Divider />
       {!isLoading ? (
         <CardContent className='flex justify-around gap-6'>

@@ -2,7 +2,7 @@
 import { getDictionary } from '@/utils/getDictionary'
 
 // View Imports
-import DisputeHistory from '@/views/dashboard/admin/dispute-management/DisputeHistory'
+import DisputeHistory from '@/views/dashboard/state/dispute-management/DisputeHistory'
 
 // Meta data
 export const metadata = {

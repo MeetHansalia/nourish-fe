@@ -127,7 +127,12 @@ const VendorProfile = props => {
         title={dictionary?.page?.vendor_profile?.title}
         action={
           isUserHasPermissionSections?.suspend_users ? (
-            <Button variant='contained' onClick={() => setIsDialogOpen(true)} disabled={isLoading}>
+            <Button
+              variant='contained'
+              onClick={() => setIsDialogOpen(true)}
+              disabled={isLoading}
+              className='theme-common-btn'
+            >
               {dictionary?.page?.vendor_profile?.button_title}
             </Button>
           ) : null

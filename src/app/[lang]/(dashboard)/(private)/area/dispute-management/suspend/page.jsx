@@ -3,7 +3,7 @@ import { getDictionary } from '@/utils/getDictionary'
 
 // View Imports
 
-import Suspend from '@/views/dashboard/admin/dispute-management/Suspend'
+import Suspend from '@/views/dashboard/area/dispute-management/Suspend'
 
 // Meta data
 export const metadata = {

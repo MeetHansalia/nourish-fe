@@ -398,7 +398,7 @@ const OrderDataTable = props => {
               ))}
               {isLoading && (
                 <tr>
-                  <td colSpan={columns?.length}>
+                  <td colSpan={columns?.length} className='no-pad-td'>
                     <LinearProgress color='primary' sx={{ height: '2px' }} />
                   </td>
                 </tr>

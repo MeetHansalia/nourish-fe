@@ -33,7 +33,7 @@ const VerticalMenuArea = ({ dictionary, userRole, userPanel }) => {
         permissions: user?.permissions,
         permissionToCheck: 'order_management',
         // subPermissionsToCheck: [],
-        subPermissionsToCheck: ['order_tracking', 'change_order']
+        subPermissionsToCheck: ['get_last_movement_cancellation_list', 'approve_last_movement_cancellation']
       }),
       foodchart_management: isUserHasPermission({
         permissions: user?.permissions,

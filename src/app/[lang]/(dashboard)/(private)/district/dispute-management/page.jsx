@@ -1,7 +1,7 @@
 // Util Imports
 import { getDictionary } from '@/utils/getDictionary'
 // View Imports
-import DisputeManagement from '@/views/dashboard/admin/dispute-management'
+import DisputeManagement from '@/views/dashboard/district/dispute-management'
 // Meta data
 export const metadata = {
   title: 'Dispute Management'

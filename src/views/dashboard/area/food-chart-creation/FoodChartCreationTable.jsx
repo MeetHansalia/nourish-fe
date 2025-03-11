@@ -165,38 +165,40 @@ const FoodChartCreationTable = ({ dictionary }) => {
 
   const columnHelper = createColumnHelper()
 
-  const columns = useMemo(
-    () => [
+  const columns = useMemo(() => {
+    const columnData = [
       columnHelper.accessor('serialNumber', {
-        header: `${dictionary?.datatable?.column?.serial_number}`,
+        id: 'serialNumber',
+        header: dictionary?.datatable?.column?.serial_number,
         cell: info => info.getValue(),
         size: 10,
         enableSorting: false
       }),
       columnHelper.accessor('city', {
-        header: `${dictionary?.datatable?.column?.city}`,
+        id: 'city',
+        header: dictionary?.datatable?.column?.city,
         cell: info => info.getValue() || <span className='italic text-gray-500'>N/A</span>,
         size: 10
-        // enableSorting: false
       }),
       columnHelper.accessor('address', {
-        header: `${dictionary?.datatable?.column?.address}`,
+        id: 'address',
+        header: dictionary?.datatable?.column?.address,
         cell: info => info.getValue() || <span className='italic text-gray-500'>N/A</span>,
         size: 40
       }),
       columnHelper.accessor('schoolName', {
-        // id: 'School name',
-        cell: ({ row }) => {
-          return (
-            <Typography sx={{ fontFamily: 'inherit', fontSize: 'inherit', color: 'inherit' }}>
-              {row?.original?.schoolName}
-            </Typography>
-          )
-        },
+        id: 'schoolName',
+        header: dictionary?.datatable?.column?.school_name,
+        cell: ({ row }) => (
+          <Typography sx={{ fontFamily: 'inherit', fontSize: 'inherit', color: 'inherit' }}>
+            {row?.original?.schoolName}
+          </Typography>
+        ),
         size: 16
       }),
       columnHelper.display({
-        header: `${dictionary?.datatable?.column?.view}`,
+        id: 'view',
+        header: dictionary?.datatable?.column?.view,
         cell: ({ row }) => {
           const { schoolAdminId, groupId } = row?.original
 
@@ -219,82 +221,47 @@ const FoodChartCreationTable = ({ dictionary }) => {
         enableSorting: false
       }),
       columnHelper.accessor('Status', {
-        header: `${dictionary?.datatable?.column?.status}`,
+        id: 'status',
+        header: dictionary?.datatable?.column?.status,
         enableSorting: false,
         cell: ({ row }) => {
           const orderStatus = row?.original?.status
 
-          return (
-            <>
-              <StatusLabel status={orderStatus} />
-            </>
-          )
-        }
-      }),
-      columnHelper.accessor('Actions', {
-        header: `${dictionary?.datatable?.column?.actions}`,
-        enableSorting: false,
-        cell: ({ row }) => {
-          return (
-            <>
-              <Button
-                variant={row?.original?.status === 'Approved' ? 'customLight' : 'contained'}
-                onClick={() => {
-                  if (row?.original?.status !== 'Approved') {
-                    handleStatusChange(row?.original?.schoolAdminId, row?.original?.groupId)
-                  }
-                }}
-              >
-                {row?.original?.status}
-              </Button>
-            </>
-          )
-        }
-      }),
-      columnHelper.accessor('Actions', {
-        header: `${dictionary?.datatable?.column?.actions}`,
-        enableSorting: false,
-        cell: ({ row }) => {
-          return (
-            <>
-              {row?.original?.status === 'Pending' ? (
-                <Button
-                  variant='contained'
-                  onClick={() => {
-                    handleStatusChange(row?.original?.schoolAdminId, row?.original?.groupId)
-                  }}
-                >
-                  {row?.original?.status}
-                </Button>
-              ) : (
-                ''
-              )}
-            </>
-          )
+          return <StatusLabel status={orderStatus} />
         }
       })
-      // columnHelper.accessor('status', {
-      //   header: `${dictionary?.datatable?.column?.status}`,
-      //   cell: ({ row }) => {
-      //     return (
-      //       <Button
-      //         variant={row?.original?.status === 'Approved' ? 'customLight' : 'contained'}
-      //         onClick={() => {
-      //           if (row?.original?.status !== 'Approved') {
-      //             handleStatusChange(row?.original?.schoolAdminId, row?.original?.groupId)
-      //           }
-      //         }}
-      //       >
-      //         {row?.original?.status}
-      //       </Button>
-      //     )
-      //   },
-      //   size: 12,
-      //   enableSorting: false
-      // })
-    ],
-    [dictionary, data]
-  )
+    ]
+
+    // ✅ Now adding Actions Column only if permission is given
+    if (userOperationPermissions?.approve_foodchart) {
+      columnData.push(
+        columnHelper.display({
+          id: 'actions',
+          header: dictionary?.datatable?.column?.actions,
+          enableSorting: false,
+          cell: ({ row }) => {
+            const { status, schoolAdminId, groupId } = row?.original
+
+            return (
+              <div className='flex gap-2' onClick={e => e.stopPropagation()}>
+                {status === 'Pending' ? (
+                  <Button variant='contained' onClick={() => handleStatusChange(schoolAdminId, groupId)}>
+                    {dictionary?.common?.approve}
+                  </Button>
+                ) : (
+                  <Button variant='customLight' disabled>
+                    {status}
+                  </Button>
+                )}
+              </div>
+            )
+          }
+        })
+      )
+    }
+
+    return columnData
+  }, [dictionary, data, userOperationPermissions])
 
   const dataWithSerialNumber = useMemo(
     () =>
@@ -330,7 +297,9 @@ const FoodChartCreationTable = ({ dictionary }) => {
   }
 
   useEffect(() => {
-    getAllRequests()
+    {
+      userOperationPermissions?.get_foodchart_requests && getAllRequests()
+    }
 
     return () => {
       if (abortController.current) {
@@ -380,138 +349,149 @@ const FoodChartCreationTable = ({ dictionary }) => {
 
   return (
     <>
-      <Card>
+      <Card className='common-block-dashboard table-block-no-pad'>
         {userOperationPermissions?.create_foodchart && (
           <CardHeader
+            className='common-block-title'
             title={dictionary?.navigation?.food_chart_creation}
             action={
               <div className='flex max-sm:flex-col max-sm:is-full sm:items-center gap-4'>
                 <Link href={getLocalizedUrl(`/${panelName}/food-chart-creation/new-food-chart-creation`, locale)}>
-                  <Button variant='contained'>{dictionary?.common?.food_chart_creation}</Button>
+                  <Button variant='contained' className='theme-common-btn min-width-auto'>
+                    {dictionary?.common?.food_chart_creation}
+                  </Button>
                 </Link>
-                <DebouncedInput
-                  value={globalFilter ?? ''}
-                  onChange={value => setGlobalFilter(String(value))}
-                  placeholder={dictionary?.datatable?.common?.search_placeholder}
-                />
+                <div className='form-group'>
+                  <DebouncedInput
+                    value={globalFilter ?? ''}
+                    onChange={value => setGlobalFilter(String(value))}
+                    placeholder={dictionary?.datatable?.common?.search_placeholder}
+                  />
+                </div>
               </div>
             }
-            className='flex-wrap gap-4'
+            // className='flex-wrap gap-4'
           />
         )}
-        <div className='overflow-x-auto'>
-          <table className={tableStyles.table}>
-            <thead>
-              {table.getHeaderGroups().map(headerGroup => (
-                <tr key={headerGroup.id}>
-                  {headerGroup.headers.map(header => (
-                    <th key={header.id}>
-                      <>
-                        <div
-                          className={classnames({
-                            'flex items-center': header.column.getIsSorted(),
-                            'cursor-pointer select-none': header.column.getCanSort()
-                          })}
-                          onClick={header.column.getToggleSortingHandler()}
-                        >
-                          {flexRender(header.column.columnDef.header, header.getContext())}
-                          {{
-                            asc: <i className='tabler-chevron-up text-xl' />,
-                            desc: <i className='tabler-chevron-down text-xl' />
-                          }[header.column.getIsSorted()] ?? null}
-                        </div>
-                      </>
-                    </th>
-                  ))}
-                </tr>
-              ))}
-              {isDataTableServerLoading && (
-                <tr>
-                  <td colSpan={columns?.length}>
-                    <LinearProgress color='primary' sx={{ height: '2px' }} />
-                  </td>
-                </tr>
-              )}
-            </thead>
-            {globalFilter.length > 0 && table.getFilteredRowModel().rows.length === 0 ? (
-              <tbody>
-                <tr>
-                  <td colSpan={table.getVisibleFlatColumns().length} className='text-center'>
-                    {t('datatable.common.no_matching_data_found')}
-                  </td>
-                </tr>
-              </tbody>
-            ) : table.getFilteredRowModel().rows.length === 0 ? (
-              <tbody>
-                <tr>
-                  <td colSpan={table.getVisibleFlatColumns().length} className='text-center'>
-                    {t('datatable.common.no_data_available')}
-                  </td>
-                </tr>
-              </tbody>
-            ) : (
-              <tbody>
-                {table
-                  .getRowModel()
-                  .rows.slice(0, table.getState().pagination.pageSize)
-                  .map(row => (
-                    <tr key={row.id} className={classnames({ selected: row.getIsSelected() })}>
-                      {row.getVisibleCells().map(cell => (
-                        <td
-                          key={cell.id}
-                          style={{
-                            width: `${cell.column.columnDef.size}%`,
-                            minWidth: `${cell.column.columnDef.minSize}%`
-                          }}
-                          className='whitespace-normal break-words'
-                        >
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                        </td>
+        {/* <div className='overflow-x-auto'> */}
+        {userOperationPermissions?.get_foodchart_requests && (
+          <>
+            <div className='table-common-block p-0 overflow-x-auto'>
+              <table className={tableStyles.table}>
+                <thead>
+                  {table.getHeaderGroups().map(headerGroup => (
+                    <tr key={headerGroup.id}>
+                      {headerGroup.headers.map(header => (
+                        <th key={header.id}>
+                          <div
+                            className={classnames({
+                              'flex items-center': header.column.getIsSorted(),
+                              'cursor-pointer select-none': header.column.getCanSort()
+                            })}
+                            onClick={header.column.getToggleSortingHandler()}
+                          >
+                            {flexRender(header.column.columnDef.header, header.getContext())}
+                            {header.column.getIsSorted() === 'asc' && <i className='tabler-chevron-up text-xl' />}
+                            {header.column.getIsSorted() === 'desc' && <i className='tabler-chevron-down text-xl' />}
+                          </div>
+                        </th>
                       ))}
                     </tr>
                   ))}
-              </tbody>
-            )}
-          </table>
-        </div>
-        <TablePagination
-          component={() => (
-            <div className='flex justify-between items-center flex-wrap pli-6 border-bs bs-auto plb-[12.5px] gap-2'>
-              <Typography color='text.disabled'>
-                {t('datatable.common.footer_showing_entries', {
-                  startIndex: recordMetaData?.startIndex || 0,
-                  endIndex: recordMetaData?.endIndex || 0,
-                  totalFiltered: recordMetaData?.totalFiltered || 0
-                })}
-              </Typography>
-              <div className='flex items-center gap-2 is-full sm:is-auto'>
-                <Typography className='hidden sm:block'>{dictionary?.datatable?.common?.show}</Typography>
-                <CustomTextField
-                  select
-                  value={itemsPerPage || 10}
-                  onChange={e => setItemsPerPage(e.target.value)}
-                  className='is-[70px] max-sm:is-full'
-                >
-                  <MenuItem value='5'>05</MenuItem>
-                  <MenuItem value='10'>10</MenuItem>
-                  <MenuItem value='25'>25</MenuItem>
-                  <MenuItem value='50'>50</MenuItem>
-                </CustomTextField>
-              </div>
+                  {isDataTableServerLoading && (
+                    <tr>
+                      <td colSpan={columns?.length} className='no-pad-td'>
+                        <LinearProgress color='primary' sx={{ height: '2px' }} />
+                      </td>
+                    </tr>
+                  )}
+                </thead>
 
-              <Pagination
-                shape='rounded'
-                color='primary'
-                variant='tonal'
-                count={recordMetaData?.totalPage}
-                page={page}
-                onChange={handlePageChange}
-                showFirstButton
-                showLastButton
-              />
+                <tbody>
+                  {globalFilter.length > 0 && table.getFilteredRowModel().rows.length === 0 ? (
+                    <tr>
+                      <td colSpan={table.getVisibleFlatColumns().length} className='text-center'>
+                        {t('datatable.common.no_matching_data_found')}
+                      </td>
+                    </tr>
+                  ) : table.getFilteredRowModel().rows.length === 0 ? (
+                    <tr>
+                      <td colSpan={table.getVisibleFlatColumns().length} className='text-center'>
+                        {t('datatable.common.no_data_available')}
+                      </td>
+                    </tr>
+                  ) : (
+                    table
+                      .getRowModel()
+                      .rows.slice(0, table.getState().pagination.pageSize)
+                      .map(row => (
+                        <tr key={row.id} className={classnames({ selected: row.getIsSelected() })}>
+                          {row.getVisibleCells().map(cell => (
+                            <td
+                              key={cell.id}
+                              style={{
+                                width: `${cell.column.columnDef.size}%`,
+                                minWidth: `${cell.column.columnDef.minSize}%`
+                              }}
+                              className='whitespace-normal break-words'
+                            >
+                              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                            </td>
+                          ))}
+                        </tr>
+                      ))
+                  )}
+
+                  {isDataTableServerLoading && (
+                    <tr>
+                      <td colSpan={columns?.length}>
+                        <LinearProgress color='primary' sx={{ height: '2px' }} />
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             </div>
-          )}
-        />
+            <TablePagination
+              component={() => (
+                <div className='flex justify-between items-center flex-wrap pli-6 border-bs bs-auto plb-[12.5px] gap-2'>
+                  <Typography color='text.disabled'>
+                    {t('datatable.common.footer_showing_entries', {
+                      startIndex: recordMetaData?.startIndex || 0,
+                      endIndex: recordMetaData?.endIndex || 0,
+                      totalFiltered: recordMetaData?.totalFiltered || 0
+                    })}
+                  </Typography>
+                  <div className='flex items-center gap-2 is-full sm:is-auto'>
+                    <Typography className='hidden sm:block'>{dictionary?.datatable?.common?.show}</Typography>
+                    <CustomTextField
+                      select
+                      value={itemsPerPage || 10}
+                      onChange={e => setItemsPerPage(e.target.value)}
+                      className='is-[70px] max-sm:is-full'
+                    >
+                      <MenuItem value='5'>05</MenuItem>
+                      <MenuItem value='10'>10</MenuItem>
+                      <MenuItem value='25'>25</MenuItem>
+                      <MenuItem value='50'>50</MenuItem>
+                    </CustomTextField>
+                  </div>
+
+                  <Pagination
+                    shape='rounded'
+                    color='primary'
+                    variant='tonal'
+                    count={recordMetaData?.totalPage}
+                    page={page}
+                    onChange={handlePageChange}
+                    showFirstButton
+                    showLastButton
+                  />
+                </div>
+              )}
+            />
+          </>
+        )}
       </Card>
     </>
   )

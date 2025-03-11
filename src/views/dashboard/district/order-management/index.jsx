@@ -36,10 +36,10 @@ const OrderManagement = props => {
   // Vars
   const isUserHasPermissionSections = useMemo(
     () => ({
-      order_tracking: isUserHasPermission({
+      get_last_movement_cancellation_list: isUserHasPermission({
         permissions: user?.permissions,
         permissionToCheck: 'order_management',
-        subPermissionsToCheck: ['order_tracking']
+        subPermissionsToCheck: ['get_last_movement_cancellation_list']
       }),
       change_order: isUserHasPermission({
         permissions: user?.permissions,
@@ -52,11 +52,12 @@ const OrderManagement = props => {
 
   return (
     <Grid container spacing={6}>
-      {isUserHasPermissionSections?.order_tracking && (
+      {isUserHasPermissionSections?.get_last_movement_cancellation_list && (
         <Grid item xs={6} sm={2} md={12}>
           <Statistics dictionary={dictionary} setShowDropDown={setShowDropDown} showDropDdown={showDropDdown} />
           {showDropDdown.last_moment_cancellation && <LastMomentOrderDataTable dictionary={dictionary} />}
           {showDropDdown.meal_monitoring && (
+            // <></>
             <LocationSelectorForm dictionary={dictionary} showButton={true} spacing={4} lg={6} />
           )}
         </Grid>

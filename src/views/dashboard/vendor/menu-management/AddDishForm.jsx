@@ -28,7 +28,10 @@ import {
   DialogActions,
   FormHelperText,
   FormControlLabel,
-  Checkbox
+  Checkbox,
+  Card,
+  CardHeader,
+  CardContent
 } from '@mui/material'
 
 import AddCircleIcon from '@mui/icons-material/AddCircle'
@@ -44,6 +47,7 @@ import axiosApiCall from '@/utils/axiosApiCall'
 import { toastError, apiResponseErrorHandling, toastSuccess } from '@/utils/globalFunctions'
 
 import { useTranslation } from '@/utils/getDictionaryClient'
+import CustomTextField from '@/@core/components/mui/TextField'
 
 function AddDishForm({ onSave, onDelete, handleBackToTabs, tabValue, editId }) {
   const { lang: locale } = useParams()
@@ -450,259 +454,439 @@ function AddDishForm({ onSave, onDelete, handleBackToTabs, tabValue, editId }) {
   }
 
   return (
-    <Paper elevation={3} sx={{ padding: 4, borderRadius: 2 }}>
-      <Typography variant='h6' fontWeight='bold' mb={3}>
-        {editId ? t('form.label.edit_dish') : t('form.label.add_dish')}
-      </Typography>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <Typography mb={1}>{t('form.label.dish_name')}</Typography>
-            <TextField
-              fullWidth
-              placeholder={t('form.placeholder.enter_dish_name')}
-              variant='outlined'
-              size='small'
-              {...register('dishName')}
-              error={!!errors.dishName}
-              helperText={errors.dishName?.message}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <Typography mb={1}>{t('form.label.dish_description')}</Typography>
-            <TextField
-              fullWidth
-              placeholder={t('form.placeholder.enter_description_name')}
-              multiline
-              rows={3}
-              variant='outlined'
-              size='small'
-              {...register('dishDescription')}
-              error={!!errors.dishDescription}
-              helperText={errors.dishDescription?.message}
-            />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <FormControl fullWidth>
-              <InputLabel>{t('form.label.modifier')}</InputLabel>
-              <Select
-                fullWidth
-                multiple
-                value={selectedModifierList}
-                onChange={handleModifierChange}
-                renderValue={selected => (
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                    {selected.map(value => (
-                      <Chip
-                        key={value}
-                        label={modifierList.find(modifier => modifier._id === value)?.name || value}
-                        onDelete={() => handleRemoveModifier(value)}
-                      />
-                    ))}
-                  </Box>
-                )}
-              >
-                {modifierList.map(modifier => (
-                  <MenuItem key={modifier._id} value={modifier._id}>
-                    {modifier.name}
-                  </MenuItem>
-                ))}
-              </Select>
-              {/* <Typography color='error' variant='caption'>
-                {errors.modifier?.message}
-              </Typography> */}
-            </FormControl>
-          </Grid>
-
-          <Grid item xs={12} md={6}>
-            <FormControl fullWidth>
-              <InputLabel>{t('form.label.category_name')}</InputLabel>
-              <Select
-                fullWidth
-                multiple
-                value={selectedCategories}
-                onChange={handleChange}
-                renderValue={selected => (
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                    {selected.map(value => (
-                      <Chip
-                        key={value}
-                        label={categoriesList.find(category => category._id === value)?.name || value}
-                        onDelete={() => handleRemoveCategory(value)}
-                      />
-                    ))}
-                  </Box>
-                )}
-              >
-                {categoriesList.map(category => (
-                  <MenuItem key={category._id} value={category._id}>
-                    {category.name}
-                  </MenuItem>
-                ))}
-              </Select>
-              <Typography color='error' variant='caption'>
-                {errors.category?.message}
-              </Typography>
-            </FormControl>
-          </Grid>
-
-          <Grid item xs={12} md={6}>
-            <Typography mb={1}>{t('form.label.price')}</Typography>
-            <TextField
-              fullWidth
-              placeholder={t('form.placeholder.pricing')}
-              variant='outlined'
-              size='small'
-              {...register('price')}
-              error={!!errors.price}
-              helperText={errors.price?.message}
-            />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <Typography mb={1}>{t('form.label.tax_pricing')}</Typography>
-            <TextField
-              fullWidth
-              placeholder={t('form.placeholder.tax_pricing')}
-              variant='outlined'
-              size='small'
-              {...register('tax_pricing')}
-              error={!!errors.tax_pricing}
-              helperText={errors.tax_pricing?.message}
-            />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <Typography mb={1}>{t('form.label.dish_image')}</Typography>
-            <Box display='flex' alignItems='center' gap={2}>
-              <label htmlFor='image-upload'>
-                <input
-                  accept='image/*'
-                  style={{ display: 'none' }}
-                  id='image-upload'
-                  type='file'
-                  onChange={handleImageChange}
-                />
-                <Button variant='outlined' component='span' fullWidth>
-                  +
-                </Button>
-              </label>
-              {imageURL && (
-                <img
-                  src={imageURL}
-                  alt='Uploaded'
-                  style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 8 }}
-                />
-              )}
-            </Box>
-            {errors.file && (
-              <Typography variant='caption' color='error'>
-                {errors.file.message}
-              </Typography>
-            )}
-          </Grid>
-          <Grid item xs={12}>
-            <Box display='flex' gap={2} alignItems='center'>
-              <FormControlLabel
-                control={
-                  <Checkbox checked={comboMeal} onChange={handleComboMealChange} name='comboMeal' color='primary' />
-                }
-                label={t('form.label.combo_meal')}
-              />
-            </Box>
-          </Grid>
-          <Grid container spacing={2} xs={12}>
-            <Typography mb={2}>{t('form.label.add_ingredient')}</Typography>
-            {ingredients.map((ingredient, index) => (
-              <Grid item xs={12} key={index}>
-                <Box display='flex' gap={2} alignItems='center'>
-                  {/* Name Field */}
-                  <TextField
-                    label={t('form.label.name')}
-                    size='small'
-                    value={ingredient.name}
-                    onChange={e => handleIngredientChange(index, 'name', e.target.value)}
-                    error={!!errors.ingredients?.[index]?.name}
-                    helperText={errors.ingredients?.[index]?.name?.message}
-                  />
-
-                  {/* Quantity Field */}
-                  <TextField
-                    label={t('form.label.quantity')}
-                    size='small'
-                    value={ingredient.quantity}
-                    onChange={e => handleIngredientChange(index, 'quantity', e.target.value)}
-                    error={!!errors.ingredients?.[index]?.quantity}
-                    helperText={errors.ingredients?.[index]?.quantity?.message}
-                  />
-
-                  {/* Unit Dropdown */}
-                  <FormControl fullWidth size='small' error={!!errors.ingredients?.[index]?.unit}>
-                    <InputLabel> {t('form.label.unit')}</InputLabel>
-                    <Select
-                      value={ingredient.unit}
-                      onChange={e => handleIngredientChange(index, 'unit', e.target.value)}
-                    >
-                      <MenuItem value='kilogram'>{t('form.label.kilogram')}</MenuItem>
-                      <MenuItem value='g'>{t('form.label.gram')}</MenuItem>
-                      <MenuItem value='l'>{t('form.label.liter')}</MenuItem>
-                      <MenuItem value='ml'>{t('form.label.milliliter')}</MenuItem>
-                      <MenuItem value='pcs'>{t('form.label.pieces')}</MenuItem>
-                    </Select>
-                    <FormHelperText>{errors.ingredients?.[index]?.unit?.message}</FormHelperText>
-                  </FormControl>
-                  {/* Show "+" button only for the last ingredient */}
-                  {index === ingredients.length - 1 && (
-                    <IconButton color='primary' onClick={addIngredient}>
-                      <AddCircleIcon />
-                    </IconButton>
+    <Card className='common-block-dashboard'>
+      <div className='common-block-title'>
+        <CardHeader className='p-0' title={editId ? t('form.label.edit_dish') : t('form.label.add_dish')} />
+      </div>
+      <CardContent className='p-0 common-form-dashboard'>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Grid container spacing={6}>
+            <Grid item xs={12} sm={6}>
+              <div className='form-group'>
+                <Controller
+                  name='dish_name'
+                  control={control}
+                  render={({ field }) => (
+                    <CustomTextField
+                      fullWidth
+                      placeholder={t('form.placeholder.enter_dish_name')}
+                      variant='outlined'
+                      size='small'
+                      label={t('form.label.dish_name')}
+                      {...register('dishName')}
+                      error={!!errors.dishName}
+                      helperText={errors.dishName?.message}
+                    />
                   )}
+                />
+              </div>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <div className='form-group'>
+                <Controller
+                  name='dishDescription'
+                  control={control}
+                  render={({ field }) => (
+                    <CustomTextField
+                      fullWidth
+                      placeholder={t('form.placeholder.enter_description_name')}
+                      multiline
+                      rows={3}
+                      variant='outlined'
+                      size='small'
+                      label={t('form.label.dish_description')}
+                      {...register('dishDescription')}
+                      error={!!errors.dishDescription}
+                      helperText={errors.dishDescription?.message}
+                    />
+                  )}
+                />
+              </div>
+            </Grid>
+            <Grid item xs={6}>
+              <div className='form-group'>
+                <InputLabel>{t('form.label.modifier')}</InputLabel>
+                <Controller
+                  name='modifier'
+                  control={control}
+                  rules={{ required: t('form.validation.required') }}
+                  render={({ field, fieldState: { error } }) => (
+                    <FormControl fullWidth error={!!error}>
+                      <Select
+                        {...field}
+                        multiple
+                        displayEmpty
+                        value={field.value || []} // Ensuring default empty array
+                        onChange={event => field.onChange(event.target.value)}
+                        renderValue={selected =>
+                          selected.length > 0 ? (
+                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                              {selected.map(value => (
+                                <Chip
+                                  key={value}
+                                  label={modifierList.find(modifier => modifier._id === value)?.name || value}
+                                  onDelete={() => {
+                                    field.onChange(field.value.filter(v => v !== value))
+                                  }}
+                                />
+                              ))}
+                            </Box>
+                          ) : (
+                            <Typography sx={{ color: 'gray' }}>{t('form.placeholder.enter_modifier_name')}</Typography>
+                          )
+                        }
+                      >
+                        <MenuItem disabled value=''>
+                          {t('form.placeholder.enter_modifier_name')}
+                        </MenuItem>
+                        {modifierList.map(modifier => (
+                          <MenuItem key={modifier._id} value={modifier._id}>
+                            {modifier.name}
+                          </MenuItem>
+                        ))}
+                      </Select>
 
-                  {/* Show "-" button for all ingredients except the first one */}
-                  {ingredients.length > 1 && (
-                    <IconButton color='error' onClick={() => removeIngredient(index)}>
-                      <RemoveCircleIcon />
-                    </IconButton>
+                      {error && (
+                        <Typography color='error' variant='caption'>
+                          {error.message}
+                        </Typography>
+                      )}
+                    </FormControl>
+                  )}
+                />
+              </div>
+            </Grid>
+
+            <Grid item xs={6}>
+              <div className='form-group address-fill-common'>
+                <InputLabel>{t('form.label.category_name')}</InputLabel>
+                <Controller
+                  name='category'
+                  control={control}
+                  rules={{ required: t('form.validation.required') }}
+                  render={({ field, fieldState: { error } }) => (
+                    <>
+                      <FormControl fullWidth>
+                        <Select
+                          {...field}
+                          multiple
+                          displayEmpty
+                          value={field.value || []}
+                          onChange={event => field.onChange(event.target.value)}
+                          renderValue={selected =>
+                            selected.length > 0 ? (
+                              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                {selected.map(value => (
+                                  <Chip
+                                    key={value}
+                                    label={categoriesList.find(category => category._id === value)?.name || value}
+                                    onDelete={() => {
+                                      field.onChange(field.value.filter(v => v !== value))
+                                    }}
+                                  />
+                                ))}
+                              </Box>
+                            ) : (
+                              <Typography sx={{ color: 'gray' }}>
+                                {t('form.placeholder.enter_category_name')}
+                              </Typography>
+                            )
+                          }
+                        >
+                          <MenuItem disabled value=''>
+                            {t('form.placeholder.enter_category_name')}
+                          </MenuItem>
+                          {categoriesList.map(category => (
+                            <MenuItem key={category._id} value={category._id}>
+                              {category.name}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+
+                      {/* Display error message separately (no red box) */}
+                      {error && (
+                        <Typography color='error' variant='caption'>
+                          {error.message}
+                        </Typography>
+                      )}
+                    </>
+                  )}
+                />
+              </div>
+            </Grid>
+
+            <Grid item xs={3}>
+              <div className='form-group'>
+                <Controller
+                  name='price'
+                  control={control}
+                  render={({ field }) => (
+                    <CustomTextField
+                      fullWidth
+                      placeholder={t('form.placeholder.pricing')}
+                      variant='outlined'
+                      size='small'
+                      label={t('form.label.price')}
+                      {...register('price')}
+                      error={!!errors.price}
+                      helperText={errors.price?.message}
+                    />
+                  )}
+                />
+              </div>
+            </Grid>
+            <Grid item xs={3}>
+              <div className='form-group address-fill-common'>
+                <Controller
+                  name='price'
+                  control={control}
+                  render={({ field }) => (
+                    <CustomTextField
+                      fullWidth
+                      placeholder={t('form.placeholder.tax_pricing')}
+                      variant='outlined'
+                      size='small'
+                      label={t('form.label.tax_pricing')}
+                      {...register('tax_pricing')}
+                      error={!!errors.tax_pricing}
+                      helperText={errors.tax_pricing?.message}
+                    />
+                  )}
+                />
+              </div>
+            </Grid>
+            <Grid item xs={3}>
+              <div className='form-group'>
+                <InputLabel>{t('form.label.dish_image')}</InputLabel>
+                <Box display='flex' alignItems='center' gap={2}>
+                  <label htmlFor='image-upload'>
+                    <input
+                      accept='image/*'
+                      style={{ display: 'none' }}
+                      id='image-upload'
+                      type='file'
+                      onChange={handleImageChange}
+                    />
+                    <Button variant='outlined' component='span' fullWidth>
+                      +
+                    </Button>
+                  </label>
+                  {imageURL && (
+                    <img
+                      src={imageURL}
+                      alt='Uploaded'
+                      style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 8 }}
+                    />
                   )}
                 </Box>
-              </Grid>
-            ))}
-          </Grid>
-        </Grid>
+                {errors.file && (
+                  <Typography variant='caption' color='error'>
+                    {errors.file.message}
+                  </Typography>
+                )}
+              </div>
+            </Grid>
+            <Grid item xs={3}>
+              <div className='form-group address-fill-common'>
+                <Box display='flex' gap={2} alignItems='center'>
+                  <FormControlLabel
+                    control={
+                      <Checkbox checked={comboMeal} onChange={handleComboMealChange} name='comboMeal' color='primary' />
+                    }
+                    label={t('form.label.combo_meal')}
+                  />
+                </Box>
+              </div>
+            </Grid>
+            <Grid item xs={12}>
+              <div className='form-group'>
+                <InputLabel mb={2}>{t('form.label.add_ingredient')}</InputLabel>
+                {ingredients.map((ingredient, index) => (
+                  <Grid item xs={3} key={index}>
+                    <div className='form-group'>
+                      <Controller
+                        name='name'
+                        control={control}
+                        render={({ field }) => (
+                          <CustomTextField
+                            placeholder={t('form.placeholder.name')}
+                            variant='outlined'
+                            size='small'
+                            label={t('form.label.name')}
+                            value={ingredient.name}
+                            onChange={e => handleIngredientChange(index, 'name', e.target.value)}
+                            error={!!errors.ingredients?.[index]?.name}
+                            helperText={errors.ingredients?.[index]?.name?.message}
+                          />
+                        )}
+                      />
+                    </div>
+                    <Grid item xs={3}>
+                      <div className='form-group'>
+                        <Controller
+                          name='quantity'
+                          control={control}
+                          render={({ field }) => (
+                            <CustomTextField
+                              placeholder={t('form.placeholder.enter_quantity')}
+                              variant='outlined'
+                              size='small'
+                              label={t('form.label.quantity')}
+                              value={ingredient.quantity}
+                              onChange={e => handleIngredientChange(index, 'quantity', e.target.value)}
+                              error={!!errors.ingredients?.[index]?.quantity}
+                              helperText={errors.ingredients?.[index]?.quantity?.message}
+                            />
+                          )}
+                        />
+                      </div>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <div className='form-group address-fill-common'>
+                        <InputLabel>{t('form.label.unit')}</InputLabel>
+                        <Controller
+                          name={`ingredients.${index}.unit`}
+                          control={control}
+                          rules={{ required: t('form.validation.required') }}
+                          render={({ field, fieldState: { error } }) => (
+                            <>
+                              <FormControl fullWidth>
+                                <Select
+                                  {...field}
+                                  value={field.value || ''}
+                                  onChange={e => field.onChange(e.target.value)}
+                                  displayEmpty
+                                  renderValue={selected =>
+                                    selected ? (
+                                      t(`form.label.${selected}`)
+                                    ) : (
+                                      <Typography sx={{ color: 'gray' }}>
+                                        {t('form.placeholder.select_unit')}
+                                      </Typography>
+                                    )
+                                  }
+                                >
+                                  <MenuItem disabled value=''>
+                                    {t('form.placeholder.select_unit')}
+                                  </MenuItem>
 
-        <Box mt={3} display='flex' justifyContent='flex-end' gap={2}>
-          <Button type='submit' variant='contained' color='success' disabled={isSubmitting}>
-            {isSubmitting ? t('common.saving') : editId ? t('form.button.update') : t('form.button.save')}
-          </Button>
-          {editId && (
-            <div>
-              <Button variant='contained' color='error' onClick={handleClickOpen}>
-                {t('form.button.delete')}
-              </Button>
-              <Dialog
-                open={open}
-                onClose={handleClose}
-                aria-labelledby='alert-dialog-title'
-                aria-describedby='alert-dialog-description'
-              >
-                <DialogTitle id='alert-dialog-title'>{t('form.button.delete')}</DialogTitle>
-                <DialogContent>
-                  <DialogContentText id='alert-dialog-description'>
-                    {t('dialog.delete_category_confirmation')}
-                  </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                  <Button onClick={handleClose} color='primary'>
-                    {t('form.button.cancel')}
-                  </Button>
-                  <Button onClick={() => handleDelete(editId)} color='error' autoFocus>
-                    {t('form.button.delete')}
-                  </Button>
-                </DialogActions>
-              </Dialog>
-            </div>
-          )}
-        </Box>
-      </form>
-    </Paper>
+                                  <MenuItem value='kilogram'>{t('form.label.kilogram')}</MenuItem>
+                                  <MenuItem value='g'>{t('form.label.gram')}</MenuItem>
+                                  <MenuItem value='l'>{t('form.label.liter')}</MenuItem>
+                                  <MenuItem value='ml'>{t('form.label.milliliter')}</MenuItem>
+                                  <MenuItem value='pcs'>{t('form.label.pieces')}</MenuItem>
+                                </Select>
+                              </FormControl>
+
+                              {/* Show error message separately, without red border */}
+                              {error && (
+                                <Typography color='error' variant='caption'>
+                                  {error.message}
+                                </Typography>
+                              )}
+                            </>
+                          )}
+                        />
+                      </div>
+                    </Grid>
+
+                    {/* <Grid item xs={3}>
+                      <div className='form-group'>
+                        <Controller
+                          name={`ingredients.${index}.unit`} // Ensuring proper nested field name
+                          control={control}
+                          rules={{ required: t('form.validation.required') }}
+                          render={({ field, fieldState: { error } }) => (
+                            <FormControl fullWidth size='small' error={!!error}>
+                              <InputLabel>{t('form.label.unit')}</InputLabel>
+                              <Select
+                                {...field}
+                                value={field.value || ''}
+                                onChange={e => field.onChange(e.target.value)}
+                              >
+                                <MenuItem value='kilogram'>{t('form.label.kilogram')}</MenuItem>
+                                <MenuItem value='g'>{t('form.label.gram')}</MenuItem>
+                                <MenuItem value='l'>{t('form.label.liter')}</MenuItem>
+                                <MenuItem value='ml'>{t('form.label.milliliter')}</MenuItem>
+                                <MenuItem value='pcs'>{t('form.label.pieces')}</MenuItem>
+                              </Select>
+                              {error && <FormHelperText>{error.message}</FormHelperText>}
+                            </FormControl>
+                          )}
+                        />
+                      </div>
+                    </Grid> */}
+
+                    {/* <FormControl fullWidth size='small' error={!!errors.ingredients?.[index]?.unit}>
+                      <InputLabel> {t('form.label.unit')}</InputLabel>
+                      <Select
+                        value={ingredient.unit}
+                        onChange={e => handleIngredientChange(index, 'unit', e.target.value)}
+                      >
+                        <MenuItem value='kilogram'>{t('form.label.kilogram')}</MenuItem>
+                        <MenuItem value='g'>{t('form.label.gram')}</MenuItem>
+                        <MenuItem value='l'>{t('form.label.liter')}</MenuItem>
+                        <MenuItem value='ml'>{t('form.label.milliliter')}</MenuItem>
+                        <MenuItem value='pcs'>{t('form.label.pieces')}</MenuItem>
+                      </Select>
+                      <FormHelperText>{errors.ingredients?.[index]?.unit?.message}</FormHelperText>
+                    </FormControl> */}
+                    {/* Show "+" button only for the last ingredient */}
+                    {index === ingredients.length - 1 && (
+                      <IconButton color='primary' onClick={addIngredient}>
+                        <AddCircleIcon />
+                      </IconButton>
+                    )}
+
+                    {/* Show "-" button for all ingredients except the first one */}
+                    {ingredients.length > 1 && (
+                      <IconButton color='error' onClick={() => removeIngredient(index)}>
+                        <RemoveCircleIcon />
+                      </IconButton>
+                    )}
+                  </Grid>
+                ))}
+              </div>
+            </Grid>
+          </Grid>
+
+          <Box mt={3} display='flex' justifyContent='flex-end' gap={2}>
+            <Button type='submit' variant='contained' color='success' disabled={isSubmitting}>
+              {isSubmitting ? t('common.saving') : editId ? t('form.button.update') : t('form.button.save')}
+            </Button>
+            {editId && (
+              <div>
+                <Button variant='contained' color='error' onClick={handleClickOpen}>
+                  {t('form.button.delete')}
+                </Button>
+                <Dialog
+                  open={open}
+                  onClose={handleClose}
+                  aria-labelledby='alert-dialog-title'
+                  aria-describedby='alert-dialog-description'
+                >
+                  <DialogTitle id='alert-dialog-title'>{t('form.button.delete')}</DialogTitle>
+                  <DialogContent>
+                    <DialogContentText id='alert-dialog-description'>
+                      {t('dialog.delete_category_confirmation')}
+                    </DialogContentText>
+                  </DialogContent>
+                  <DialogActions>
+                    <Button onClick={handleClose} color='primary'>
+                      {t('form.button.cancel')}
+                    </Button>
+                    <Button onClick={() => handleDelete(editId)} color='error' autoFocus>
+                      {t('form.button.delete')}
+                    </Button>
+                  </DialogActions>
+                </Dialog>
+              </div>
+            )}
+          </Box>
+        </form>
+      </CardContent>
+    </Card>
   )
 }
 

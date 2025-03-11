@@ -187,13 +187,19 @@ const DocumentVerificationTable = props => {
         title={dictionary?.page?.vendor_management?.document_verification_requests?.document_list}
         action={
           <div className='flex gap-2'>
-            <Button variant='contained' color='primary' onClick={handleApprove} disabled={isLoadingDocuments}>
+            <Button
+              variant='contained'
+              color='primary'
+              className='theme-common-btn'
+              onClick={handleApprove}
+              disabled={isLoadingDocuments}
+            >
               {dictionary?.common?.approve}
             </Button>
             <Button
-              variant='contained'
+              variant='customLight'
+              className='theme-common-btn-border'
               onClick={() => setIsDialogOpen(true)}
-              style={{ backgroundColor: '#8bc34a' }}
               disabled={isLoadingDocuments}
             >
               {dictionary?.common?.reject}

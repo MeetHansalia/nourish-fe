@@ -296,6 +296,7 @@ const ManageVendorRequest = ({ dictionary }) => {
                 <>
                   <Button
                     variant='contained'
+                    className='theme-common-btn'
                     onClick={e => {
                       e.stopPropagation()
                       setSelectedRow(row?.original)

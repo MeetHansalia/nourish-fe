@@ -191,7 +191,6 @@ const VendorRegistrationRequestsTable = ({ dictionary }) => {
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    // getFilteredRowModel: getFilteredRowModel(),
     manualPagination: true,
     manualSorting: true
   })
@@ -211,19 +210,23 @@ const VendorRegistrationRequestsTable = ({ dictionary }) => {
   }, [page, itemsPerPage, globalFilter, sorting])
 
   return (
-    <Card>
+    <Card className='common-block-dashboard table-block-no-pad'>
       <CardHeader
+        className='common-block-title'
         title={dictionary?.datatable?.verification_request_Table?.table_title}
         action={
-          <DebouncedInput
-            value={globalFilter ?? ''}
-            onChange={value => setGlobalFilter(String(value))}
-            placeholder={dictionary?.datatable?.common?.search_placeholder}
-          />
+          <div className='form-group'>
+            <DebouncedInput
+              value={globalFilter ?? ''}
+              onChange={value => setGlobalFilter(String(value))}
+              placeholder={dictionary?.datatable?.common?.search_placeholder}
+            />
+          </div>
         }
-        className='flex-wrap gap-4'
+        // className='flex-wrap gap-4'
       />
-      <div className='overflow-x-auto'>
+      {/* <div className='overflow-x-auto'> */}
+      <div className='table-common-block p-0 overflow-x-auto'>
         <table className={tableStyles.table}>
           <thead>
             {table.getHeaderGroups().map(headerGroup => (
@@ -253,7 +256,8 @@ const VendorRegistrationRequestsTable = ({ dictionary }) => {
             ))}
             {isDataTableServerLoading && (
               <tr>
-                <td colSpan={columns?.length}>
+                {/* <td colSpan={columns?.length}> */}
+                <td className='no-pad-td' colSpan={columns?.length}>
                   <LinearProgress color='primary' sx={{ height: '2px' }} />
                 </td>
               </tr>

@@ -260,8 +260,7 @@ const DisputeListManagement = props => {
             <Button
               disabled={row?.original?.vendorId?.status === 'suspended'}
               variant='contained'
-              color='primary'
-              sx={{ px: 2, mx: 1 }}
+              className='theme-common-btn'
               onClick={() => {
                 const param = JSON.stringify(row?.original?.vendorId)
 
@@ -305,7 +304,6 @@ const DisputeListManagement = props => {
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
     manualPagination: true,
     manualSorting: true
   })
@@ -413,7 +411,7 @@ const DisputeListManagement = props => {
               ))}
               {isDataTableServerLoading && (
                 <tr>
-                  <td className="p-0" colSpan={columns?.length}>
+                  <td className='p-0' colSpan={columns?.length}>
                     <LinearProgress color='primary' sx={{ height: '2px' }} />
                   </td>
                 </tr>

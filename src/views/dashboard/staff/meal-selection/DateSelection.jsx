@@ -92,7 +92,7 @@ const DateSelection = ({ dictionary }) => {
 
   const [orderTypeDialog, setOrderTypeDialog] = useState(false)
 
-  const [orderTypeValue, setOrderTypeValue] = useState()
+  const [orderTypeValue, setOrderTypeValue] = useState('single')
 
   const singleDate = useSelector(state => state.date.singleDate)
 
@@ -334,23 +334,24 @@ const DateSelection = ({ dictionary }) => {
             </CardContent>
           </Card>
         </Grid>
-
-        <Grid item xs={12} className='pt-0'>
-          <Card className='overflow-visible common-block-dashboard p-0'>
-            <AppFullCalendar className='app-calendar'>
-              <div className='p-6 pbe-0 flex-grow overflow-visible bg-backgroundPaper rounded'>
-                <Calendar
-                  events={events}
-                  setCalStartDate={setCalStartDate}
-                  setCalEndDate={setCalEndDate}
-                  // onOrderNow={handleOrderNow}
-                  setSelectedVendor={setSelectedVendor}
-                  orderTypeValue={orderTypeValue}
-                />
-              </div>
-            </AppFullCalendar>
-          </Card>
-        </Grid>
+        {orderTypeValue === 'single' && (
+          <Grid item xs={12} className='pt-0'>
+            <Card className='overflow-visible common-block-dashboard p-0'>
+              <AppFullCalendar className='app-calendar'>
+                <div className='p-6 pbe-0 flex-grow overflow-visible bg-backgroundPaper rounded'>
+                  <Calendar
+                    events={events}
+                    setCalStartDate={setCalStartDate}
+                    setCalEndDate={setCalEndDate}
+                    // onOrderNow={handleOrderNow}
+                    setSelectedVendor={setSelectedVendor}
+                    orderTypeValue={orderTypeValue}
+                  />
+                </div>
+              </AppFullCalendar>
+            </Card>
+          </Grid>
+        )}
       </Grid>
 
       <Dialog
